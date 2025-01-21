@@ -1,0 +1,8 @@
+name: AwesomeMarket
+version: '1.0-SNAPSHOT'
+main: com.wjz.awesomemarket.AwesomeMarket
+api-version: '1.21'
+load: STARTUP
+authors: [ WJZ_P ]
+description: An awesome global market plugin!
+website: https://github.com/WJZ-P
