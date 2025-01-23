@@ -13,6 +13,11 @@ public class MarketTools {
         //先获取玩家手中的物品。
         player.getInventory().getItemInMainHand();
         //支付类型
+        String paymentType = args[2];
+        //上架数量
+        int amount=Integer.parseInt(args[3]);
+        //上架时间
+        int days=Integer.parseInt(args[4]);
 
     }
 

@@ -1,7 +1,9 @@
 package com.wjz.awesomemarket;
 
 import com.wjz.awesomemarket.utils.CommandHandler;
+import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.Mysql;
+import com.wjz.awesomemarket.utils.VaultTools;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -9,22 +11,25 @@ public final class AwesomeMarket extends JavaPlugin {
     //启用插件时
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        getLogger().info("§a==============================");
-        getLogger().info("§bAwesomeMarket 插件已启用!");
-        getLogger().info("§e欢迎使用 WJZ_P 的插件(✧ω✧)!");
-        getLogger().info("§e任何问题请联系 QQ1369727119");
-        getLogger().info("§a==============================");
+        //初始化各种类
+        Log.logger=getLogger();
+
+        Log.loadPlugin();//插件载入输出
 
         //下面这里先保存默认配置
         saveDefaultConfig();//保存config.yml到插件文件夹。如果已有则不做任何事
         FileConfiguration config = getConfig();//获取文件夹中的插件
-        getLogger().info("§b author:" + config.getString("author"));
 
         //配置指令
         CommandHandler.handleCommand(this);
         //尝试连接数据库
         Mysql.tryToConnect(config, getLogger());
+        //注册Vault插件
+        if(!VaultTools.setupEconomy()){//如果没有Vault插件
+            getLogger().severe("§b[AwesomeMarket] §cVault插件未安装或未启用！");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
     }
 
