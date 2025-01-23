@@ -1,14 +1,12 @@
 package com.wjz.awesomemarket;
 
-import com.wjz.awesomemarket.Utils.CommandHandler;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import com.wjz.awesomemarket.utils.CommandHandler;
+import com.wjz.awesomemarket.utils.Mysql;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 public final class AwesomeMarket extends JavaPlugin {
-
+    //启用插件时
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -20,8 +18,14 @@ public final class AwesomeMarket extends JavaPlugin {
 
         //下面这里先保存默认配置
         saveDefaultConfig();//保存config.yml到插件文件夹。如果已有则不做任何事
-        FileConfiguration config=getConfig();//获取文件夹中的插件
-        getLogger().info("§b author:"+config.getString("author"));
+        FileConfiguration config = getConfig();//获取文件夹中的插件
+        getLogger().info("§b author:" + config.getString("author"));
+
+        //配置指令
+        CommandHandler.handleCommand(this);
+        //尝试连接数据库
+        Mysql.tryToConnect(config, getLogger());
+
     }
 
     @Override
@@ -31,12 +35,7 @@ public final class AwesomeMarket extends JavaPlugin {
         getLogger().info("§bAwesomeMarket 插件已关闭!");
         getLogger().info("§e感谢使用(｡•̀ᴗ-)✧!");
         getLogger().info("§c==============================");
-    }
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
-        //交给CommandHandler处理指令
-        return CommandHandler.handleCommand(sender, command, label, args);
+        Mysql.closeConnection();
     }
 }
 

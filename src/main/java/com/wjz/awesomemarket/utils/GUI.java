@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.Utils;
+package com.wjz.awesomemarket.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

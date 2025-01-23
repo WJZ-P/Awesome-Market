@@ -6,7 +6,7 @@ load: STARTUP
 authors: [ WJZ_P ]
 description: An awesome global market plugin!
 website: https://github.com/WJZ-P
-database: false
+depend: [Vault]
 
 commands:
   awesomemarket:
