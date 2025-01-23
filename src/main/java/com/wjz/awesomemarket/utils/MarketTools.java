@@ -19,6 +19,7 @@ public class MarketTools {
         //上架时间
         int days=Integer.parseInt(args[4]);
 
+        //先判断
     }
 
     /**

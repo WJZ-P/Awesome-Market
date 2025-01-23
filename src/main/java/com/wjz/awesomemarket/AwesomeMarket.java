@@ -11,14 +11,14 @@ public final class AwesomeMarket extends JavaPlugin {
     //启用插件时
     @Override
     public void onEnable() {
-        //初始化各种类
-        Log.logger=getLogger();
-
-        Log.loadPlugin();//插件载入输出
-
         //下面这里先保存默认配置
         saveDefaultConfig();//保存config.yml到插件文件夹。如果已有则不做任何事
         FileConfiguration config = getConfig();//获取文件夹中的插件
+
+        //初始化各种类
+        Log.logger=getLogger();
+        Log.language=config.getString("language");//获取配置文档
+        Log.loadPlugin();//插件载入输出
 
         //配置指令
         CommandHandler.handleCommand(this);
