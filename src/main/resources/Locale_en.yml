@@ -1,5 +1,6 @@
 #log when plugin is loaded
 load_plugin: |
+  
   §a==============================
   §bAwesomeMarket 插件已启用!
   §e欢迎使用 WJZ_P 的插件(✧ω✧)!

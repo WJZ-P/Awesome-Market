@@ -19,15 +19,15 @@ public class Mysql {
         try {
             Connection connection = DriverManager.getConnection(url, mysqlConfig.getString("user"),
                     mysqlConfig.getString("password"));
-            logger.info("§b[AwesomeMarket] §e主机连接成功！");
+            Log.info("connect_mysql_success");
 
             Mysql.connection = connection;//保存好变量
 
             //看指定数据库是否存在
             if (!isDatabaseExist(MysqlType.DATABASE_NAME)) {
                 //不存在就要新建数据库
-                connection.createStatement().execute("create database " + MysqlType.DATABASE_NAME);
-                logger.info("§b[AwesomeMarket] §e数据库不存在，已新建数据库！");
+                connection.createStatement().execute(MysqlType.CREATE_DATABASE);
+                Log.severe("connect_mysql_fail");
             }
 
         } catch (SQLException e) {

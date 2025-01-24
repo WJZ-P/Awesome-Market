@@ -1,34 +1,42 @@
 package com.wjz.awesomemarket.utils;
 
+import com.wjz.awesomemarket.AwesomeMarket;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
 import java.util.logging.Logger;
 
 public class Log {
-    public static Logger logger;
-    public static String language;
+    private static Logger logger;
+    public static FileConfiguration langConfig;
 
     /**
-     * 载入插件的log
+     * 初始化Log类
      */
-    public static void loadPlugin() {
-        // Plugin startup logic
-        switch (language) {
-            case "zh":
-                logger.info("""
-                        §a==============================
-                        §bAwesomeMarket 插件已启用!
-                        §e欢迎使用 WJZ_P 的插件(✧ω✧)!
-                        §e任何问题请联系 QQ1369727119
-                        §a==============================
-                        """);
-                break;
-            case "en":
-                logger.info("""
-                        §a==============================
-                        §bAwesomeMarket plugin has been loaded!
-                        §eWelcome to use plugin made by WJZ_P!(✧ω✧)!
-                        §eAny question please contact 1369727119@qq.com or WJZ-P on github
-                        §a==============================
-                        """);
+    public static void Initialize() {
+        //设置插件输出
+        logger = AwesomeMarket.getInstance().getLogger();
+        //设置插件的语言路径，不存在的话就创建
+        String langFileName = "Locale_" + AwesomeMarket.getInstance().getConfig().getString("language") + ".yml";
+        File langFile = new File(AwesomeMarket.getInstance().getDataFolder(), langFileName);
+        if (!langFile.exists()) {
+            //不存在，要创建语言文件
+            langFile.getParentFile().mkdirs();//确保所有父目录是存在的
+            AwesomeMarket.getInstance().saveResource(langFileName, false);
         }
+        langConfig = YamlConfiguration.loadConfiguration(langFile);
+    }
+    public static void info(String name){
+        logger.info(name);
+    }
+    public static void severe(String name){
+        logger.severe(name);
+    }
+    public static void warning(String name){
+        logger.warning(name);
+    }
+    public static String getString(String name){
+        return langConfig.getString(name);
     }
 }

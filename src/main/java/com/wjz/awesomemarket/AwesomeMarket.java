@@ -8,17 +8,22 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class AwesomeMarket extends JavaPlugin {
+    private static AwesomeMarket pluginInstance=null;
     //启用插件时
     @Override
     public void onEnable() {
+        pluginInstance=this;//设置实例
+
         //下面这里先保存默认配置
         saveDefaultConfig();//保存config.yml到插件文件夹。如果已有则不做任何事
-        FileConfiguration config = getConfig();//获取文件夹中的插件
+        FileConfiguration config = getConfig();//获取文件夹中的config.yml
 
         //初始化各种类
-        Log.logger=getLogger();
-        Log.language=config.getString("language");//获取配置文档
-        Log.loadPlugin();//插件载入输出
+        Log.Initialize();
+
+        getLogger().info("Locale_"+config.getString("language")+".yml");
+        getLogger().info(Log.langConfig.getString("load_plugin"));
+        Log.info("load_plugin");//插件载入输出
 
         //配置指令
         CommandHandler.handleCommand(this);
@@ -26,7 +31,7 @@ public final class AwesomeMarket extends JavaPlugin {
         Mysql.tryToConnect(config, getLogger());
         //注册Vault插件
         if(!VaultTools.setupEconomy()){//如果没有Vault插件
-            getLogger().severe("§b[AwesomeMarket] §cVault插件未安装或未启用！");
+            Log.severe("no_vault");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -36,12 +41,14 @@ public final class AwesomeMarket extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getLogger().info("§c==============================");
-        getLogger().info("§bAwesomeMarket 插件已关闭!");
-        getLogger().info("§e感谢使用(｡•̀ᴗ-)✧!");
-        getLogger().info("§c==============================");
+
         Mysql.closeConnection();
     }
+
+    public static AwesomeMarket getInstance(){
+        return pluginInstance;
+    }
+
 }
 
 

@@ -1,4 +1,6 @@
-#
+#support Chinese and English, use "zh" or "en". Notice that you must
+#select a language and start the server first to see the language config file.
+#支持中英文，zh和en。必须选定对应语言，启动后才会生成语言配置文件。
 language: zh
 
 #use Mysql as database
@@ -7,4 +9,4 @@ mysql-data-base:
   ip: 0.0.0.0
   port: 3306
   user:
-  password:
+  password: 0821
