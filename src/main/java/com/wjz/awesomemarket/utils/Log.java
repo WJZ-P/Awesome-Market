@@ -27,16 +27,20 @@ public class Log {
         }
         langConfig = YamlConfiguration.loadConfiguration(langFile);
     }
-    public static void info(String name){
-        logger.info(name);
+
+    public static void info(String name) {
+        logger.info(langConfig.getString(name));
     }
-    public static void severe(String name){
-        logger.severe(name);
+
+    public static void severe(String name) {
+        logger.severe(langConfig.getString(name));
     }
-    public static void warning(String name){
+
+    public static void warning(String name) {
         logger.warning(name);
     }
-    public static String getString(String name){
+
+    public static String getString(String name) {
         return langConfig.getString(name);
     }
 }

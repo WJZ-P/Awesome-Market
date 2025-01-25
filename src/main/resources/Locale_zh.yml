@@ -1,6 +1,6 @@
 #插件加载时候的log
 load_plugin: |
-  
+
   §a==============================
   §bAwesomeMarket 插件已启用!
   §e欢迎使用 WJZ_P 的插件(✧ω✧)!
@@ -8,13 +8,14 @@ load_plugin: |
   §a==============================
 
 unload_plugin: |
-  
+
   §c==============================
   §bAwesomeMarket 插件已关闭!
   §e感谢使用(｡•̀ᴗ-)✧!
   §c==============================
 
-connect_mysql_success: "§b[AwesomeMarket] §e数据库不存在，已新建数据库！"
-connect_mysql_fail: "§b[AwesomeMarket] §e数据库不存在，已新建数据库！"
+try_create_database: "§b[AwesomeMarket] §e数据库不存在，创建awesome_market数据库。"
+connect_mysql_success: "§b[AwesomeMarket] §e成功连接数据库！"
+connect_mysql_fail: "§b[AwesomeMarket] §e数据库连接出错！"
 no_vault: "§b[AwesomeMarket] §cVault插件未安装或未启用！"
 payment_type_error: "§b[AwesomeMarket] §c货币类型错误！"

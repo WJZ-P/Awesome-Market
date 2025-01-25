@@ -21,14 +21,13 @@ public final class AwesomeMarket extends JavaPlugin {
         //初始化各种类
         Log.Initialize();
 
-        getLogger().info("Locale_"+config.getString("language")+".yml");
-        getLogger().info(Log.langConfig.getString("load_plugin"));
+        getLogger().info("use Locale_"+config.getString("language")+".yml");
         Log.info("load_plugin");//插件载入输出
 
         //配置指令
         CommandHandler.handleCommand(this);
         //尝试连接数据库
-        Mysql.tryToConnect(config, getLogger());
+        Mysql.tryToConnect(config);
         //注册Vault插件
         if(!VaultTools.setupEconomy()){//如果没有Vault插件
             Log.severe("no_vault");
@@ -41,7 +40,7 @@ public final class AwesomeMarket extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-
+        Mysql.closeDataSource();
     }
 
     public static AwesomeMarket getInstance(){
