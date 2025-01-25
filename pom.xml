@@ -38,6 +38,14 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+<!--                        <configuration>-->
+<!--                            <relocations>-->
+<!--                                <relocation>-->
+<!--                                    <pattern>com.zaxxer.hikari</pattern>-->
+<!--                                    <shadedPattern>com.wjz.awesomemarket.shade.hikari</shadedPattern>-->
+<!--                                </relocation>-->
+<!--                            </relocations>-->
+<!--                        </configuration>-->
                     </execution>
                 </executions>
             </plugin>
@@ -72,10 +80,15 @@
             <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>mysql</groupId>-->
+<!--            <artifactId>mysql-connector-java</artifactId>-->
+<!--            <version>8.0.31</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.31</version>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
@@ -83,5 +96,6 @@
             <version>1.7</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 </project>

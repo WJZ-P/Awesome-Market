@@ -11,8 +11,6 @@ public class MarketTools {
      * @param args
      */
     public static void sellItems(Player player, String[] args) {
-        //先获取玩家手中的物品。
-        ItemStack itemStack = player.getInventory().getItemInMainHand();
         //支付类型
         String paymentType = args[2];
         //上架数量
@@ -25,6 +23,9 @@ public class MarketTools {
             player.sendMessage(Log.getString("payment_type_error"));
         }
 
+        //先获取玩家手中的物品。
+        ItemStack itemStack = player.getInventory().getItemInMainHand();
+        //上架到全球市场
 
     }
 
@@ -34,4 +35,8 @@ public class MarketTools {
     public static void buyItems(Player player, String[] args) {
 
     }
+
+//    private static void Seri
+
+
 }

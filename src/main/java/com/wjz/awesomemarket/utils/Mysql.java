@@ -1,6 +1,8 @@
 package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.constants.MysqlType;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -8,31 +10,40 @@ import java.sql.*;
 import java.util.logging.Logger;
 
 public class Mysql {
-    private static Connection connection;
+    private static HikariDataSource dataSource;
 
     public static void tryToConnect(FileConfiguration config, Logger logger) {
         //准备连接数据库
+        HikariConfig hikariConfig = new HikariConfig();
         ConfigurationSection mysqlConfig = config.getConfigurationSection("mysql-data-base");
         String url = "jdbc:mysql://" + mysqlConfig.getString("ip") +
                 ":" + mysqlConfig.getString("port");//先看能否连接上
 
+        hikariConfig.setJdbcUrl(url);
+        hikariConfig.setUsername(mysqlConfig.getString("user"));
+        hikariConfig.setPassword(mysqlConfig.getString("password"));
+
         try {
-            Connection connection = DriverManager.getConnection(url, mysqlConfig.getString("user"),
-                    mysqlConfig.getString("password"));
+            HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
             Log.info("connect_mysql_success");
-
-            Mysql.connection = connection;//保存好变量
-
+            Mysql.dataSource = hikariDataSource;
             //看指定数据库是否存在
             if (!isDatabaseExist(MysqlType.DATABASE_NAME)) {
                 //不存在就要新建数据库
-                connection.createStatement().execute(MysqlType.CREATE_DATABASE);
-                Log.severe("connect_mysql_fail");
+                try (Connection connection = dataSource.getConnection()) {
+                    connection.createStatement().execute(MysqlType.CREATE_DATABASE);
+                    Log.severe("connect_mysql_fail");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //说明数据库已存在
+                try (Connection connection = dataSource.getConnection()) {
+                    connection.createStatement().execute("use " + MysqlType.DATABASE_NAME);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
-
-        } catch (SQLException e) {
-            logger.severe("数据库连接失败: " + e.getMessage());
-            throw new RuntimeException(e);
         }
     }
 
@@ -46,13 +57,13 @@ public class Mysql {
         }
     }
 
-    public static void closeConnection()  {
+    public static void closeConnection() {
         try {
             Mysql.connection.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        Mysql.connection=null;
+        Mysql.connection = null;
     }
 
 }
