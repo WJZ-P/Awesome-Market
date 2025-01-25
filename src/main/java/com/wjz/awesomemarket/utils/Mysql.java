@@ -22,6 +22,14 @@ public class Mysql {
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(mysqlConfig.getString("user"));
         hikariConfig.setPassword(mysqlConfig.getString("password"));
+        String driver ="com.mysql.cj.jdbc.Driver";
+        //MC不同版本driver不一样，这里先尝试。
+        try{
+            Class.forName(driver);
+        } catch (ClassNotFoundException e) {
+            driver="com.mysql.jdbc.Driver";
+            Log.infoDirectly("Driver class"+driver+"not found, use legacy MySql Driver com.mysql.cj.jdbc.Driver");
+        }
 
         try {
             HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
@@ -59,6 +67,14 @@ public class Mysql {
     public static void closeDataSource() {
         if (dataSource != null)
             dataSource.close();
+    }
+
+    /**
+     * 创建数据库，表等
+     * @param config
+     */
+    private static void createNeeds(FileConfiguration config){
+
     }
 
 }

@@ -15,3 +15,6 @@ mysql-data-base:
   #不要有-等特殊符号，小写
   #do not use "-" or other special characters, use lowercase
   database-name: awesome_market
+  #all table created by this plugin will use this prefix to prevent from conflicts
+  #所有该插件创建的表的前缀，主要用于避免冲突
+  table-prefix: am_
