@@ -42,7 +42,6 @@ public final class AwesomeMarket extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
 
-        Mysql.closeConnection();
     }
 
     public static AwesomeMarket getInstance(){

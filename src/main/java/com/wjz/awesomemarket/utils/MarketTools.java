@@ -1,5 +1,7 @@
 package com.wjz.awesomemarket.utils;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,7 +38,10 @@ public class MarketTools {
 
     }
 
-//    private static void Seri
-
+    private static String SerializeItem(ItemStack itemStack){
+        YamlConfiguration config=new YamlConfiguration();
+        config.set("item",itemStack);
+        return config.saveToString();
+    }
 
 }
