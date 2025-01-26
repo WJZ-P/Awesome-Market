@@ -17,7 +17,7 @@ mysql-data-base:
   database-name: awesome_market
   #all table created by this plugin will use this prefix to prevent from conflicts
   #所有该插件创建的表的前缀，主要用于避免冲突
-  table-prefix:
+  table-prefix: ""
 
 #the time that items will stay in the market, in days. When expired, items will be removed from the market
 #物品上架到市场的过期时间，过期后被下架，单位为天

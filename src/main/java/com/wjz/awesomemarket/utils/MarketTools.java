@@ -32,7 +32,7 @@ public class MarketTools {
      */
     public static void sellItems(Player player, String[] args) {
         if(args.length<4){
-            player.sendMessage(Log.getString());
+            player.sendMessage(Log.getString("args_error_sell"));
         }
 
         //支付类型

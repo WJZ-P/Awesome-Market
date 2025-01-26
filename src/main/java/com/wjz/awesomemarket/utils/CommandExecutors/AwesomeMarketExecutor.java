@@ -8,6 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  * 处理awesomemarket指令
  */
@@ -20,8 +22,7 @@ public class AwesomeMarketExecutor implements CommandExecutor {
                 return true;
             }
             //已经判断是玩家了
-
-            if (strings.length == 1)//说明没有额外的参数，就直接打开全球市场
+            if (strings.length == 0)//说明没有额外的参数，就直接打开全球市场
             {
                 sender.sendMessage("§b准备打开GUI辣！");
                 GUI.openMarket((Player) sender);
@@ -30,7 +31,7 @@ public class AwesomeMarketExecutor implements CommandExecutor {
             }
 
             //下面说明有额外参数存在
-            switch (strings[1]) {
+            switch (strings[0]) {
                 //把物品上架到全球商店
                 case "sell":
                     MarketTools.sellItems((Player) sender,strings);

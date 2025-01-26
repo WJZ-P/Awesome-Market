@@ -22,7 +22,7 @@ public class MysqlType {
             "COLLATE='utf8mb4_general_ci'\n" +
             "ENGINE=InnoDB\n" +
             ";\n";
-    public static String CREATE_EXPIRE_ITEMS_TABLE = "CREATE TABLE `%s` (\n" +
+    public static String CREATE_EXPIRE_ITEMS_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (\n" +
             "\t`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,\n" +
             "\t`item_detail` LONGTEXT NOT NULL COMMENT 'Serialized item' COLLATE 'utf8mb4_general_ci',\n" +
             "\t`item_type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',\n" +
