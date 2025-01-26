@@ -103,7 +103,7 @@ public class Mysql {
      * 把物品上传到数据库
      */
     public static void InsertItemsToMarket(String itemDetail, String itemType, String seller, String payment, double price, long onSellTime, long expiryTime) {
-        String insertSQL = MessageFormat.format(MysqlType.INSERT_ITEM_TO_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        String insertSQL = String.format(MysqlType.INSERT_ITEM_TO_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
         try (Connection connection = dataSource.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
             pstmt.setString(1, itemDetail);

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.Instant;
+import java.util.Arrays;
 
 public class MarketTools {
     private static Economy economy = null;
@@ -31,14 +32,14 @@ public class MarketTools {
      * @param args
      */
     public static void sellItems(Player player, String[] args) {
-        if(args.length<4){
+        if(args.length<3){
             player.sendMessage(Log.getString("args_error_sell"));
+            return;
         }
-
         //支付类型
-        String paymentType = args[2];
+        String paymentType = args[1];
         //上架价格
-        double price = Double.parseDouble(args[3]);
+        double price = Double.parseDouble(args[2]);
 
         //上架时间
 
@@ -55,6 +56,13 @@ public class MarketTools {
 
         //先获取玩家手中的物品。
         ItemStack itemStack = player.getInventory().getItemInMainHand();
+
+        //得判断手中有没有物品
+        if(itemStack.isEmpty()){
+            player.sendMessage(Log.getString("empty_item_error_sell"));
+            return;
+        }
+
         //上架到全球市场,下面准备数据
         String seller = player.getName();
         String itemDetail = serializeItem(itemStack);
@@ -62,10 +70,6 @@ public class MarketTools {
         long onSellTime = Instant.now().getEpochSecond();
         int durationTime = AwesomeMarket.getInstance().getConfig().getInt("market-item-expiry");
 
-        //把物品放到数据库
-        Mysql.InsertItemsToMarket(itemDetail, itemType, seller, paymentType, price, onSellTime, onSellTime + (long) durationTime * 24 * 3600);
-        //然后把玩家手中的物品清除
-        player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         //根据配置进行收税
         ConfigurationSection taxConfig = AwesomeMarket.getInstance().getConfig().getConfigurationSection("tax");
 
@@ -75,7 +79,7 @@ public class MarketTools {
         if (paymentType.equalsIgnoreCase("money")) {
             double balanceMoney = economy.getBalance(player);//获取当前玩家的游戏币余额
             if (tax > balanceMoney) {
-                player.sendMessage(Log.getString("pay_tax_fail"));
+                player.sendMessage(String.format(Log.getString("pay_tax_fail"),balanceMoney,tax));
                 return;
             }
             //从玩家账户扣除税款
@@ -84,12 +88,18 @@ public class MarketTools {
         else {
             double balancePoint = ppAPI.look(player.getUniqueId());
             if(tax>balancePoint){
-                player.sendMessage(Log.getString("pay_tax_fail"));
+                player.sendMessage(String.format(Log.getString("pay_tax_fail"),balancePoint,tax));
                 return;
             }
             //扣款
             ppAPI.take(player.getUniqueId(), (int) tax);
         }
+
+        //把物品放到数据库
+        Mysql.InsertItemsToMarket(itemDetail, itemType, seller, paymentType, price, onSellTime, onSellTime + (long) durationTime * 24 * 3600);
+        //然后把玩家手中的物品清除
+        player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+
         //上架成功，发送回馈消息。
         player.sendMessage(String.format(Log.getString("withdraw_tax"),
                 tax, paymentType.equalsIgnoreCase("money") ? "元" : "点券"));
