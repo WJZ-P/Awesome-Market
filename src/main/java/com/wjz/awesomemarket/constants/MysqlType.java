@@ -3,14 +3,14 @@ package com.wjz.awesomemarket.constants;
 public class MysqlType {
     public static String ON_SELL_ITEMS_TABLE = "on_selling_items";
     public static String EXPIRE_ITEMS_TABLE = "expire_items";
-    public static String TRANSACTIONS = "transactions";
+    public static String TRANSACTIONS_TABLE = "transactions";
     public static String CREATE_ON_SELLING_ITEMS_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (\n" +
             "\t`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,\n" +
             "\t`item_detail` LONGTEXT NOT NULL COMMENT 'Serialized item' COLLATE 'utf8mb4_general_ci',\n" +
             "\t`item_type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',\n" +
             "\t`seller` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
             "\t`payment` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`price` INT(11) UNSIGNED NULL DEFAULT NULL,\n" +
+            "\t`price` DOUBLE UNSIGNED NULL DEFAULT NULL,\n" +
             "\t`on_sell_time` BIGINT(20) NULL DEFAULT NULL,\n" +
             "\t`expiry_time` BIGINT(20) NULL DEFAULT NULL,\n" +
             "\tPRIMARY KEY (`id`) USING BTREE,\n" +
@@ -28,7 +28,7 @@ public class MysqlType {
             "\t`item_type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',\n" +
             "\t`seller` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
             "\t`payment` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`price` INT(11) UNSIGNED NULL DEFAULT NULL,\n" +
+            "\t`price` DOUBLE UNSIGNED NULL DEFAULT NULL,\n" +
             "\t`on_sell_time` BIGINT(20) NULL DEFAULT NULL,\n" +
             "\t`expiry_time` BIGINT(20) NULL DEFAULT NULL,\n" +
             "\tPRIMARY KEY (`id`) USING BTREE,\n" +
@@ -50,7 +50,7 @@ public class MysqlType {
             "\t`seller` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
             "\t`buyer` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
             "\t`payment` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`price` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
+            "\t`price` DOUBLE UNSIGNED NULL DEFAULT NULL,\n" +
             "\t`trade_time` BIGINT(20) NULL DEFAULT NULL,\n" +
             "\tPRIMARY KEY (`id`) USING BTREE\n" +
             ")\n" +

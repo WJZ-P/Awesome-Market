@@ -4,7 +4,6 @@ import com.wjz.awesomemarket.constants.MysqlType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.*;
 import java.text.MessageFormat;
@@ -74,23 +73,34 @@ public class Mysql {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement()//创库不能用预处理语句
                     .execute("CREATE DATABASE IF NOT EXISTS " + sqlConfig.getString("database-name"));
+            //选择数据库
+            connection.createStatement().execute("USE " + sqlConfig.getString("database-name"));
             //下面建表
-            PreparedStatement pstmt = connection.prepareStatement(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE);
-            pstmt.setString(1, sqlConfig.getString("table-prefix") +
-                    sqlConfig.getString(MysqlType.ON_SELL_ITEMS_TABLE));
-            pstmt.execute();
+            Log.infoDirectly("这里正常1");
 
-            pstmt = connection.prepareStatement(MysqlType.CREATE_EXPIRE_ITEMS_TABLE);
-            pstmt.setString(1, sqlConfig.getString("table-prefix") +
-                    sqlConfig.getString(MysqlType.EXPIRE_ITEMS_TABLE));
+            //创建sell表
+            Statement stmt = connection.createStatement();
+            stmt.execute(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE,
+                    sqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE));
 
-            pstmt = connection.prepareStatement(MysqlType.CREATE_TRANSACTIONS_TABLE);
-            pstmt.setString(1, sqlConfig.getString("table-prefix") +
-                    sqlConfig.getString(MysqlType.TRANSACTIONS));
+            Log.infoDirectly(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE,
+                    sqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE));
 
+            Log.infoDirectly("这里正常2");
+
+            //创建expire表
+            stmt = connection.createStatement();
+            stmt.execute(String.format(MysqlType.CREATE_EXPIRE_ITEMS_TABLE,
+                    sqlConfig.getString("table-prefix") + MysqlType.EXPIRE_ITEMS_TABLE));
+
+            //创建transaction
+            stmt = connection.createStatement();
+            stmt.execute(String.format(MysqlType.CREATE_TRANSACTIONS_TABLE,
+                    sqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE));
 
         } catch (SQLException e) {
             Log.severe("create_mysql_fail");
+            e.printStackTrace();
         }
 
     }
@@ -101,8 +111,8 @@ public class Mysql {
     public static void InsertItemsToMarket(String itemDetail, String itemType, String seller, String payment, double price, long onSellTime, long expiryTime) {
         String insertSQL = MessageFormat.format(MysqlType.INSERT_ITEM_TO_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
         try (Connection connection = dataSource.getConnection();
-        PreparedStatement pstmt=connection.prepareStatement(insertSQL)) {
-            pstmt.setString(1,itemDetail);
+             PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
+            pstmt.setString(1, itemDetail);
             pstmt.setString(2, itemType);
             pstmt.setString(3, seller);
             pstmt.setString(4, payment);
@@ -111,7 +121,7 @@ public class Mysql {
             pstmt.setLong(7, expiryTime);
             //执行sql
             pstmt.executeUpdate();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
