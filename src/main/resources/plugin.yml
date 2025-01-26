@@ -6,7 +6,7 @@ load: STARTUP
 authors: [ WJZ_P ]
 description: An awesome global market plugin!
 website: https://github.com/WJZ-P
-#depend: [Vault] 注释掉是因为没装插件的报错太粗暴了。交给插件本身处理。
+#depend: [Vault,PlayerPoints] 注释掉是因为没装插件的报错太粗暴了。交给插件本身处理。
 
 commands:
   awesomemarket:

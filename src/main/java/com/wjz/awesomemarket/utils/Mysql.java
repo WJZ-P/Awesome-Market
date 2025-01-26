@@ -76,17 +76,11 @@ public class Mysql {
             //选择数据库
             connection.createStatement().execute("USE " + sqlConfig.getString("database-name"));
             //下面建表
-            Log.infoDirectly("这里正常1");
 
             //创建sell表
             Statement stmt = connection.createStatement();
             stmt.execute(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE,
                     sqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE));
-
-            Log.infoDirectly(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE,
-                    sqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE));
-
-            Log.infoDirectly("这里正常2");
 
             //创建expire表
             stmt = connection.createStatement();

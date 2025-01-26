@@ -21,6 +21,7 @@ public class VaultTools {
             return false;
         }
         econ = rsp.getProvider();
+        MarketTools.setEconomy(econ);
         return econ != null;
     }
 }
