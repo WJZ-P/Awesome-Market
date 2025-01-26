@@ -27,7 +27,8 @@ public final class AwesomeMarket extends JavaPlugin {
         //配置指令
         CommandHandler.handleCommand(this);
         //尝试连接数据库
-        Mysql.tryToConnect(config);
+        Mysql.setConfig(config.getConfigurationSection("mysql-data-base"));
+        Mysql.tryToConnect();
         //注册Vault插件
         if(!VaultTools.setupEconomy()){//如果没有Vault插件
             Log.severe("no_vault");

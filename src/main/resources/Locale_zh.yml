@@ -17,5 +17,6 @@ unload_plugin: |
 try_create_database: "§b[AwesomeMarket] §e数据库不存在，创建awesome_market数据库。"
 connect_mysql_success: "§b[AwesomeMarket] §e成功连接数据库！"
 connect_mysql_fail: "§b[AwesomeMarket] §e数据库连接出错！"
+create_mysql_fail: "§b[AwesomeMarket] §e创建数据库或表出错！"
 no_vault: "§b[AwesomeMarket] §cVault插件未安装或未启用！"
 payment_type_error: "§b[AwesomeMarket] §c货币类型错误！"

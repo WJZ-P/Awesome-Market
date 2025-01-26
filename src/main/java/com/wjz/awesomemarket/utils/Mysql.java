@@ -7,28 +7,32 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.*;
-import java.util.logging.Logger;
+import java.text.MessageFormat;
 
 public class Mysql {
     private static HikariDataSource dataSource;
+    private static ConfigurationSection mysqlConfig;
 
-    public static void tryToConnect(FileConfiguration config) {
+    public static void setConfig(ConfigurationSection config) {
+        mysqlConfig = config;
+    }
+
+    public static void tryToConnect() {
         //准备连接数据库
         HikariConfig hikariConfig = new HikariConfig();
-        ConfigurationSection mysqlConfig = config.getConfigurationSection("mysql-data-base");
         String url = "jdbc:mysql://" + mysqlConfig.getString("ip") +
                 ":" + mysqlConfig.getString("port");//先看能否连接上
 
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(mysqlConfig.getString("user"));
         hikariConfig.setPassword(mysqlConfig.getString("password"));
-        String driver ="com.mysql.cj.jdbc.Driver";
+        String driver = "com.mysql.cj.jdbc.Driver";
         //MC不同版本driver不一样，这里先尝试。
-        try{
+        try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            driver="com.mysql.jdbc.Driver";
-            Log.infoDirectly("Driver class"+driver+"not found, use legacy MySql Driver com.mysql.cj.jdbc.Driver");
+            driver = "com.mysql.jdbc.Driver";
+            Log.infoDirectly("Driver class" + driver + "not found, use legacy MySql Driver com.mysql.cj.jdbc.Driver");
         }
 
         try {
@@ -36,17 +40,9 @@ public class Mysql {
             Log.info("connect_mysql_success");
             Mysql.dataSource = hikariDataSource;
             Connection connection = dataSource.getConnection();
-            //看指定数据库是否存在
-            if (!isDatabaseExist(MysqlType.DATABASE_NAME)) {//不存在就要新建数据库
-                Log.info("try_create_database");
-                connection.createStatement().execute(MysqlType.CREATE_DATABASE);
-                //同时要完成建表
+            //建立数据库和表
+            createNeeds(mysqlConfig);
 
-
-            } else {//说明数据库已存在
-                connection.createStatement().execute("use " + MysqlType.DATABASE_NAME);
-            }
-            connection.close();//处理完成关闭链接
         } catch (SQLException e) {
             Log.severe("connect_mysql_fail");
             e.printStackTrace();
@@ -70,11 +66,54 @@ public class Mysql {
     }
 
     /**
-     * 创建数据库，表等
-     * @param config
+     * 创建数据库，表
+     *
+     * @param sqlConfig sql配置
      */
-    private static void createNeeds(FileConfiguration config){
+    private static void createNeeds(ConfigurationSection sqlConfig) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.createStatement()//创库不能用预处理语句
+                    .execute("CREATE DATABASE IF NOT EXISTS " + sqlConfig.getString("database-name"));
+            //下面建表
+            PreparedStatement pstmt = connection.prepareStatement(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE);
+            pstmt.setString(1, sqlConfig.getString("table-prefix") +
+                    sqlConfig.getString(MysqlType.ON_SELL_ITEMS_TABLE));
+            pstmt.execute();
 
+            pstmt = connection.prepareStatement(MysqlType.CREATE_EXPIRE_ITEMS_TABLE);
+            pstmt.setString(1, sqlConfig.getString("table-prefix") +
+                    sqlConfig.getString(MysqlType.EXPIRE_ITEMS_TABLE));
+
+            pstmt = connection.prepareStatement(MysqlType.CREATE_TRANSACTIONS_TABLE);
+            pstmt.setString(1, sqlConfig.getString("table-prefix") +
+                    sqlConfig.getString(MysqlType.TRANSACTIONS));
+
+
+        } catch (SQLException e) {
+            Log.severe("create_mysql_fail");
+        }
+
+    }
+
+    /**
+     * 把物品上传到数据库
+     */
+    public static void InsertItemsToMarket(String itemDetail, String itemType, String seller, String payment, double price, long onSellTime, long expiryTime) {
+        String insertSQL = MessageFormat.format(MysqlType.INSERT_ITEM_TO_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement pstmt=connection.prepareStatement(insertSQL)) {
+            pstmt.setString(1,itemDetail);
+            pstmt.setString(2, itemType);
+            pstmt.setString(3, seller);
+            pstmt.setString(4, payment);
+            pstmt.setString(5, String.valueOf(price));
+            pstmt.setLong(6, onSellTime);
+            pstmt.setLong(7, expiryTime);
+            //执行sql
+            pstmt.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
 }
