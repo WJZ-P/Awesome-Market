@@ -2,21 +2,26 @@ package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import net.milkbowl.vault.economy.Economy;
+import org.black_ixx.playerpoints.PlayerPoints;
+import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.ref.Cleaner;
 import java.time.Instant;
 
 public class MarketTools {
     private static Economy economy = null;
+    private static PlayerPointsAPI ppAPI = null;
 
     public static void setEconomy(Economy eco) {
         economy = eco;
+    }
+
+    public static void setPpAPI(PlayerPointsAPI pp) {
+        ppAPI = pp;
     }
 
     /**
@@ -26,6 +31,10 @@ public class MarketTools {
      * @param args
      */
     public static void sellItems(Player player, String[] args) {
+        if(args.length<4){
+            player.sendMessage(Log.getString());
+        }
+
         //支付类型
         String paymentType = args[2];
         //上架价格
@@ -62,8 +71,28 @@ public class MarketTools {
 
         double tax = paymentType.equalsIgnoreCase("money")
                 ? price * taxConfig.getDouble("money") : price * taxConfig.getDouble("point");
-        double balanceMoney =economy.getBalance(player);//获取当前玩家的游戏币余额
-        double balancePoint=economy.getBalance(player,"券");
+        //处理游戏币上架的逻辑
+        if (paymentType.equalsIgnoreCase("money")) {
+            double balanceMoney = economy.getBalance(player);//获取当前玩家的游戏币余额
+            if (tax > balanceMoney) {
+                player.sendMessage(Log.getString("pay_tax_fail"));
+                return;
+            }
+            //从玩家账户扣除税款
+            economy.withdrawPlayer(player, tax);
+        }
+        else {
+            double balancePoint = ppAPI.look(player.getUniqueId());
+            if(tax>balancePoint){
+                player.sendMessage(Log.getString("pay_tax_fail"));
+                return;
+            }
+            //扣款
+            ppAPI.take(player.getUniqueId(), (int) tax);
+        }
+        //上架成功，发送回馈消息。
+        player.sendMessage(String.format(Log.getString("withdraw_tax"),
+                tax, paymentType.equalsIgnoreCase("money") ? "元" : "点券"));
 
     }
 

@@ -1,9 +1,8 @@
 package com.wjz.awesomemarket;
 
-import com.wjz.awesomemarket.utils.CommandHandler;
-import com.wjz.awesomemarket.utils.Log;
-import com.wjz.awesomemarket.utils.Mysql;
-import com.wjz.awesomemarket.utils.VaultTools;
+import com.wjz.awesomemarket.utils.*;
+import org.black_ixx.playerpoints.PlayerPoints;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,6 +32,14 @@ public final class AwesomeMarket extends JavaPlugin {
         if(!VaultTools.setupEconomy()){//如果没有Vault插件
             Log.severe("no_vault");
             getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        //注册PlayerPoints插件
+        if(Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")){
+            MarketTools.setPpAPI(PlayerPoints.getInstance().getAPI());
+        }
+        else{
+            Log.severe("no_player_points");
             return;
         }
 
