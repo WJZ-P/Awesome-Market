@@ -6,7 +6,8 @@ import org.bukkit.inventory.Inventory;
 
 public class GUI {
     public static void openMarket(Player player){
-        Inventory globalMktGUI= Bukkit.createInventory(null,27,"§e§l全球市场");
+        Inventory globalMktGUI= Bukkit.createInventory(null,54,Log.getString("market_name"));
+
         player.openInventory(globalMktGUI);
     }
 }

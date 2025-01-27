@@ -25,6 +25,10 @@ public final class AwesomeMarket extends JavaPlugin {
 
         //配置指令
         CommandHandler.handleCommand(this);
+
+        //注册tab补全器
+        getCommand("awesomemarket").setTabCompleter(new MyTabCompleter());
+
         //尝试连接数据库
         Mysql.setConfig(config.getConfigurationSection("mysql-data-base"));
         Mysql.tryToConnect();

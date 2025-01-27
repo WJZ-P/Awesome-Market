@@ -26,3 +26,5 @@ pay_tax_fail: "§b[AwesomeMarket] §c您的货币余额§e %.2f§c 不足以付�
 withdraw_tax: "§b[AwesomeMarket] §e物品上架成功！扣除税款§c %.2f §a%s"
 args_error_sell: "§b[AwesomeMarket] §c参数错误，正确格式为:\n§e/amt sell money(point) price"
 empty_item_error_sell: "§b[AwesomeMarket] §e请把要上架的商品置于主手中！"
+
+market_name: "§e§l全球市场"

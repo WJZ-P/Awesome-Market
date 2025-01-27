@@ -110,7 +110,7 @@ public class Mysql {
             pstmt.setString(2, itemType);
             pstmt.setString(3, seller);
             pstmt.setString(4, payment);
-            pstmt.setString(5, String.valueOf(price));
+            pstmt.setDouble(5, price);
             pstmt.setLong(6, onSellTime);
             pstmt.setLong(7, expiryTime);
             //执行sql
