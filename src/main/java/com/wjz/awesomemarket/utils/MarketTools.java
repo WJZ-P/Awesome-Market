@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.AwesomeMarket;
+import com.wjz.awesomemarket.constants.PriceType;
 import net.milkbowl.vault.economy.Economy;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
@@ -25,7 +26,7 @@ public class MarketTools {
      * @param args
      */
     public static void sellItems(Player player, String[] args) {
-        if(args.length<3){
+        if (args.length < 3) {
             player.sendMessage(Log.getString("args_error_sell"));
             return;
         }
@@ -33,7 +34,8 @@ public class MarketTools {
         String paymentType = args[1];
         //上架价格
         double price = Double.parseDouble(args[2]);
-
+        //先获取玩家手中的物品。
+        ItemStack itemStack = player.getInventory().getItemInMainHand();
         //上架时间
 
         //先判断货币类型是否符合要求
@@ -47,11 +49,9 @@ public class MarketTools {
             return;
         }
 
-        //先获取玩家手中的物品。
-        ItemStack itemStack = player.getInventory().getItemInMainHand();
 
         //得判断手中有没有物品
-        if(itemStack.isEmpty()){
+        if (itemStack.isEmpty()) {
             player.sendMessage(Log.getString("empty_item_error_sell"));
             return;
         }
@@ -66,22 +66,21 @@ public class MarketTools {
         //根据配置进行收税
         ConfigurationSection taxConfig = AwesomeMarket.getInstance().getConfig().getConfigurationSection("tax");
 
-        double tax = paymentType.equalsIgnoreCase("money")
-                ? price * taxConfig.getDouble("money") : price * taxConfig.getDouble("point");
+        double tax = PriceType.getType(paymentType).calculateTax(price);
+
         //处理游戏币上架的逻辑
         if (paymentType.equalsIgnoreCase("money")) {
             double balanceMoney = economy.getBalance(player);//获取当前玩家的游戏币余额
             if (tax > balanceMoney) {
-                player.sendMessage(String.format(Log.getString("pay_tax_fail"),balanceMoney,tax));
+                player.sendMessage(String.format(Log.getString("pay_tax_fail"), balanceMoney, tax));
                 return;
             }
             //从玩家账户扣除税款
             economy.withdrawPlayer(player, tax);
-        }
-        else {
+        } else {
             double balancePoint = ppAPI.look(player.getUniqueId());
-            if(tax>balancePoint){
-                player.sendMessage(String.format(Log.getString("pay_tax_fail"),balancePoint,tax));
+            if (tax > balancePoint) {
+                player.sendMessage(String.format(Log.getString("pay_tax_fail"), balancePoint, tax));
                 return;
             }
             //扣款
