@@ -23,7 +23,11 @@ mysql-data-base:
 #物品上架到市场的过期时间，过期后被下架，单位为天
 market-item-expiry: 30
 
-tax:
-  money: 0.05
-  point: 0
+currency:
+  tax:
+    money: 0.05
+    point: 0
+  name:
+    money: "§e元"
+    point: "§a点券"
 
