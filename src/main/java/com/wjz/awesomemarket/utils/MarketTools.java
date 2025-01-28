@@ -13,17 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import java.time.Instant;
 import java.util.Arrays;
 
+import static com.wjz.awesomemarket.utils.CurrencyManager.economy;
+import static com.wjz.awesomemarket.utils.CurrencyManager.ppAPI;
+
 public class MarketTools {
-    private static Economy economy = null;
-    private static PlayerPointsAPI ppAPI = null;
-
-    public static void setEconomy(Economy eco) {
-        economy = eco;
-    }
-
-    public static void setPpAPI(PlayerPointsAPI pp) {
-        ppAPI = pp;
-    }
 
     /**
      * 把物品上架到全球市场
