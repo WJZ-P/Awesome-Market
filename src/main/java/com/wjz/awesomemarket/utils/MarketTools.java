@@ -62,13 +62,17 @@ public class MarketTools {
         String itemType = String.valueOf(itemStack.getType());
         long onSellTime = Instant.now().getEpochSecond();
         int durationTime = AwesomeMarket.getInstance().getConfig().getInt("market-item-expiry");
-
-        //根据配置进行收税
-        ConfigurationSection taxConfig = AwesomeMarket.getInstance().getConfig().getConfigurationSection("tax");
-
-        double tax = PriceType.getType(paymentType).calculateTax(price);
-
+        //计算货币类型
+        PriceType priceType=PriceType.getType(paymentType);
+        //收税
+        double tax = priceType.calculateTax(price);
         //处理游戏币上架的逻辑
+        double playerBalance=priceType.look(player);
+        if (tax > playerBalance) {
+            player.sendMessage(String.format(Log.getString("pay_tax_fail"), playerBalance, tax));
+            return;
+        }
+
         if (paymentType.equalsIgnoreCase("money")) {
             double balanceMoney = economy.getBalance(player);//获取当前玩家的游戏币余额
             if (tax > balanceMoney) {
