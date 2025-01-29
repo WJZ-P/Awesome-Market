@@ -7,11 +7,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class AwesomeMarket extends JavaPlugin {
-    private static AwesomeMarket pluginInstance=null;
+    private static AwesomeMarket pluginInstance = null;
+
     //启用插件时
     @Override
     public void onEnable() {
-        pluginInstance=this;//设置实例
+        pluginInstance = this;//设置实例
 
         //下面这里先保存默认配置
         saveDefaultConfig();//保存config.yml到插件文件夹。如果已有则不做任何事
@@ -20,7 +21,7 @@ public final class AwesomeMarket extends JavaPlugin {
         //初始化各种类
         Log.Initialize();
 
-        getLogger().info("use Locale_"+config.getString("language")+".yml");
+        getLogger().info("use Locale_" + config.getString("language") + ".yml");
         Log.info("load_plugin");//插件载入输出
 
         //配置指令
@@ -33,16 +34,15 @@ public final class AwesomeMarket extends JavaPlugin {
         Mysql.setConfig(config.getConfigurationSection("mysql-data-base"));
         Mysql.tryToConnect();
         //注册Vault插件
-        if(!VaultTools.setupEconomy()){//如果没有Vault插件
+        if (!VaultTools.setupEconomy()) {//如果没有Vault插件
             Log.severe("no_vault");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         //注册PlayerPoints插件
-        if(Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")){
-            MarketTools.setPpAPI(PlayerPoints.getInstance().getAPI());
-        }
-        else{
+        if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
+            CurrencyManager.ppAPI = PlayerPoints.getInstance().getAPI();
+        } else {
             Log.severe("no_player_points");
             return;
         }
@@ -56,7 +56,7 @@ public final class AwesomeMarket extends JavaPlugin {
         Mysql.closeDataSource();
     }
 
-    public static AwesomeMarket getInstance(){
+    public static AwesomeMarket getInstance() {
         return pluginInstance;
     }
 

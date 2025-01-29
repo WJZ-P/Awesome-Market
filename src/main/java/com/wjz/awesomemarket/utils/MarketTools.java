@@ -72,24 +72,8 @@ public class MarketTools {
             player.sendMessage(String.format(Log.getString("pay_tax_fail"), playerBalance, tax));
             return;
         }
-
-        if (paymentType.equalsIgnoreCase("money")) {
-            double balanceMoney = economy.getBalance(player);//获取当前玩家的游戏币余额
-            if (tax > balanceMoney) {
-                player.sendMessage(String.format(Log.getString("pay_tax_fail"), balanceMoney, tax));
-                return;
-            }
-            //从玩家账户扣除税款
-            economy.withdrawPlayer(player, tax);
-        } else {
-            double balancePoint = ppAPI.look(player.getUniqueId());
-            if (tax > balancePoint) {
-                player.sendMessage(String.format(Log.getString("pay_tax_fail"), balancePoint, tax));
-                return;
-            }
-            //扣款
-            ppAPI.take(player.getUniqueId(), (int) tax);
-        }
+        //扣款
+        priceType.take(player,price);
 
         //把物品放到数据库
         Mysql.InsertItemsToMarket(itemDetail, itemType, seller, paymentType, price, onSellTime, onSellTime + (long) durationTime * 24 * 3600);
@@ -98,7 +82,7 @@ public class MarketTools {
 
         //上架成功，发送回馈消息。
         player.sendMessage(String.format(Log.getString("withdraw_tax"),
-                tax, paymentType.equalsIgnoreCase("money") ? "元" : "点券"));
+                tax, priceType.getName()));
 
     }
 

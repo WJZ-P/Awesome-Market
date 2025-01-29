@@ -64,7 +64,7 @@ public enum PriceType {
         if (type == null || type.isEmpty()) {
             throw new IllegalArgumentException("货币类型不能为空");
         }
-        return PriceType.valueOf(type);
+        return PriceType.valueOf(type.toUpperCase());
     }
 
     public String getName() {
