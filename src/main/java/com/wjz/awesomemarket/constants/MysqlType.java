@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.constants;
 
 public class MysqlType {
+
     public static String ON_SELL_ITEMS_TABLE = "on_selling_items";
     public static String EXPIRE_ITEMS_TABLE = "expire_items";
     public static String TRANSACTIONS_TABLE = "transactions";
@@ -58,6 +59,8 @@ public class MysqlType {
             "COLLATE='utf8mb4_general_ci'\n" +
             "ENGINE=InnoDB\n" +
             ";\n";
+
+    public static final String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%S`";
 
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +

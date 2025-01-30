@@ -120,4 +120,23 @@ public class Mysql {
         }
     }
 
+    /**
+     * 获取商场中的所有商品.在表on_selling中
+     *
+     * @return
+     */
+    public static int getTotalItemsCount() {
+        String query = String.format(MysqlType.SELECT_ALL_ITEMS_COUNT, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        try (Connection connection = dataSource.getConnection()) {
+            ResultSet rs = connection.createStatement().executeQuery(query);
+            if (rs.next()) return rs.getInt("total");
+            else {
+                Log.severe("查询数据库on_selling商品总数失败！");
+                return 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

@@ -28,3 +28,17 @@ args_error_sell: "§b[AwesomeMarket] §c参数错误，正确格式为:\n§e/amt
 empty_item_error_sell: "§b[AwesomeMarket] §e请把要上架的商品置于主手中！"
 
 market_name: "§e§l全球市场"
+
+market-GUI:
+  name:
+    prev-page: §e上一页
+    prev-page-lore:
+    next-page: §e下一页
+    sort-type: |
+      §c点击选择排序类型
+      
+      §e当前排序规则：§a%s
+    currency-type: |
+      §c点击选择商品货币
+      
+      §e当前货币类型：§a%s
