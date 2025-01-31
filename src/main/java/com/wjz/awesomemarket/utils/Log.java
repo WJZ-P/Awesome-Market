@@ -43,7 +43,12 @@ public class Log {
     public static String getString(String name) {
         return langConfig.getString(name);
     }
-    public static void infoDirectly(String info){
+
+    public static void infoDirectly(String info) {
         logger.info(info);
+    }
+
+    public static void severeDirectly(String severe) {
+        logger.severe(severe);
     }
 }

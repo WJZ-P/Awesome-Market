@@ -65,5 +65,8 @@ public class MysqlType {
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public static String SHOW_ITEMS_BY_PAGE="SELECT * FROM `%s` " +
+            "ORDER BY on_sell_time ASC " +
+            "LIMIT 45 OFFSET ?;";
 
 }

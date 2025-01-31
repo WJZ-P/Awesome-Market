@@ -1,11 +1,13 @@
 package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.AwesomeMarket;
+import com.wjz.awesomemarket.constants.MysqlType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -18,6 +20,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
+
+import static com.wjz.awesomemarket.cache.MarketCache.getTotalPages;
 
 public class GUI {
     private static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
@@ -42,6 +46,9 @@ public class GUI {
         for (int i = 0; i < 54; i++) {
             globalMktGUI.setItem(i, background);
         }
+        //获取物品
+        List<ItemStack> items = Mysql.getItemsByPage(getPlayerPage(player));
+
 
         //添加功能按钮
         globalMktGUI.setItem(PREV_PAGE_SLOT, createNavItem(Material.ARROW, "prev_page",
@@ -88,20 +95,34 @@ public class GUI {
     }
 
     private static void setPlayerPage(Player player, int page) {
-        playerPageMap.put(player.getUniqueId(),page);
+        playerPageMap.put(player.getUniqueId(), page);
     }
+
 
     /**
      * 创建上一页按钮
      *
      * @return
      */
-    private static ItemStack createPrevBtn() {
-
-        createNavItem(Material.ARROW, "prev_page", Log.getString("market-GUI.name.prev-page"),
-                getLore("market-GUI.name.prev-page-lore"));
+    private static ItemStack createPrevBtn(Player player) {
+        List<String> lore = getLore("market-GUI.name.prev-page-lore");
+        String newSingleLore = String.format(lore.getFirst(), getPlayerPage(player), getTotalPages(false));
+        lore.set(0, newSingleLore);
+        return createNavItem(Material.ARROW, "prev_page", Log.getString("market-GUI.name.prev-page"), lore);
     }
 
+    /**
+     * 创建下一页按钮
+     *
+     * @param player
+     * @return
+     */
+    private static ItemStack createNextBtn(Player player) {
+        List<String> lore = getLore("market-GUI.name.next-page-lore");
+        String newSingleLore = String.format(lore.getFirst(), getPlayerPage(player), getTotalPages(false));
+        lore.set(0, newSingleLore);
+        return createNavItem(Material.ARROW, "next_page", Log.getString("market-GUI.name.next-page"), lore);
+    }
 
 
 }

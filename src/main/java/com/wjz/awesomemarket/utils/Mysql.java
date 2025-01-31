@@ -4,9 +4,15 @@ import com.wjz.awesomemarket.constants.MysqlType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Item;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.wjz.awesomemarket.utils.MarketTools.deserializeItem;
 
 public class Mysql {
     private static HikariDataSource dataSource;
@@ -140,11 +146,29 @@ public class Mysql {
         return 0;
     }
 
-    /**
-     * 获取当前页
-     * @return
-     */
-    public static int getCurrentPage(){
+    public static List<ItemStack> getItemsByPage(int page) {
+        List<ItemStack> items = new ArrayList<>();
+        String query = String.format(MysqlType.SHOW_ITEMS_BY_PAGE,
+                mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
 
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(query)) {
+            int offset = (page - 1) * 45;
+            pstmt.setInt(1, offset);
+
+            try(ResultSet rs=pstmt.executeQuery()){
+                while(rs.next()){
+                    ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
+                    items.add(itemStack);
+                }
+            }
+            return items;
+
+        } catch (SQLException e) {
+            Log.severeDirectly("根据页数查询物品失败");
+            e.printStackTrace();
+        }
+
+        return items;
     }
 }

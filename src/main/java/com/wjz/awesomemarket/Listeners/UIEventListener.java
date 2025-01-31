@@ -8,9 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Map;
-import java.util.UUID;
-
 public class UIEventListener implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
@@ -26,6 +23,5 @@ public class UIEventListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         GUI.getPlayerPageMap().remove(event.getPlayer().getUniqueId());
-
     }
 }
