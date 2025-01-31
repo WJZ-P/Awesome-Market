@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,12 +15,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class GUI {
     private static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), "gui_action");
+
+    private static final Map<UUID, Integer> playerPageMap = new HashMap<>();
+
     public static final int PREV_PAGE_SLOT = 45;
     public static final int NEXT_PAGE_SLOT = 53;
     public static final int SORT_TYPE_SLOT = 47;
@@ -39,11 +42,22 @@ public class GUI {
         }
 
         //添加功能按钮
-        globalMktGUI.setItem(PREV_PAGE_SLOT,createNavItem(Material.ARROW, "prev_page",
+        globalMktGUI.setItem(PREV_PAGE_SLOT, createNavItem(Material.ARROW, "prev_page",
                 Log.getString("market-GUI.name.prev-page"),
                 Arrays.asList(Log.getString("prev_page_lore"))));
 
         player.openInventory(globalMktGUI);
+    }
+
+    /**
+     * 返回符合格式的lore
+     *
+     * @param path
+     * @return
+     */
+    private static List<String> getLore(String path) {
+        //以换行符为行分割字符串
+        return Arrays.asList(Log.getString(path).split("\n"));
     }
 
     private static ItemStack createNavItem(Material material, String action, String name, List<String> lores) {
@@ -62,4 +76,24 @@ public class GUI {
         navItem.setItemMeta(meta);
         return navItem;
     }
+
+    private static int getPlayerPage(Player player) {
+        return playerPageMap.getOrDefault(player.getUniqueId(), 1);
+    }
+
+    private static void setPlayerPage(Player player, int page) {
+        playerPageMap.put(player.getUniqueId(),page);
+    }
+
+    /**
+     * 创建上一页按钮
+     *
+     * @return
+     */
+    private static ItemStack createPrevBtn() {
+
+        createNavItem(Material.ARROW, "prev_page", Log.getString("market-GUI.name.prev-page"),
+                getLore("market-GUI.name.prev-page-lore"));
+    }
+
 }

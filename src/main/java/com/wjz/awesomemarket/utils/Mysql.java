@@ -139,4 +139,12 @@ public class Mysql {
         }
         return 0;
     }
+
+    /**
+     * 获取当前页
+     * @return
+     */
+    public static int getCurrentPage(){
+
+    }
 }

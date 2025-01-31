@@ -32,12 +32,16 @@ market_name: "§e§l全球市场"
 market-GUI:
   name:
     prev-page: §e上一页
-    prev-page-lore:
+    prev-page-lore: §e%d / %d 页
+
     next-page: §e下一页
+    next-page-lore: §e%d / %d 页
+
     sort-type: |
       §c点击选择排序类型
       
       §e当前排序规则：§a%s
+
     currency-type: |
       §c点击选择商品货币
       
