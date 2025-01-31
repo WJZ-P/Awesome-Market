@@ -9,6 +9,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +32,7 @@ public class GUI {
     public static final int CURRENCY_TYPE_SLOT = 51;
 
     public static void openMarket(Player player) {
-        Inventory globalMktGUI = Bukkit.createInventory(null, 54, Log.getString("market_name"));
+        Inventory globalMktGUI = Bukkit.createInventory(new MarketHolder(), 54, Log.getString("market_name"));
         //以灰色玻璃板作为默认填充
         ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta bgMeta = background.getItemMeta();
@@ -47,6 +49,10 @@ public class GUI {
                 Arrays.asList(Log.getString("prev_page_lore"))));
 
         player.openInventory(globalMktGUI);
+    }
+
+    public static Map<UUID, Integer> getPlayerPageMap() {
+        return playerPageMap;
     }
 
     /**
@@ -95,5 +101,7 @@ public class GUI {
         createNavItem(Material.ARROW, "prev_page", Log.getString("market-GUI.name.prev-page"),
                 getLore("market-GUI.name.prev-page-lore"));
     }
+
+
 
 }

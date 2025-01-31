@@ -46,6 +46,8 @@ public final class AwesomeMarket extends JavaPlugin {
             Log.severe("no_player_points");
             return;
         }
+        //注册事件监听器
+        Bukkit.getPluginManager().registerEvent(new );
 
 
     }
