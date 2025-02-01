@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 public class MarketCache {
     private static int totalPages = 1;
     private static long lastUpdate = 0;
-    private static int ITEMS_PER_PAGE = 45;
+    private static final int ITEMS_PER_PAGE = 45;
 
     public static int getTotalPages(boolean forceRefresh) {
         //五分钟刷新一次缓存

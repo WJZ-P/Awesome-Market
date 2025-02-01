@@ -4,11 +4,9 @@ import com.wjz.awesomemarket.constants.MysqlType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +24,17 @@ public class Mysql {
         //准备连接数据库
         HikariConfig hikariConfig = new HikariConfig();
         String url = "jdbc:mysql://" + mysqlConfig.getString("ip") +
-                ":" + mysqlConfig.getString("port");//先看能否连接上
+                ":" + mysqlConfig.getString("port")+"/"+mysqlConfig.getString("database-name");
 
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(mysqlConfig.getString("user"));
         hikariConfig.setPassword(mysqlConfig.getString("password"));
+        // 设置连接池数量
+        hikariConfig.setMaximumPoolSize(mysqlConfig.getInt("pool.maximumPoolSize"));
+        hikariConfig.setMinimumIdle(mysqlConfig.getInt("pool.minimumIdle"));
+        hikariConfig.setIdleTimeout(mysqlConfig.getLong("pool.idleTimeout"));
+        hikariConfig.setMaxLifetime(mysqlConfig.getLong("pool.maxLifetime"));
+        hikariConfig.setConnectionTimeout(mysqlConfig.getLong("pool.connectionTimeout"));
         String driver = "com.mysql.cj.jdbc.Driver";
         //MC不同版本driver不一样，这里先尝试。
         try {
@@ -39,16 +43,16 @@ public class Mysql {
             driver = "com.mysql.jdbc.Driver";
             Log.infoDirectly("Driver class" + driver + "not found, use legacy MySql Driver com.mysql.cj.jdbc.Driver");
         }
+        hikariConfig.setDriverClassName(driver);
 
         try {
             HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
             Log.info("connect_mysql_success");
             Mysql.dataSource = hikariDataSource;
-            Connection connection = dataSource.getConnection();
             //建立数据库和表
             createNeeds(mysqlConfig);
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Log.severe("connect_mysql_fail");
             e.printStackTrace();
         }
@@ -75,28 +79,28 @@ public class Mysql {
      *
      * @param sqlConfig sql配置
      */
-    private static void createNeeds(ConfigurationSection sqlConfig) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.createStatement()//创库不能用预处理语句
-                    .execute("CREATE DATABASE IF NOT EXISTS " + sqlConfig.getString("database-name"));
-            //选择数据库
-            connection.createStatement().execute("USE " + sqlConfig.getString("database-name"));
-            //下面建表
+    private static void createNeeds(ConfigurationSection sqlConfig) {
+        String databaseName = sqlConfig.getString("database-name");
+        String tablePrefix = sqlConfig.getString("table-prefix");
 
-            //创建sell表
-            Statement stmt = connection.createStatement();
+        try (Connection connection = dataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+            //创库不能用预处理语句，现在改成
+//            stmt.execute("CREATE DATABASE IF NOT EXISTS " + sqlConfig.getString("database-name"));
+//            // 选择数据库
+//            stmt.execute("USE " + databaseName);
+
+            // 创建 sell 表
             stmt.execute(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE,
-                    sqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE));
+                    tablePrefix + MysqlType.ON_SELL_ITEMS_TABLE));
 
-            //创建expire表
-            stmt = connection.createStatement();
+            // 创建 expire 表
             stmt.execute(String.format(MysqlType.CREATE_EXPIRE_ITEMS_TABLE,
-                    sqlConfig.getString("table-prefix") + MysqlType.EXPIRE_ITEMS_TABLE));
+                    tablePrefix + MysqlType.EXPIRE_ITEMS_TABLE));
 
-            //创建transaction
-            stmt = connection.createStatement();
+            // 创建 transaction 表
             stmt.execute(String.format(MysqlType.CREATE_TRANSACTIONS_TABLE,
-                    sqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE));
+                    tablePrefix + MysqlType.TRANSACTIONS_TABLE));
 
         } catch (SQLException e) {
             Log.severe("create_mysql_fail");
@@ -133,6 +137,7 @@ public class Mysql {
      */
     public static int getTotalItemsCount() {
         String query = String.format(MysqlType.SELECT_ALL_ITEMS_COUNT, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+            Log.infoDirectly(query);
         try (Connection connection = dataSource.getConnection()) {
             ResultSet rs = connection.createStatement().executeQuery(query);
             if (rs.next()) return rs.getInt("total");
@@ -156,8 +161,8 @@ public class Mysql {
             int offset = (page - 1) * 45;
             pstmt.setInt(1, offset);
 
-            try(ResultSet rs=pstmt.executeQuery()){
-                while(rs.next()){
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
                     ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
                     items.add(itemStack);
                 }

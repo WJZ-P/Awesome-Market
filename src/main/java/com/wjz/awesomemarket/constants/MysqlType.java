@@ -60,7 +60,7 @@ public class MysqlType {
             "ENGINE=InnoDB\n" +
             ";\n";
 
-    public static final String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%S`";
+    public static final String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s`";
 
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +

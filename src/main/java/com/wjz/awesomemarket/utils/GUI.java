@@ -1,18 +1,11 @@
 package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.constants.MysqlType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Interaction;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -48,8 +41,8 @@ public class GUI {
         }
 
         //添加功能按钮
-        createPrevBtn(player);
-        createNextBtn(player);
+        marketGUI.setItem(PREV_PAGE_SLOT, createPrevBtn(player));
+        marketGUI.setItem(NEXT_PAGE_SLOT, createNextBtn(player));
 
         //下面使用异步方法来填充物品。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
@@ -117,6 +110,7 @@ public class GUI {
      */
     private static ItemStack createPrevBtn(Player player) {
         List<String> lore = getLore("market-GUI.name.prev-page-lore");
+
         String newSingleLore = String.format(lore.getFirst(), getPlayerPage(player), getTotalPages(false));
         lore.set(0, newSingleLore);
         return createNavItem(Material.ARROW, "prev_page", Log.getString("market-GUI.name.prev-page"), lore);
