@@ -36,7 +36,7 @@ public class GUI {
     public static final int CURRENCY_TYPE_SLOT = 51;
 
     public static void openMarket(Player player) {
-        Inventory globalMktGUI = Bukkit.createInventory(new MarketHolder(), 54, Log.getString("market_name"));
+        Inventory marketGUI = Bukkit.createInventory(new MarketHolder(), 54, Log.getString("market_name"));
         //以灰色玻璃板作为默认填充
         ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta bgMeta = background.getItemMeta();
@@ -44,18 +44,29 @@ public class GUI {
         background.setItemMeta(bgMeta);
         //填充背景板
         for (int i = 0; i < 54; i++) {
-            globalMktGUI.setItem(i, background);
+            marketGUI.setItem(i, background);
         }
-        //获取物品
-        List<ItemStack> items = Mysql.getItemsByPage(getPlayerPage(player));
-
 
         //添加功能按钮
-        globalMktGUI.setItem(PREV_PAGE_SLOT, createNavItem(Material.ARROW, "prev_page",
-                Log.getString("market-GUI.name.prev-page"),
-                Arrays.asList(Log.getString("prev_page_lore"))));
+        createPrevBtn(player);
+        createNextBtn(player);
 
-        player.openInventory(globalMktGUI);
+        //下面使用异步方法来填充物品。
+        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
+            //获取物品
+            List<ItemStack> items = Mysql.getItemsByPage(getPlayerPage(player));
+            //获取完毕后，切换回主线程更新UI
+            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
+                int slot = 0;
+                for (ItemStack itemStack : items) {
+                    if (slot >= 45) break;
+                    marketGUI.setItem(slot, itemStack);
+                    slot++;
+                }
+            });
+        });
+
+        player.openInventory(marketGUI);
     }
 
     public static Map<UUID, Integer> getPlayerPageMap() {
