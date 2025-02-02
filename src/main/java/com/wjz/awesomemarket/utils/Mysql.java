@@ -137,7 +137,6 @@ public class Mysql {
      */
     public static int getTotalItemsCount() {
         String query = String.format(MysqlType.SELECT_ALL_ITEMS_COUNT, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
-            Log.infoDirectly(query);
         try (Connection connection = dataSource.getConnection()) {
             ResultSet rs = connection.createStatement().executeQuery(query);
             if (rs.next()) return rs.getInt("total");

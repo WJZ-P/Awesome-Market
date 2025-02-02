@@ -1,10 +1,7 @@
 package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -17,9 +14,11 @@ import java.util.*;
 import static com.wjz.awesomemarket.cache.MarketCache.getTotalPages;
 
 public class GUI {
+    public static final String PREV_PAGE_KEY = "prev_page";
+    public static final String NEXT_PAGE_KEY = "next_page";
+    public static final String ACTION_KEY = "gui_action";
     private static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
-            (AwesomeMarket.getPlugin(AwesomeMarket.class), "gui_action");
-
+            (AwesomeMarket.getPlugin(AwesomeMarket.class), GUI.ACTION_KEY);
     private static final Map<UUID, Integer> playerPageMap = new HashMap<>();
 
     public static final int PREV_PAGE_SLOT = 45;
@@ -47,7 +46,7 @@ public class GUI {
         //下面使用异步方法来填充物品。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //获取物品
-            List<ItemStack> items = Mysql.getItemsByPage(getPlayerPage(player));
+            List<ItemStack> items = Mysql.getItemsByPage(getPlayerPageMap(player));
             //获取完毕后，切换回主线程更新UI
             Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
                 int slot = 0;
@@ -58,12 +57,47 @@ public class GUI {
                 }
             });
         });
-
+        //播放声音
+        player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 0.6f);
         player.openInventory(marketGUI);
     }
 
     public static Map<UUID, Integer> getPlayerPageMap() {
         return playerPageMap;
+    }
+
+    public static int getPlayerPageMap(Player player) {
+        return playerPageMap.getOrDefault(player.getUniqueId(), 1);
+    }
+    public static void setPlayerPageMap(Player player, int page) {
+        playerPageMap.put(player.getUniqueId(), page);
+    }
+
+    //设置游戏内玩家商场界面页数
+    public static void setPlayerPage(Player player, int newPage) {
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
+            List<ItemStack> itemStacks = Mysql.getItemsByPage(newPage);
+
+            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
+                int slot = 0;
+                for (ItemStack itemStack : itemStacks) {
+                    inventory.setItem(slot, itemStack);
+                    slot++;
+                }
+                if (slot < 44) {
+                    ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+                    ItemMeta bgMeta = background.getItemMeta();
+                    bgMeta.setDisplayName(" ");
+                    background.setItemMeta(bgMeta);
+                    //如果物品不满一页，后面的用背景块填充
+                    for (int i = slot; i < 45; i++) {
+                        inventory.setItem(i, background);
+                    }
+                }
+            });
+        });
+
     }
 
     /**
@@ -94,15 +128,6 @@ public class GUI {
         return navItem;
     }
 
-    private static int getPlayerPage(Player player) {
-        return playerPageMap.getOrDefault(player.getUniqueId(), 1);
-    }
-
-    private static void setPlayerPage(Player player, int page) {
-        playerPageMap.put(player.getUniqueId(), page);
-    }
-
-
     /**
      * 创建上一页按钮
      *
@@ -111,9 +136,9 @@ public class GUI {
     private static ItemStack createPrevBtn(Player player) {
         List<String> lore = getLore("market-GUI.name.prev-page-lore");
 
-        String newSingleLore = String.format(lore.getFirst(), getPlayerPage(player), getTotalPages(false));
+        String newSingleLore = String.format(lore.getFirst(), getPlayerPageMap(player), getTotalPages(false));
         lore.set(0, newSingleLore);
-        return createNavItem(Material.ARROW, "prev_page", Log.getString("market-GUI.name.prev-page"), lore);
+        return createNavItem(Material.ARROW, GUI.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"), lore);
     }
 
     /**
@@ -124,9 +149,9 @@ public class GUI {
      */
     private static ItemStack createNextBtn(Player player) {
         List<String> lore = getLore("market-GUI.name.next-page-lore");
-        String newSingleLore = String.format(lore.getFirst(), getPlayerPage(player), getTotalPages(false));
+        String newSingleLore = String.format(lore.getFirst(), getPlayerPageMap(player), getTotalPages(false));
         lore.set(0, newSingleLore);
-        return createNavItem(Material.ARROW, "next_page", Log.getString("market-GUI.name.next-page"), lore);
+        return createNavItem(Material.ARROW, GUI.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"), lore);
     }
 
 

@@ -23,7 +23,7 @@ mysql-data-base:
     maximumPoolSize: 20       #最大连接数
     minimumIdle: 10           #最小空闲数
     idleTimeout: 600000       #空闲连接超时时间
-    maxLifetime: 1800000      #连接最大生命周期
+    maxLifetime: 900000      #连接最大生命周期
     connectionTimeout: 30000  #获取连接超时时间
 
 #the time that items will stay in the market, in days. When expired, items will be removed from the market

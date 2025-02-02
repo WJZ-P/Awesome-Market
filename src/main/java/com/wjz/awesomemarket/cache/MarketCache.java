@@ -5,8 +5,9 @@ import com.wjz.awesomemarket.utils.Mysql;
 import org.bukkit.Bukkit;
 
 public class MarketCache {
-    private static int totalPages = 1;
-    private static long lastUpdate = 0;
+    //初始的时候就必须先查询一次
+    private static int totalPages = Mysql.getTotalItemsCount();
+    private static long lastUpdate = System.currentTimeMillis();
     private static final int ITEMS_PER_PAGE = 45;
 
     public static int getTotalPages(boolean forceRefresh) {

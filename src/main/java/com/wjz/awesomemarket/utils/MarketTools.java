@@ -3,6 +3,7 @@ package com.wjz.awesomemarket.utils;
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.PriceType;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -55,17 +56,17 @@ public class MarketTools {
         long onSellTime = Instant.now().getEpochSecond();
         int durationTime = AwesomeMarket.getInstance().getConfig().getInt("market-item-expiry");
         //计算货币类型
-        PriceType priceType=PriceType.getType(paymentType);
+        PriceType priceType = PriceType.getType(paymentType);
         //收税
         double tax = priceType.calculateTax(price);
         //处理游戏币上架的逻辑
-        double playerBalance=priceType.look(player);
+        double playerBalance = priceType.look(player);
         if (tax > playerBalance) {
             player.sendMessage(String.format(Log.getString("pay_tax_fail"), playerBalance, tax));
             return;
         }
         //扣款
-        priceType.take(player,price);
+        priceType.take(player, price);
 
         //把物品放到数据库
         Mysql.InsertItemsToMarket(itemDetail, itemType, seller, paymentType, price, onSellTime, onSellTime + (long) durationTime * 24 * 3600);
@@ -75,6 +76,8 @@ public class MarketTools {
         //上架成功，发送回馈消息。
         player.sendMessage(String.format(Log.getString("withdraw_tax"),
                 tax, priceType.getName()));
+        //还要发送声音
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 0.8f);
 
     }
 

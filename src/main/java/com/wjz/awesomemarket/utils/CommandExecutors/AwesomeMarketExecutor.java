@@ -24,9 +24,9 @@ public class AwesomeMarketExecutor implements CommandExecutor {
             //已经判断是玩家了
             if (strings.length == 0)//说明没有额外的参数，就直接打开全球市场
             {
-                sender.sendMessage("§b准备打开GUI辣！");
+                //sender.sendMessage("§b准备打开GUI辣！");
                 GUI.openMarket((Player) sender);
-                sender.sendMessage("§d指令执行成功辣");
+                //sender.sendMessage("§d指令执行成功辣");
                 return true;
             }
 
