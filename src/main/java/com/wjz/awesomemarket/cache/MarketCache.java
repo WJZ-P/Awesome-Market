@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 
 public class MarketCache {
     //初始的时候就必须先查询一次
-    private static int totalPages = Mysql.getTotalItemsCount();
+    private static int totalPages = (int) Math.ceil((double) Mysql.getTotalItemsCount() / MarketCache.ITEMS_PER_PAGE);
     private static long lastUpdate = System.currentTimeMillis();
     private static final int ITEMS_PER_PAGE = 45;
 

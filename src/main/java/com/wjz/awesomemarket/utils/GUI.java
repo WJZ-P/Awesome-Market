@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import org.bukkit.*;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -16,7 +17,9 @@ import static com.wjz.awesomemarket.cache.MarketCache.getTotalPages;
 public class GUI {
     public static final String PREV_PAGE_KEY = "prev_page";
     public static final String NEXT_PAGE_KEY = "next_page";
+    public static final String COMMODITY_KEY = "commodity";
     public static final String ACTION_KEY = "gui_action";
+    private static final FileConfiguration langConfig = Log.langConfig;
     private static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), GUI.ACTION_KEY);
     private static final Map<UUID, Integer> playerPageMap = new HashMap<>();
@@ -39,9 +42,8 @@ public class GUI {
             marketGUI.setItem(i, background);
         }
 
-        //添加功能按钮
-        marketGUI.setItem(PREV_PAGE_SLOT, createPrevBtn(player));
-        marketGUI.setItem(NEXT_PAGE_SLOT, createNextBtn(player));
+        //加载功能栏
+        loadFuncBar(marketGUI, player);
 
         //下面使用异步方法来填充物品。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
@@ -69,6 +71,7 @@ public class GUI {
     public static int getPlayerPageMap(Player player) {
         return playerPageMap.getOrDefault(player.getUniqueId(), 1);
     }
+
     public static void setPlayerPageMap(Player player, int page) {
         playerPageMap.put(player.getUniqueId(), page);
     }
@@ -100,24 +103,19 @@ public class GUI {
 
     }
 
-    /**
-     * 返回符合格式的lore
-     *
-     * @param path
-     * @return
-     */
-    private static List<String> getLore(String path) {
-        //以换行符为行分割字符串
-        return Arrays.asList(Log.getString(path).split("\n"));
+    public static void loadFuncBar(Inventory inventory, Player player) {
+        //添加功能按钮
+        inventory.setItem(PREV_PAGE_SLOT, createPrevBtn(player));
+        inventory.setItem(NEXT_PAGE_SLOT, createNextBtn(player));
     }
 
-    private static ItemStack createNavItem(Material material, String action, String name, List<String> lores) {
+    private static ItemStack createNavItem(Material material, String action, String name, List<String> lore) {
         ItemStack navItem = new ItemStack(material);
         ItemMeta meta = navItem.getItemMeta();
 
         //设置基础属性
         meta.setDisplayName(ChatColor.RESET + name);
-        meta.setLore(lores);
+        meta.setLore(lore);
 
         //添加NBT标识
         meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, action);
@@ -134,11 +132,10 @@ public class GUI {
      * @return
      */
     private static ItemStack createPrevBtn(Player player) {
-        List<String> lore = getLore("market-GUI.name.prev-page-lore");
+        String lore = langConfig.getString("market-GUI.name.prev-page-lore");
+        lore = String.format(lore, getPlayerPageMap(player), getTotalPages(false));
 
-        String newSingleLore = String.format(lore.getFirst(), getPlayerPageMap(player), getTotalPages(false));
-        lore.set(0, newSingleLore);
-        return createNavItem(Material.ARROW, GUI.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"), lore);
+        return createNavItem(Material.ARROW, GUI.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"), Collections.singletonList(lore));
     }
 
     /**
@@ -148,10 +145,10 @@ public class GUI {
      * @return
      */
     private static ItemStack createNextBtn(Player player) {
-        List<String> lore = getLore("market-GUI.name.next-page-lore");
-        String newSingleLore = String.format(lore.getFirst(), getPlayerPageMap(player), getTotalPages(false));
-        lore.set(0, newSingleLore);
-        return createNavItem(Material.ARROW, GUI.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"), lore);
+        String lore = langConfig.getString("market-GUI.name.next-page-lore");
+        lore = String.format(lore, getPlayerPageMap(player), getTotalPages(false));
+
+        return createNavItem(Material.ARROW, GUI.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"), Collections.singletonList(lore));
     }
 
 

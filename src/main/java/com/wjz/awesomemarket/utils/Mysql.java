@@ -1,14 +1,23 @@
 package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.constants.MysqlType;
+import com.wjz.awesomemarket.constants.PriceType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.wjz.awesomemarket.utils.MarketTools.deserializeItem;
 
@@ -24,7 +33,7 @@ public class Mysql {
         //准备连接数据库
         HikariConfig hikariConfig = new HikariConfig();
         String url = "jdbc:mysql://" + mysqlConfig.getString("ip") +
-                ":" + mysqlConfig.getString("port")+"/"+mysqlConfig.getString("database-name");
+                ":" + mysqlConfig.getString("port") + "/" + mysqlConfig.getString("database-name");
 
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(mysqlConfig.getString("user"));
@@ -163,6 +172,31 @@ public class Mysql {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
+                    ItemMeta meta = itemStack.getItemMeta();
+                    List<String> oldLore = itemStack.getLore();
+                    //要给物品上描述信息
+                    List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity");
+                    //添加lore
+                    //price,currency,player,on_sell_time
+
+                    //这里格式化时间
+                    long timeStamp = rs.getLong("on_sell_time");
+                    LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStamp), ZoneId.systemDefault());
+
+                    for (int i = 0; i < commodityLore.size(); i++) {
+                        String modifiedLore = commodityLore.get(i).replace("%player%", rs.getString("seller"))
+                                .replace("%price%", String.format("%.2f", rs.getDouble("price")))
+                                .replace("%currency%", PriceType.getType(rs.getString("payment")).getName())
+                                .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss")));
+                        commodityLore.set(i, modifiedLore);
+                    }
+                    //商品lore添加完毕后追加到原lore后
+                    oldLore.addAll(commodityLore);
+                    meta.setLore(oldLore);
+
+                    //设置好的meta数据写入到item中
+                    itemStack.setItemMeta(meta);
+
                     items.add(itemStack);
                 }
             }

@@ -1,6 +1,5 @@
 #插件加载时候的log
 load_plugin: |
-
   §a==============================
   §bAwesomeMarket 插件已启用!
   §e欢迎使用 WJZ_P 的插件(✧ω✧)!
@@ -8,7 +7,6 @@ load_plugin: |
   §a==============================
 
 unload_plugin: |
-
   §c==============================
   §bAwesomeMarket 插件已关闭!
   §e感谢使用(｡•̀ᴗ-)✧!
@@ -37,12 +35,18 @@ market-GUI:
     next-page: §e下一页
     next-page-lore: §e%d / %d 页
 
-    sort-type: |
-      §c点击选择排序类型
-      
-      §e当前排序规则：§a%s
+    sort-type:
+      - §c点击选择排序类型
+      -
+      - §e当前排序规则：§a%s
 
-    currency-type: |
-      §c点击选择商品货币
-      
-      §e当前货币类型：§a%s
+    currency-type:
+      - §c点击选择商品货币
+      -
+      - §e当前货币类型：§a%s
+
+    commodity:
+      - §c§l✦§6§l✦§e§l✦§a§l✦§b§l✦§9§l✦§d§l✦ §f§l商品信息 §d§l✦§9§l✦§b§l✦§a§l✦§e§l✦§6§l✦§c§l✦
+      - §b价格：§e%price% %currency%
+      - §3出售者：§a%player%
+      - §3上架时间：§d%on_sell_time%
