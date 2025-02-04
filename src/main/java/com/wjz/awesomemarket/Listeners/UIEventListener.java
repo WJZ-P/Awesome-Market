@@ -17,26 +17,11 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class UIEventListener implements Listener {
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (!(event.getPlayer() instanceof Player)) return;
-        Player player = (Player) event.getPlayer();
-
-        // 检查是否是市场 GUI
-        if (event.getInventory().getHolder() instanceof MarketHolder) {
-            GUI.getPlayerPageMap().remove(player.getUniqueId());
-        }
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        GUI.getPlayerPageMap().remove(event.getPlayer().getUniqueId());
-    }
-
-    @EventHandler
     public void onMarketClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof MarketHolder)) return;//不是全球市场就返回
         Player player = (Player) event.getPlayer();
         player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 0.8f);
+        ((MarketHolder) event.getInventory().getHolder()).clean();
     }
 
     @EventHandler
@@ -46,15 +31,15 @@ public class UIEventListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
 
+        event.setCancelled(true);//取消点击事件防止玩家移动物品
+
         //获取物品的标识
-        String action = itemMeta.getPersistentDataContainer().get(
-                new NamespacedKey(AwesomeMarket.getInstance(), GUI.ACTION_KEY),
+        String actionString = itemMeta.getPersistentDataContainer().get(
+                new NamespacedKey(AwesomeMarket.getInstance(), MarketHolder.ACTION_KEY),
                 PersistentDataType.STRING
         );
-        if (action == null) return;//没标识就不做动作
-
-        event.setCancelled(true);//取消点击事件防止玩家移动物品
-        GUIAction funcBtn = GUIAction.getType(action);
-        funcBtn.action(player);
+        if (actionString == null) return;//没标识就不做动作
+        GUIAction action = GUIAction.getType(actionString);
+        action.action(player,event.getSlot());
     }
 }

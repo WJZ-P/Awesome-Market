@@ -7,6 +7,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.sql.*;
 import java.time.Instant;
@@ -174,6 +175,7 @@ public class Mysql {
                     ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
                     ItemMeta meta = itemStack.getItemMeta();
                     List<String> oldLore = itemStack.getLore();
+                    if (oldLore == null) oldLore = new ArrayList<>();
                     //要给物品上描述信息
                     List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity");
                     //添加lore
@@ -187,13 +189,14 @@ public class Mysql {
                         String modifiedLore = commodityLore.get(i).replace("%player%", rs.getString("seller"))
                                 .replace("%price%", String.format("%.2f", rs.getDouble("price")))
                                 .replace("%currency%", PriceType.getType(rs.getString("payment")).getName())
-                                .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss")));
+                                .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         commodityLore.set(i, modifiedLore);
                     }
                     //商品lore添加完毕后追加到原lore后
                     oldLore.addAll(commodityLore);
                     meta.setLore(oldLore);
-
+                    //添加商品的NBT标签
+                    meta.getPersistentDataContainer().set(MarketHolder.GUI_ACTION_KEY, PersistentDataType.STRING, MarketHolder.COMMODITY_KEY);
                     //设置好的meta数据写入到item中
                     itemStack.setItemMeta(meta);
 
