@@ -16,6 +16,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.wjz.awesomemarket.cache.MarketCache.getTotalPages;
 
@@ -32,6 +33,8 @@ public class MarketHolder implements InventoryHolder {
     private static final int PAGE_INFO_SLOT = 49;
     private static final int CURRENCY_TYPE_SLOT = 51;
     private static final FileConfiguration langConfig = Log.langConfig;
+
+    private AtomicBoolean canTurnPage = new AtomicBoolean(true);
 
     //非static变量
     private final Inventory marketGUI;
@@ -68,7 +71,7 @@ public class MarketHolder implements InventoryHolder {
     }
 
     public boolean turnPrevPage() {
-        if (currentPage <= 1) return false;
+        if (currentPage <= 1 || !canTurnPage.get()) return false;
         currentPage -= 1;
         //重新渲染物品和功能栏,渲染功能栏是为了修改当前页数
         this.loadMarketItems();
@@ -77,7 +80,9 @@ public class MarketHolder implements InventoryHolder {
     }
 
     public boolean turnNextPage() {
-        if (currentPage >= maxPage) {
+        if(!canTurnPage.get()) return false;//不允许翻页就直接返回false
+
+        if (currentPage >= maxPage ) {
             int newMaxPage = MarketCache.getTotalPages(true);
             if (maxPage != newMaxPage) {
                 //如果是最后一页，但是还有下一页，说明页数更新了
@@ -122,6 +127,7 @@ public class MarketHolder implements InventoryHolder {
 
     //加载物品
     private void loadMarketItems() {
+        this.canTurnPage.set(false);//加载物品的时候不可以翻页
         //使用异步方法来填充物品。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //获取物品
@@ -144,6 +150,7 @@ public class MarketHolder implements InventoryHolder {
                         marketGUI.setItem(i, background);
                     }
                 }
+                this.canTurnPage.set(true);
             });
         });
     }
