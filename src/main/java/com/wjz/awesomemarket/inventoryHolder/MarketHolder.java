@@ -101,6 +101,10 @@ public class MarketHolder implements InventoryHolder {
         return true;
     }
 
+    public MarketItem getMarketItem(int slot){
+        return this.marketItemList.get(slot);
+    }
+
     //加载功能栏,非static是因为页数每个对象不一样
     private void loadFuncBar() {
         ItemStack prevBtn = createNavItemStack(Material.ARROW, MarketHolder.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"),

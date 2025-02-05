@@ -1,8 +1,10 @@
 package com.wjz.awesomemarket.constants;
 
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
+import com.wjz.awesomemarket.utils.GUI;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public enum MarketGUIAction {
     PREV_PAGE {
@@ -30,7 +32,10 @@ public enum MarketGUIAction {
     COMMODITY{//商品
         @Override
         public void action(Player player,int slot) {
-            //点击之后应该出现GUI来操作，确认或者关闭
+            //调用confirmGUI。
+            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            //然后获取holder中独特的marketItem传入
+            GUI.openConfirm(player,marketHolder.getMarketItem(slot),marketHolder);//传入UI中的具体物品。
         }
     }
     ;

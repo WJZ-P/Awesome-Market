@@ -1,5 +1,6 @@
 #插件加载时候的log
 load_plugin: |
+  
   §a==============================
   §bAwesomeMarket 插件已启用!
   §e欢迎使用 WJZ_P 的插件(✧ω✧)!
@@ -7,6 +8,7 @@ load_plugin: |
   §a==============================
 
 unload_plugin: |
+  
   §c==============================
   §bAwesomeMarket 插件已关闭!
   §e感谢使用(｡•̀ᴗ-)✧!
@@ -46,18 +48,20 @@ market-GUI:
       - §e当前货币类型：§a%s
 
     commodity:
-      - §x§3§5§f§b§f§b§m=§x§3§a§f§9§f§a§m=§x§4§0§f§7§f§8§m=§x§4§5§f§5§f§7§m=§x§4§a§f§3§f§5§m=§m §m   §x§4§a§f§3§f§5§l商§x§4§7§f§4§f§6§l品§x§4§4§f§4§f§7§l信§x§4§1§f§5§f§8§l息§m§l §m§l §m§l §x§4§2§f§3§f§9§m=§x§4§b§e§9§f§a§m=§x§5§4§d§f§f§c§m=§x§5§d§d§6§f§d§m=§x§6§6§c§c§f§f§m=
-      -
-      - §b价格：§e%price% %currency%
-      - §3出售者：§a%player%
+      - §8=========================
+      - §x§3§5§f§b§f§b§m=§x§3§a§f§9§f§a§m=§x§4§0§f§7§f§8§m=§x§4§5§f§5§f§7§m=§x§4§a§f§3§f§5§m=§m §m     §x§4§a§f§3§f§5§l商§x§4§7§f§4§f§6§l品§x§4§4§f§4§f§7§l信§x§4§1§f§5§f§8§l息§m§l   §m§l §m§l §x§4§2§f§3§f§9§m=§x§4§b§e§9§f§a§m=§x§5§4§d§f§f§c§m=§x§5§d§d§6§f§d§m=§x§6§6§c§c§f§f§m=
+      - ""
+      - §3物品价格：§e%price% §6%currency%
+      - §3出售玩家：§a%player%
       - §3上架时间：§d%on_sell_time%
-      -
-      - §a点击购买
+      - ""
+      - §a§l点击购买
+      - §8=========================
 
 confirm-GUI:
   buy:
-    title: §c确认购买
+    title: §c§l确认支付
     yes: §a点击以确认购买!
-    yes-lore: §e你将支付 §c%.2f %currency% §e给 §a%player%
+    yes-lore: §e你将支付 §c%price% %currency% §e给 §a%player%
     no: §c点击以取消购买!
     no-lore: §d感觉还是太贵了。

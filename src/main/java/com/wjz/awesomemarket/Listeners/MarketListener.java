@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-public class UIEventListener implements Listener {
+public class MarketListener implements Listener {
     @EventHandler
     public void onMarketClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof MarketHolder)) return;//不是全球市场就返回

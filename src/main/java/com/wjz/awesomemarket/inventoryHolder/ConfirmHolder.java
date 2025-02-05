@@ -1,7 +1,7 @@
 package com.wjz.awesomemarket.inventoryHolder;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.constants.ConfirmGUIAction;
+import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,10 +17,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 
 public class ConfirmHolder implements InventoryHolder {
-    private Inventory confirmGUI;//显示确认信息
-    private int ITEM_SLOT=13;
-    private int CONFIRM_SLOT =11;
-    private int CANCEL_SLOT =15;
+    private final Inventory confirmGUI;//显示确认信息
+    private final int CONFIRM_SLOT = 11;
+    private final int CANCEL_SLOT = 15;
+
+    private MarketHolder marketHolder;//存储当前的marketHolder，方便用户继续浏览全球市场。
     private static final FileConfiguration langConfig = Log.langConfig;
 
     @Override
@@ -28,21 +29,33 @@ public class ConfirmHolder implements InventoryHolder {
         return this.confirmGUI;
     }
 
-    public ConfirmHolder(ItemStack itemStack){
+    public ConfirmHolder(MarketItem marketItem,MarketHolder marketHolder) {
+        this.marketHolder=marketHolder;
+        ItemStack itemStack = marketItem.getItemStack();
         confirmGUI = Bukkit.createInventory(this, 27, langConfig.getString("confirm-GUI.buy.title"));
 
-        //创建两个按钮物品
-        ItemStack confirmBtn=createButton(Material.GREEN_STAINED_GLASS_PANE,langConfig.getString("confirm-GUI.buy.yes"),
-                langConfig.getString("confirm-GUI.buy.yes-lore"),"buy");
+        String buyLore = langConfig.getString("confirm-GUI.buy.yes-lore")
+                .replace("%price%",String.format("%.2f",marketItem.getPrice()))
+                .replace("%currency%",marketItem.getPriceTypeName())
+                .replace("%player%",marketItem.getSellerName());
 
-        ItemStack cancelBtn=createButton(Material.RED_STAINED_GLASS_PANE,langConfig.getString("confirm-GUI.buy.no"),
-                langConfig.getString("confirm-GUI.buy.no-lore"),"cancel");
+        //创建两个按钮物品
+        ItemStack confirmBtn = createButton(Material.GREEN_STAINED_GLASS_PANE, langConfig.getString("confirm-GUI.buy.yes"),
+                buyLore, "buy");
+
+        ItemStack cancelBtn = createButton(Material.RED_STAINED_GLASS_PANE, langConfig.getString("confirm-GUI.buy.no"),
+                langConfig.getString("confirm-GUI.buy.no-lore"), "cancel");
 
         //设置物品
-        confirmGUI.setItem(CONFIRM_SLOT,confirmBtn);
-        confirmGUI.setItem(CANCEL_SLOT,cancelBtn);
-        confirmGUI.setItem(ITEM_SLOT,itemStack);
+        confirmGUI.setItem(CONFIRM_SLOT, confirmBtn);
+        confirmGUI.setItem(CANCEL_SLOT, cancelBtn);
+        int ITEM_SLOT = 13;
+        confirmGUI.setItem(ITEM_SLOT, itemStack);
 
+    }
+
+    public MarketHolder getMarketHolder(){
+        return this.marketHolder;
     }
 
     private ItemStack createButton(Material material, String name, String lore, String action) {

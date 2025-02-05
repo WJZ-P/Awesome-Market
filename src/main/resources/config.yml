@@ -35,5 +35,5 @@ currency:
     money: 0.05
     point: 0
   name:
-    money: "§e元"
-    point: "§a点券"
+    money: "游戏币"
+    point: "点券"

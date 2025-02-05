@@ -1,5 +1,6 @@
 package com.wjz.awesomemarket.utils;
 
+import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import org.bukkit.Sound;
@@ -15,10 +16,10 @@ public class GUI {
         player.openInventory(new MarketHolder().getInventory());
     }
 
-    public static void openConfirm(Player player, ItemStack itemStack) {
+    public static void openConfirm(Player player, MarketItem marketItem,MarketHolder marketHolder) {
         //播放声音
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
-        player.openInventory(new ConfirmHolder(itemStack).getInventory());
+        player.openInventory(new ConfirmHolder(marketItem,marketHolder).getInventory());
     }
 
 }
