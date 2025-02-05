@@ -2,6 +2,8 @@ package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.constants.MysqlType;
 import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.entity.MarketItem;
+import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
@@ -12,13 +14,10 @@ import org.bukkit.persistence.PersistentDataType;
 import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.wjz.awesomemarket.utils.MarketTools.deserializeItem;
 
@@ -160,7 +159,7 @@ public class Mysql {
         return 0;
     }
 
-    public static List<ItemStack> getItemsByPage(int page) {
+    public static List<ItemStack> getAndSetItemsByPage(int page, List<MarketItem> marketItemList) {
         List<ItemStack> items = new ArrayList<>();
         String query = String.format(MysqlType.SHOW_ITEMS_BY_PAGE,
                 mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
@@ -185,10 +184,20 @@ public class Mysql {
                     long timeStamp = rs.getLong("on_sell_time");
                     LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStamp), ZoneId.systemDefault());
 
+                    //下面获取一些信息
+                    String seller = rs.getString("seller");
+                    double price = rs.getDouble("price");
+                    PriceType priceType = PriceType.getType(rs.getString("payment"));
+                    long id= rs.getLong("id");
+
+                    //封装好item，放入list内
+                    marketItemList.add(new MarketItem(itemStack,price,priceType,id));
+
+                    //修改要展示到UI上的物品描述
                     for (int i = 0; i < commodityLore.size(); i++) {
-                        String modifiedLore = commodityLore.get(i).replace("%player%", rs.getString("seller"))
-                                .replace("%price%", String.format("%.2f", rs.getDouble("price")))
-                                .replace("%currency%", PriceType.getType(rs.getString("payment")).getName())
+                        String modifiedLore = commodityLore.get(i).replace("%player%", seller)
+                                .replace("%price%", String.format("%.2f", price))
+                                .replace("%currency%", priceType.getName())
                                 .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         commodityLore.set(i, modifiedLore);
                     }

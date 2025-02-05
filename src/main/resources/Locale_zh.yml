@@ -53,3 +53,11 @@ market-GUI:
       - §3上架时间：§d%on_sell_time%
       -
       - §a点击购买
+
+confirm-GUI:
+  buy:
+    title: §c确认购买
+    yes: §a点击以确认购买!
+    yes-lore: §e你将支付 §c%.2f %currency% §e给 §a%player%
+    no: §c点击以取消购买!
+    no-lore: §d感觉还是太贵了。

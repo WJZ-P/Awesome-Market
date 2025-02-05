@@ -1,14 +1,10 @@
 package com.wjz.awesomemarket.constants;
 
-import com.wjz.awesomemarket.cache.MarketCache;
-import com.wjz.awesomemarket.utils.GUI;
-import com.wjz.awesomemarket.utils.MarketHolder;
+import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 
-public enum GUIAction {
+public enum MarketGUIAction {
     PREV_PAGE {
         @Override
         public void action(Player player,int slot) {
@@ -34,14 +30,14 @@ public enum GUIAction {
     COMMODITY{//商品
         @Override
         public void action(Player player,int slot) {
-
+            //点击之后应该出现GUI来操作，确认或者关闭
         }
     }
     ;
 
     public abstract void action(Player player,int slot);
 
-    public static GUIAction getType(String type) {
-        return GUIAction.valueOf(type.toUpperCase());
+    public static MarketGUIAction getType(String type) {
+        return MarketGUIAction.valueOf(type.toUpperCase());
     }
 }
