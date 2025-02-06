@@ -195,7 +195,7 @@ public class Mysql {
                     long id = rs.getLong("id");
 
                     //封装好item，放入list内
-                    marketItemList.add(new MarketItem(itemStack, seller, price, priceType, id));
+                    marketItemList.add(new MarketItem(itemStack.clone(), seller, price, priceType, id));
 
                     //修改要展示到UI上的物品描述
                     for (int i = 0; i < commodityLore.size(); i++) {

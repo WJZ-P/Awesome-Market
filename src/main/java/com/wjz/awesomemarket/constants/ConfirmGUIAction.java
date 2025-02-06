@@ -11,7 +11,8 @@ public enum ConfirmGUIAction {
         public void action(Player player,MarketItem marketItem) {
             //确认购买
             if(marketItem.purchase(player)){
-
+                //Log输出等已经在购买方法内部完成
+                //负责播放声音和返回商店界面即可。
             }
         }
 

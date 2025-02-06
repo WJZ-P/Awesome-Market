@@ -29,6 +29,12 @@ empty_item_error_sell: "§b[AwesomeMarket] §e请把要上架的商品置于主�
 
 market_name: "§e§l全球市场"
 
+buy_success: §a您花费 §e %money% §6 %currency% §a 购买了 §e%seller% §a的 §7[§r %item%§7 ] §a！
+
+buy_fail:
+  lack-of-eco: §c余额不足! 您仍需§e %money% §6 %currency% §c以购买!
+  has-been-bought: §c购买失败! 手慢了! 物品已被买走...
+
 market-GUI:
   name:
     prev-page: §e上一页

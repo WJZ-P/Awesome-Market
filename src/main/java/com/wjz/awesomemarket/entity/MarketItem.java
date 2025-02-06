@@ -1,8 +1,10 @@
 package com.wjz.awesomemarket.entity;
 
 import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.Mysql;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class MarketItem {
@@ -18,7 +20,7 @@ public class MarketItem {
         this.id = id;
         this.price = price;
         this.seller = seller;
-        this.priceType=priceType;
+        this.priceType = priceType;
     }
 
     public ItemStack getItemStack() {
@@ -44,15 +46,45 @@ public class MarketItem {
     /**
      * 购买商品，成功返回true失败返回false。
      */
-    public boolean purchase(Player player){
+    public boolean purchase(Player player) {
         //要先判断玩家是否满足购买需求
-        double playerEconomy=priceType.look(player);//查询玩家当前货币
-        if(playerEconomy<price) {
-            player.sendMessage();
+        double playerEconomy = priceType.look(player);//查询玩家当前货币
+        if (playerEconomy < price) {
+            String buyFail = Log.getString("buy_fail.lack-of-eco")
+                    .replace("%money%", String.format("%.2f", price))
+                    .replace("%currency%", priceType.getName());
+
+            player.sendMessage(buyFail);
+            return false;
         }
 
-        if(Mysql.deleteMarketItem(this.id)){//成功删除了物品，那么要从玩家处扣款
+        //下面开始走付款流程。
+        if (Mysql.deleteMarketItem(this.id)) {
+            priceType.take(player, price);
+            //成功删除了物品，并且成功扣款
+            String buySuccess = Log.getString("buy_success")
+                    .replace("%money%", String.format("%.2f", price))
+                    .replace("%currency%", priceType.getName())
+                    .replace("%seller%", seller)
+                    .replace("%item%", itemStack.getItemMeta().getDisplayName());
+            player.sendMessage(buySuccess);
 
+            //扣款之后把物品给玩家
+            Inventory playerInv = player.getInventory();
+            if (playerInv.firstEmpty() != -1) {
+                //说明玩家的背包是没满的
+                playerInv.addItem(itemStack);
+                return true;
+            } else {
+                //说明玩家背包满了
+                //那就需要把物品放到邮箱里，这里先暂时丢在玩家地上吧
+                player.getWorld().dropItem(player.getLocation(), itemStack);
+                return true;
+            }
+        } else {
+            //删除物品失败了。说明物品已经被买走了
+            player.sendMessage(Log.getString("buy_fail.has-been-bought"));
+            return false;
         }
     }
 }
