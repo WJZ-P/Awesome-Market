@@ -32,9 +32,9 @@ public class ConfirmListener implements Listener {
         if (actionString == null) return;//没标识就不做动作
 
         ConfirmGUIAction action=ConfirmGUIAction.getType(actionString);
-
+        ConfirmHolder confirmHolder=(ConfirmHolder)event.getInventory().getHolder();
         //应该传入marketItem。里面有所需信息
-        action.action(event.getInventory().getHolder().);//执行对应指令
+        action.action(confirmHolder.getMarketItem());//执行对应指令
 
     }
 }

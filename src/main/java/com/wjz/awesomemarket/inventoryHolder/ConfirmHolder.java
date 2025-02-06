@@ -21,8 +21,9 @@ public class ConfirmHolder implements InventoryHolder {
     private final int marketPage;//
     private final Inventory confirmGUI;//显示确认信息
     private final int CONFIRM_SLOT = 11;
-    private final int ITEM_SLOT=13;
+    private final int ITEM_SLOT = 13;
     private final int CANCEL_SLOT = 15;
+    private final MarketItem marketItem;
     private final MarketHolder marketHolder;//存储原来的marketHolder
     public static final String ACTION_KEY = "gui_action";
     private static final FileConfiguration langConfig = Log.langConfig;
@@ -36,7 +37,7 @@ public class ConfirmHolder implements InventoryHolder {
     public ConfirmHolder(MarketHolder marketHolder, int slot) {
         this.marketPage = marketHolder.getCurrentPage();
         this.marketHolder = marketHolder;
-        MarketItem marketItem = marketHolder.getMarketItem(slot);
+        this.marketItem = marketHolder.getMarketItem(slot);
         confirmGUI = Bukkit.createInventory(this, 27, langConfig.getString("confirm-GUI.buy.title"));
 
         String buyLore = langConfig.getString("confirm-GUI.buy.yes-lore")
@@ -60,6 +61,14 @@ public class ConfirmHolder implements InventoryHolder {
 
     public int getMarketPage() {
         return this.marketPage;
+    }
+
+    public MarketHolder getMarketHolder() {
+        return this.marketHolder;
+    }
+
+    public MarketItem getMarketItem() {
+        return this.marketItem;
     }
 
     private ItemStack createButton(Material material, String name, String lore, String action) {

@@ -8,14 +8,13 @@ public enum ConfirmGUIAction {
     CONFIRM {
         @Override
         public void action(MarketItem marketItem) {
+            //确认购买
+        }
 
-        }//确认购买
-
-    }, CANCEL {//取消购买
-
+    }, CANCEL {
         @Override
         public void action(MarketItem marketItem) {
-
+            //取消购买
         }
     };
 
