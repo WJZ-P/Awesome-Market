@@ -35,7 +35,7 @@ public enum MarketGUIAction {
             //调用confirmGUI。
             MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
             //然后获取holder中独特的marketItem传入
-            GUI.openConfirm(player,marketHolder.getMarketItem(slot),marketHolder);//传入UI中的具体物品。
+            GUI.openConfirm(player,marketHolder,slot);//传入UI中的具体物品。
         }
     }
     ;

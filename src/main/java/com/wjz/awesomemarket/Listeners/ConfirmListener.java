@@ -1,17 +1,40 @@
 package com.wjz.awesomemarket.Listeners;
 
+import com.wjz.awesomemarket.AwesomeMarket;
+import com.wjz.awesomemarket.constants.ConfirmGUIAction;
+import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+
+import java.util.List;
 
 public class ConfirmListener implements Listener {
     @EventHandler
-    public void onMarketClose(InventoryCloseEvent event) {
+    public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof ConfirmHolder)) return;
-        ConfirmHolder confirmHolder= (ConfirmHolder) event.getInventory().getHolder();
-        //要返回原打开商店页，以实现继续购买。
-        event.getPlayer().openInventory(confirmHolder.getMarketHolder().getInventory());
+        if (event.getCurrentItem() == null) return;//如果点击的是空的地方
+        Player player = (Player) event.getWhoClicked();
+        ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
+
+        event.setCancelled(true);//取消点击事件防止玩家移动物品
+        //获取物品的标识
+        String actionString = itemMeta.getPersistentDataContainer().get(
+                new NamespacedKey(AwesomeMarket.getInstance(), ConfirmHolder.ACTION_KEY),
+                PersistentDataType.STRING
+        );
+        if (actionString == null) return;//没标识就不做动作
+
+        ConfirmGUIAction action=ConfirmGUIAction.getType(actionString);
+
+        //应该传入marketItem。里面有所需信息
+        action.action(event.getInventory().getHolder().);//执行对应指令
+
     }
 }

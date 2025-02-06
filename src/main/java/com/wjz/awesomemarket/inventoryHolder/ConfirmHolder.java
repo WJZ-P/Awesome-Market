@@ -15,33 +15,38 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.List;
 
 public class ConfirmHolder implements InventoryHolder {
+    private final int marketPage;//
     private final Inventory confirmGUI;//显示确认信息
     private final int CONFIRM_SLOT = 11;
+    private final int ITEM_SLOT=13;
     private final int CANCEL_SLOT = 15;
-
-    private MarketHolder marketHolder;//存储当前的marketHolder，方便用户继续浏览全球市场。
+    private final MarketHolder marketHolder;//存储原来的marketHolder
+    public static final String ACTION_KEY = "gui_action";
     private static final FileConfiguration langConfig = Log.langConfig;
+
 
     @Override
     public @NotNull Inventory getInventory() {
         return this.confirmGUI;
     }
 
-    public ConfirmHolder(MarketItem marketItem,MarketHolder marketHolder) {
-        this.marketHolder=marketHolder;
-        ItemStack itemStack = marketItem.getItemStack();
+    public ConfirmHolder(MarketHolder marketHolder, int slot) {
+        this.marketPage = marketHolder.getCurrentPage();
+        this.marketHolder = marketHolder;
+        MarketItem marketItem = marketHolder.getMarketItem(slot);
         confirmGUI = Bukkit.createInventory(this, 27, langConfig.getString("confirm-GUI.buy.title"));
 
         String buyLore = langConfig.getString("confirm-GUI.buy.yes-lore")
-                .replace("%price%",String.format("%.2f",marketItem.getPrice()))
-                .replace("%currency%",marketItem.getPriceTypeName())
-                .replace("%player%",marketItem.getSellerName());
+                .replace("%price%", String.format("%.2f", marketItem.getPrice()))
+                .replace("%currency%", marketItem.getPriceTypeName())
+                .replace("%player%", marketItem.getSellerName());
 
         //创建两个按钮物品
         ItemStack confirmBtn = createButton(Material.GREEN_STAINED_GLASS_PANE, langConfig.getString("confirm-GUI.buy.yes"),
-                buyLore, "buy");
+                buyLore, "confirm");
 
         ItemStack cancelBtn = createButton(Material.RED_STAINED_GLASS_PANE, langConfig.getString("confirm-GUI.buy.no"),
                 langConfig.getString("confirm-GUI.buy.no-lore"), "cancel");
@@ -49,13 +54,12 @@ public class ConfirmHolder implements InventoryHolder {
         //设置物品
         confirmGUI.setItem(CONFIRM_SLOT, confirmBtn);
         confirmGUI.setItem(CANCEL_SLOT, cancelBtn);
-        int ITEM_SLOT = 13;
-        confirmGUI.setItem(ITEM_SLOT, itemStack);
+        confirmGUI.setItem(ITEM_SLOT, marketItem.getItemStack());
 
     }
 
-    public MarketHolder getMarketHolder(){
-        return this.marketHolder;
+    public int getMarketPage() {
+        return this.marketPage;
     }
 
     private ItemStack createButton(Material material, String name, String lore, String action) {

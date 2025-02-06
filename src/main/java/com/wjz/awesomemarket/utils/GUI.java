@@ -13,13 +13,13 @@ public class GUI {
 
         //播放声音
         player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 0.6f);
-        player.openInventory(new MarketHolder().getInventory());
+        player.openInventory(new MarketHolder(1).getInventory());
     }
 
-    public static void openConfirm(Player player, MarketItem marketItem,MarketHolder marketHolder) {
+    public static void openConfirm(Player player,MarketHolder marketHolder, int slot) {
         //播放声音
-        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
-        player.openInventory(new ConfirmHolder(marketItem,marketHolder).getInventory());
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.8f);
+        player.openInventory(new ConfirmHolder(marketHolder,slot).getInventory());
     }
 
 }

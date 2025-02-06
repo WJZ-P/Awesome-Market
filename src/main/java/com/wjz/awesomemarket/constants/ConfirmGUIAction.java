@@ -1,19 +1,25 @@
 package com.wjz.awesomemarket.constants;
 
+import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public enum ConfirmGUIAction {
-    BUY {//购买
+    CONFIRM {
+        @Override
+        public void action(MarketItem marketItem) {
+
+        }//确认购买
+
+    }, CANCEL {//取消购买
 
         @Override
-        public String getTitle() {
-            return langConfig.getString("confirm-GUI.buy.title");
-        }
+        public void action(MarketItem marketItem) {
 
+        }
     };
 
-    public abstract String getTitle();
+    public abstract void action(MarketItem marketItem);
 
     public static ConfirmGUIAction getType(String type) {
         return ConfirmGUIAction.valueOf(type.toUpperCase());//返回实例

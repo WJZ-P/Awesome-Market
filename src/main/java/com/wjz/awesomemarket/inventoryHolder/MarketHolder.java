@@ -50,7 +50,8 @@ public class MarketHolder implements InventoryHolder {
         return marketGUI;
     }
 
-    public MarketHolder() {
+    public MarketHolder(int currentPage) {
+        this.currentPage=currentPage;
         this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
         //下面对marketGUI做初始化处理
 
@@ -103,6 +104,10 @@ public class MarketHolder implements InventoryHolder {
 
     public MarketItem getMarketItem(int slot){
         return this.marketItemList.get(slot);
+    }
+
+    public int getCurrentPage(){
+        return this.currentPage;
     }
 
     //加载功能栏,非static是因为页数每个对象不一样
