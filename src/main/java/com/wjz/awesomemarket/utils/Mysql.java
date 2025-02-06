@@ -32,8 +32,7 @@ public class Mysql {
     public static void tryToConnect() {
         //准备连接数据库
         HikariConfig hikariConfig = new HikariConfig();
-        String url = "jdbc:mysql://" + mysqlConfig.getString("ip") +
-                ":" + mysqlConfig.getString("port") + "/" + mysqlConfig.getString("database-name");
+        String url = "jdbc:mysql://" + mysqlConfig.getString("ip") + ":" + mysqlConfig.getString("port") + "/" + mysqlConfig.getString("database-name");
 
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(mysqlConfig.getString("user"));
@@ -70,8 +69,7 @@ public class Mysql {
     private static boolean isDatabaseExist(String name) {
         //应该用create if not exist语句才对，不需要检查
         String query = "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '" + name + "'";
-        try (Statement stmt = dataSource.getConnection().createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = dataSource.getConnection().createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             return rs.next();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -79,8 +77,7 @@ public class Mysql {
     }
 
     public static void closeDataSource() {
-        if (dataSource != null)
-            dataSource.close();
+        if (dataSource != null) dataSource.close();
     }
 
     /**
@@ -92,24 +89,20 @@ public class Mysql {
         String databaseName = sqlConfig.getString("database-name");
         String tablePrefix = sqlConfig.getString("table-prefix");
 
-        try (Connection connection = dataSource.getConnection();
-             Statement stmt = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection(); Statement stmt = connection.createStatement()) {
             //创库不能用预处理语句，现在改成
 //            stmt.execute("CREATE DATABASE IF NOT EXISTS " + sqlConfig.getString("database-name"));
 //            // 选择数据库
 //            stmt.execute("USE " + databaseName);
 
             // 创建 sell 表
-            stmt.execute(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE,
-                    tablePrefix + MysqlType.ON_SELL_ITEMS_TABLE));
+            stmt.execute(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE, tablePrefix + MysqlType.ON_SELL_ITEMS_TABLE));
 
             // 创建 expire 表
-            stmt.execute(String.format(MysqlType.CREATE_EXPIRE_ITEMS_TABLE,
-                    tablePrefix + MysqlType.EXPIRE_ITEMS_TABLE));
+            stmt.execute(String.format(MysqlType.CREATE_EXPIRE_ITEMS_TABLE, tablePrefix + MysqlType.EXPIRE_ITEMS_TABLE));
 
             // 创建 transaction 表
-            stmt.execute(String.format(MysqlType.CREATE_TRANSACTIONS_TABLE,
-                    tablePrefix + MysqlType.TRANSACTIONS_TABLE));
+            stmt.execute(String.format(MysqlType.CREATE_TRANSACTIONS_TABLE, tablePrefix + MysqlType.TRANSACTIONS_TABLE));
 
         } catch (SQLException e) {
             Log.severe("create_mysql_fail");
@@ -123,8 +116,7 @@ public class Mysql {
      */
     public static void InsertItemsToMarket(String itemDetail, String itemType, String seller, String payment, double price, long onSellTime, long expiryTime) {
         String insertSQL = String.format(MysqlType.INSERT_ITEM_TO_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
             pstmt.setString(1, itemDetail);
             pstmt.setString(2, itemType);
             pstmt.setString(3, seller);
@@ -159,13 +151,25 @@ public class Mysql {
         return 0;
     }
 
+    public static boolean deleteMarketItem(long id) {
+        String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
+            preparedStatement.setLong(1, id);
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;//删除失败
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static List<ItemStack> getAndSetItemsByPage(int page, List<MarketItem> marketItemList) {
         List<ItemStack> items = new ArrayList<>();
-        String query = String.format(MysqlType.SHOW_ITEMS_BY_PAGE,
-                mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        String query = String.format(MysqlType.SHOW_ITEMS_BY_PAGE, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(query)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement(query)) {
             int offset = (page - 1) * 45;
             pstmt.setInt(1, offset);
 
@@ -188,17 +192,14 @@ public class Mysql {
                     String seller = rs.getString("seller");
                     double price = rs.getDouble("price");
                     PriceType priceType = PriceType.getType(rs.getString("payment"));
-                    long id= rs.getLong("id");
+                    long id = rs.getLong("id");
 
                     //封装好item，放入list内
-                    marketItemList.add(new MarketItem(itemStack,seller,price,priceType,id));
+                    marketItemList.add(new MarketItem(itemStack, seller, price, priceType, id));
 
                     //修改要展示到UI上的物品描述
                     for (int i = 0; i < commodityLore.size(); i++) {
-                        String modifiedLore = commodityLore.get(i).replace("%player%", seller)
-                                .replace("%price%", String.format("%.2f", price))
-                                .replace("%currency%", priceType.getName())
-                                .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                        String modifiedLore = commodityLore.get(i).replace("%player%", seller).replace("%price%", String.format("%.2f", price)).replace("%currency%", priceType.getName()).replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                         commodityLore.set(i, modifiedLore);
                     }
                     //商品lore添加完毕后追加到原lore后

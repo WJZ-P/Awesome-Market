@@ -69,4 +69,6 @@ public class MysqlType {
             "ORDER BY on_sell_time ASC " +
             "LIMIT 45 OFFSET ?;";
 
+    public static String DELETE_ITEM_FROM_MARKET="DELETE FROM `%s` WHERE ID = ?";
+
 }

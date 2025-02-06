@@ -34,7 +34,7 @@ public class ConfirmListener implements Listener {
         ConfirmGUIAction action=ConfirmGUIAction.getType(actionString);
         ConfirmHolder confirmHolder=(ConfirmHolder)event.getInventory().getHolder();
         //应该传入marketItem。里面有所需信息
-        action.action(confirmHolder.getMarketItem());//执行对应指令
+        action.action(Player player,confirmHolder.getMarketItem());//执行对应指令
 
     }
 }
