@@ -7,6 +7,7 @@ import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -86,7 +87,6 @@ public class Mysql {
      * @param sqlConfig sql配置
      */
     private static void createNeeds(ConfigurationSection sqlConfig) {
-        String databaseName = sqlConfig.getString("database-name");
         String tablePrefix = sqlConfig.getString("table-prefix");
 
         try (Connection connection = dataSource.getConnection(); Statement stmt = connection.createStatement()) {
@@ -103,6 +103,8 @@ public class Mysql {
 
             // 创建 transaction 表
             stmt.execute(String.format(MysqlType.CREATE_TRANSACTIONS_TABLE, tablePrefix + MysqlType.TRANSACTIONS_TABLE));
+            // 创建 player_storage 表
+            stmt.execute(String.format(MysqlType.CREATE_PLAYER_STORAGE_TABLE, tablePrefix + MysqlType.PLAYER_STORAGE_TABLE));
 
         } catch (SQLException e) {
             Log.severe("create_mysql_fail");
@@ -221,5 +223,73 @@ public class Mysql {
         }
 
         return items;
+    }
+
+    //交易完成后要增加交易记录
+    public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price) {
+        try (Connection connection = dataSource.getConnection()) {
+            String query = String.format(MysqlType.INSERT_INTO_TRANSACTION, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, itemDetail);
+            preparedStatement.setString(2, itemType);
+            preparedStatement.setString(3, seller);
+            preparedStatement.setString(4, buyer);
+            preparedStatement.setString(5, payment);
+            preparedStatement.setDouble(6, price);
+            preparedStatement.setLong(7, System.currentTimeMillis());
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.severeDirectly("创建交易单失败！");
+        }
+    }
+
+    //把物品放到暂存库中
+    public static void addItemToTempStorage(long id, String owner, String seller, String itemDetail, String itemType, long storeTime, double price, String priceType) {
+        try (Connection connection = dataSource.getConnection()) {
+            String query = String.format(MysqlType.INSERT_INTO_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setLong(1, id);
+            preparedStatement.setString(2, owner);
+            preparedStatement.setString(3, seller);
+            preparedStatement.setString(4, itemDetail);
+            preparedStatement.setString(5, itemType);
+            preparedStatement.setLong(6, storeTime);
+            preparedStatement.setDouble(7, price);
+            preparedStatement.setString(8, priceType);
+            preparedStatement.execute();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.severeDirectly("创建交易单失败！");
+        }
+    }
+
+    public static List<MarketItem> getStorageList(Player player) {
+        List<MarketItem> storageItemList = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            String query = String.format(MysqlType.SELECT_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE, player.getName());
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    //先创建一个marketItem
+                    String itemDetail = rs.getString("item_detail");
+                    String seller = rs.getString("seller");
+                    double price = rs.getDouble("price");
+                    PriceType priceType = PriceType.getType(rs.getString("priceType"));
+                    long id = rs.getLong("id");
+                    MarketItem marketItem = new MarketItem(MarketTools.deserializeItem(itemDetail), seller, price, priceType, id);
+                    storageItemList.add(marketItem);
+                }
+            }
+            return storageItemList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.severeDirectly("获取暂存库物品失败！");
+        }
+        return storageItemList;
     }
 }

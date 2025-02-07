@@ -29,11 +29,12 @@ empty_item_error_sell: "§b[AwesomeMarket] §e请把要上架的商品置于主�
 
 market_name: "§e§l全球市场"
 
-buy_success: §a您花费 §e %money% §6 %currency% §a 购买了 §e%seller% §a的 §7[§r %item%§7 ] §a！
+buy_success: §b[AwesomeMarket] §a您花费 §e %money% §6 %currency% §a 购买了 §e%seller% §a的 §7[§r %item%§7 ] §a！
+add_item_to_storage: §b[AwesomeMarket] §c背包空间不足! 物品已移至暂存库!
 
 buy_fail:
-  lack-of-eco: §c余额不足! 您仍需§e %money% §6 %currency% §c以购买!
-  has-been-bought: §c购买失败! 手慢了! 物品已被买走...
+  lack-of-eco: §b[AwesomeMarket] §c余额不足! 您仍需§e %money% §6 %currency% §c以购买!
+  has-been-bought: §b[AwesomeMarket] §c购买失败! 手慢了! 物品已被买走...
 
 market-GUI:
   name:
@@ -66,8 +67,8 @@ market-GUI:
 
 confirm-GUI:
   buy:
-    title: §c§l确认支付
-    yes: §a点击以确认购买!
-    yes-lore: §e你将支付 §c%price% %currency% §e给 §a%player%
-    no: §c点击以取消购买!
-    no-lore: §d感觉还是太贵了。
+    title: §c§l确认支付?
+    confirm: §a点击以确认支付!
+    confirm-lore: §e你将支付 §c%price% %currency% §e给 §a%player%
+    cancel: §c点击以取消支付!
+    cancel-lore: §d我再想想...

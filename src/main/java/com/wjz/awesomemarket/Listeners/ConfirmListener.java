@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -34,7 +35,13 @@ public class ConfirmListener implements Listener {
         ConfirmGUIAction action=ConfirmGUIAction.getType(actionString);
         ConfirmHolder confirmHolder=(ConfirmHolder)event.getInventory().getHolder();
         //应该传入marketItem。里面有所需信息
-        action.action(Player player,confirmHolder.getMarketItem());//执行对应指令
+        action.action(player,confirmHolder.getMarketItem());//执行对应指令
 
+    }
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event){
+        if (!(event.getInventory().getHolder() instanceof ConfirmHolder)) return;
+        //打开UI的时候来一个小动画.
     }
 }

@@ -6,7 +6,6 @@ import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +25,6 @@ public class ConfirmHolder implements InventoryHolder {
     private final MarketItem marketItem;
     private final MarketHolder marketHolder;//存储原来的marketHolder
     public static final String ACTION_KEY = "gui_action";
-    private static final FileConfiguration langConfig = Log.langConfig;
 
 
     @Override
@@ -38,19 +36,18 @@ public class ConfirmHolder implements InventoryHolder {
         this.marketPage = marketHolder.getCurrentPage();
         this.marketHolder = marketHolder;
         this.marketItem = marketHolder.getMarketItem(slot);
-        confirmGUI = Bukkit.createInventory(this, 27, langConfig.getString("confirm-GUI.buy.title"));
+        confirmGUI = Bukkit.createInventory(this, 27, Log.getString("confirm-GUI.buy.title"));
 
-        String buyLore = langConfig.getString("confirm-GUI.buy.yes-lore")
+        String buyLore = Log.getString("confirm-GUI.buy.confirm-lore")
                 .replace("%price%", String.format("%.2f", marketItem.getPrice()))
                 .replace("%currency%", marketItem.getPriceTypeName())
                 .replace("%player%", marketItem.getSellerName());
-
         //创建两个按钮物品
-        ItemStack confirmBtn = createButton(Material.GREEN_STAINED_GLASS_PANE, langConfig.getString("confirm-GUI.buy.yes"),
+        ItemStack confirmBtn = createButton(Material.GREEN_STAINED_GLASS_PANE, Log.getString("confirm-GUI.buy.confirm"),
                 buyLore, "confirm");
 
-        ItemStack cancelBtn = createButton(Material.RED_STAINED_GLASS_PANE, langConfig.getString("confirm-GUI.buy.no"),
-                langConfig.getString("confirm-GUI.buy.no-lore"), "cancel");
+        ItemStack cancelBtn = createButton(Material.RED_STAINED_GLASS_PANE, Log.getString("confirm-GUI.buy.cancel"),
+                Log.getString("confirm-GUI.buy.cancel-lore"), "cancel");
 
         //设置物品
         confirmGUI.setItem(CONFIRM_SLOT, confirmBtn);

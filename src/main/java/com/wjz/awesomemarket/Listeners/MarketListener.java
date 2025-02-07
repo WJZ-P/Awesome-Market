@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.Listeners;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.MarketGUIAction;
+import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -14,13 +15,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public class MarketListener implements Listener {
-    @EventHandler
-    public void onMarketClose(InventoryCloseEvent event) {
-        if (!(event.getInventory().getHolder() instanceof MarketHolder)) return;//不是全球市场就返回
-        Player player = (Player) event.getPlayer();
-        player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 0.8f);
-        ((MarketHolder) event.getInventory().getHolder()).clean();
-    }
+//    @EventHandler
+//    public void onMarketClose(InventoryCloseEvent event) {
+//        if (!(event.getInventory().getHolder() instanceof MarketHolder)) return;//不是全球市场就返回
+//
+//        Player player = (Player) event.getPlayer();
+//        player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 0.8f);
+//        ((MarketHolder) event.getInventory().getHolder()).clean();
+//    }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {

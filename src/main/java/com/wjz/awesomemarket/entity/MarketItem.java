@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.entity;
 
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.utils.Log;
+import com.wjz.awesomemarket.utils.MarketTools;
 import com.wjz.awesomemarket.utils.Mysql;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -74,13 +75,18 @@ public class MarketItem {
             if (playerInv.firstEmpty() != -1) {
                 //说明玩家的背包是没满的
                 playerInv.addItem(itemStack);
-                return true;
             } else {
                 //说明玩家背包满了
-                //那就需要把物品放到邮箱里，这里先暂时丢在玩家地上吧
-                player.getWorld().dropItem(player.getLocation(), itemStack);
-                return true;
+                //那就需要把物品放到暂存库里
+                Mysql.addItemToTempStorage(id,player.getName(),seller,MarketTools.serializeItem(itemStack),String.valueOf(itemStack.getType()),
+                        System.currentTimeMillis(),price,priceType.getName());
+                player.sendMessage(Log.getString("add_item_to_storage"));
             }
+            //下面创建交易单数据。
+            Mysql.addTradeTransaction(MarketTools.serializeItem(itemStack),
+                    String.valueOf(itemStack.getType()), seller, player.getName(), String.valueOf(priceType), price);
+            return true;
+
         } else {
             //删除物品失败了。说明物品已经被买走了
             player.sendMessage(Log.getString("buy_fail.has-been-bought"));
