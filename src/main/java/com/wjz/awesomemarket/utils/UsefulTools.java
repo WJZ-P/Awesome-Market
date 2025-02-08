@@ -4,12 +4,18 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.wjz.awesomemarket.constants.SkullType;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class UsefulTools {
@@ -41,6 +47,22 @@ public class UsefulTools {
 
             return head;
         }
+    }
+
+    public static ItemStack createNavItemStack(ItemStack navItem, String action, String name, List<String> lore, NamespacedKey key) {
+        ItemMeta meta = navItem.getItemMeta();
+
+        //设置基础属性
+        meta.setDisplayName(ChatColor.RESET + name);
+        meta.setLore(lore);
+
+        //添加NBT标识
+        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, action);
+        //隐藏默认属性
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+
+        navItem.setItemMeta(meta);
+        return navItem;
     }
 
 

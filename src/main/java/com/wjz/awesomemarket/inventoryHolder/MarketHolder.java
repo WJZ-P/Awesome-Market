@@ -2,9 +2,12 @@ package com.wjz.awesomemarket.inventoryHolder;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.cache.MarketCache;
+import com.wjz.awesomemarket.constants.SkullType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.utils.Log;
+import com.wjz.awesomemarket.utils.MarketTools;
 import com.wjz.awesomemarket.utils.Mysql;
+import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,20 +26,22 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.wjz.awesomemarket.cache.MarketCache.getTotalPages;
+import static com.wjz.awesomemarket.utils.UsefulTools.createNavItemStack;
 
 public class MarketHolder implements InventoryHolder {
     public static final String PREV_PAGE_KEY = "prev_page";
     public static final String NEXT_PAGE_KEY = "next_page";
     public static final String COMMODITY_KEY = "commodity";
+    public static final String STORAGE_KEY = "storage";
     public static final String ACTION_KEY = "gui_action";
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), MarketHolder.ACTION_KEY);
     private static final int PREV_PAGE_SLOT = 45;
+    private static final int STORAGE_SLOT = 46;
     private static final int NEXT_PAGE_SLOT = 53;
     private static final int SORT_TYPE_SLOT = 47;
     private static final int PAGE_INFO_SLOT = 49;
     private static final int CURRENCY_TYPE_SLOT = 51;
-    private static final FileConfiguration langConfig = Log.langConfig;
 
     //非static变量
     private final AtomicBoolean canTurnPage = new AtomicBoolean(true);
@@ -51,7 +56,7 @@ public class MarketHolder implements InventoryHolder {
     }
 
     public MarketHolder(int currentPage) {
-        this.currentPage=currentPage;
+        this.currentPage = currentPage;
         this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
         //下面对marketGUI做初始化处理
 
@@ -102,40 +107,27 @@ public class MarketHolder implements InventoryHolder {
         return true;
     }
 
-    public MarketItem getMarketItem(int slot){
+    public MarketItem getMarketItem(int slot) {
         return this.marketItemList.get(slot);
     }
 
-    public int getCurrentPage(){
+    public int getCurrentPage() {
         return this.currentPage;
     }
 
     //加载功能栏,非static是因为页数每个对象不一样
     private void loadFuncBar() {
-        ItemStack prevBtn = createNavItemStack(Material.ARROW, MarketHolder.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"),
-                Collections.singletonList(String.format(langConfig.getString("market-GUI.name.prev-page-lore"), this.currentPage, getTotalPages(false))));
-        ItemStack nextBtn = createNavItemStack(Material.ARROW, MarketHolder.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"),
-                Collections.singletonList(String.format(langConfig.getString("market-GUI.name.next-page-lore"), this.currentPage, getTotalPages(false))));
+        ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"),
+                Collections.singletonList(String.format(Log.getString("market-GUI.name.prev-page-lore"), this.currentPage, getTotalPages(false))),GUI_ACTION_KEY);
+        ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"),
+                Collections.singletonList(String.format(Log.getString("market-GUI.name.next-page-lore"), this.currentPage, getTotalPages(false))),GUI_ACTION_KEY);
+
+        ItemStack storageBtn = createNavItemStack(UsefulTools.getCustomSkull(SkullType.STORAGE_DATA), MarketHolder.STORAGE_KEY, Log.getString("market-GUI.name.storage"),
+                Collections.singletonList(Log.getString("market-GUI.name.storage-lore")),GUI_ACTION_KEY);
 
         this.marketGUI.setItem(MarketHolder.PREV_PAGE_SLOT, prevBtn);
         this.marketGUI.setItem(MarketHolder.NEXT_PAGE_SLOT, nextBtn);
-    }
-
-    private static ItemStack createNavItemStack(Material material, String action, String name, List<String> lore) {
-        ItemStack navItem = new ItemStack(material);
-        ItemMeta meta = navItem.getItemMeta();
-
-        //设置基础属性
-        meta.setDisplayName(ChatColor.RESET + name);
-        meta.setLore(lore);
-
-        //添加NBT标识
-        meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, action);
-        //隐藏默认属性
-        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-
-        navItem.setItemMeta(meta);
-        return navItem;
+        this.marketGUI.setItem(MarketHolder.STORAGE_SLOT, storageBtn);
     }
 
     //加载物品
@@ -144,7 +136,7 @@ public class MarketHolder implements InventoryHolder {
         //使用异步方法来填充物品。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //获取物品
-            List<ItemStack> items = Mysql.getAndSetItemsByPage(this.currentPage,this.marketItemList);
+            List<ItemStack> items = Mysql.getAndSetItemsByPage(this.currentPage, this.marketItemList);
             //这里要对传入的items做处理
 
             //获取完毕后，切换回主线程更新UI

@@ -37,6 +37,13 @@ public enum MarketGUIAction {
             //然后获取holder中独特的marketItem传入
             GUI.openConfirm(player,marketHolder,slot);//传入UI中的具体物品。
         }
+    },
+    STORAGE{
+        @Override
+        public void action(Player player,int slot){
+            //调用storageGUI。
+
+        }
     }
     ;
 

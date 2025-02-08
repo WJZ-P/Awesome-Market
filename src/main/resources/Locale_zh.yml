@@ -54,6 +54,9 @@ market-GUI:
       -
       - §e当前货币类型：§a%s
 
+    storage: §9暂存库
+    storage-lore: §5背包已满时购得物品会存于此处
+
     commodity:
       - §8=========================
       - §x§3§5§f§b§f§b§m=§x§3§a§f§9§f§a§m=§x§4§0§f§7§f§8§m=§x§4§5§f§5§f§7§m=§x§4§a§f§3§f§5§m=§m §m     §x§4§a§f§3§f§5§l商§x§4§7§f§4§f§6§l品§x§4§4§f§4§f§7§l信§x§4§1§f§5§f§8§l息§m§l   §m§l §m§l §x§4§2§f§3§f§9§m=§x§4§b§e§9§f§a§m=§x§5§4§d§f§f§c§m=§x§5§d§d§6§f§d§m=§x§6§6§c§c§f§f§m=
@@ -72,3 +75,6 @@ confirm-GUI:
     confirm-lore: §e你将支付 §c%price% %currency% §e给 §a%player%
     cancel: §c点击以取消支付!
     cancel-lore: §d我再想想...
+
+storage-GUI:
+  title: §9暂存库
