@@ -1,7 +1,7 @@
 package com.wjz.awesomemarket.inventoryHolder;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.entity.MarketItem;
+import com.wjz.awesomemarket.cache.MarketCache;
 import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.Mysql;
@@ -27,10 +27,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StorageHolder implements InventoryHolder {
     private final Inventory storageGUI;
-    private int page;
+    private int currentPage;
+    private final Player player;//这个holder的打开者
+    private final int maxPage;
+    private List<StorageItem> storageItems;
     public static final String PREV_PAGE_KEY = "prev_page";
     public static final String NEXT_PAGE_KEY = "next_page";
-    public static final String STORAGE_ITEM_KEY="storage_item";
+    public static final String STORAGE_ITEM_KEY = "storage_item";
     private static final int PREV_PAGE_SLOT = 45;
     private static final int NEXT_PAGE_SLOT = 53;
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
@@ -43,8 +46,11 @@ public class StorageHolder implements InventoryHolder {
         return storageGUI;
     }
 
-    StorageHolder(Player player, int page) {
-        this.page=page;
+    StorageHolder(Player player, int currentPage) {
+        this.currentPage = currentPage;
+        this.player = player;
+        this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(player.getName()) / 45);
+
         storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-GUI.title"));
 
         //以灰色玻璃板作为默认填充
@@ -60,15 +66,34 @@ public class StorageHolder implements InventoryHolder {
         //加载功能栏
         this.loadFuncBar();
         //加载物品
-        this.loadStorageItems(player);
+        this.loadAndSetStorageItems(player);
     }
 
-    private void loadStorageItems(Player player) {
+    public boolean turnPrevPage() {
+        if (currentPage <= 1 || !canTurnPage.get()) return false;
+        currentPage -= 1;
+        //重新渲染物品和功能栏,渲染功能栏是为了修改当前页数
+        this.loadAndSetStorageItems(player);
+        this.loadFuncBar();
+        return true;
+    }
+
+    public boolean turnNextPage() {
+        if (!canTurnPage.get() || currentPage >= maxPage) return false;//不允许翻页就直接返回false
+
+        currentPage += 1;
+        this.loadAndSetStorageItems(player);
+        this.loadFuncBar();
+        return true;
+    }
+
+    private void loadAndSetStorageItems(Player player) {
         //加载物品的时候不允许翻页
         this.canTurnPage.set(false);
         //从数据库中加载物品，使用异步
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
-            List<StorageItem> storageList = Mysql.getStorageList(player, page);
+            List<StorageItem> storageList = Mysql.getStorageList(player, currentPage);
+            this.storageItems = storageList;
             //然后载入物品
             //获取完毕后，切换回主线程更新UI
             Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
@@ -77,8 +102,8 @@ public class StorageHolder implements InventoryHolder {
                     if (slot >= 45) break;
 
                     //要给itemstack设置一些属性
-                    ItemStack itemStack=storageItem.getItemStack();
-                    ItemMeta meta=itemStack.getItemMeta();
+                    ItemStack itemStack = storageItem.getItemStack().clone();
+                    ItemMeta meta = itemStack.getItemMeta();
                     List<String> oldLore = itemStack.getLore();
                     if (oldLore == null) oldLore = new ArrayList<>();
                     List<String> lore = Log.getStringList("storage-GUI.item");
@@ -95,11 +120,9 @@ public class StorageHolder implements InventoryHolder {
                     oldLore.addAll(lore);
                     meta.setLore(oldLore);
                     //添加商品的NBT标签
-                    meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING,STORAGE_ITEM_KEY);
+                    meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, STORAGE_ITEM_KEY);
                     //设置好的meta数据写入到item中
                     itemStack.setItemMeta(meta);
-
-                    items.add(itemStack);
                     storageGUI.setItem(slot, itemStack);
                     slot++;
                 }
@@ -115,7 +138,7 @@ public class StorageHolder implements InventoryHolder {
                 }
                 this.canTurnPage.set(true);
             });
-        })
+        });
     }
 
     private void loadFuncBar() {

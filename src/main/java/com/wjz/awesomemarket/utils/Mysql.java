@@ -153,6 +153,22 @@ public class Mysql {
         }
         return 0;
     }
+    public static int getStorageTotalItemsCount(String playerName) {
+        String query = String.format(MysqlType.SELECT_ALL_STORAGE_ITEMS_COUNT, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement preparedStatement=connection.prepareStatement(query);
+            preparedStatement.setString(1,playerName);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) return rs.getInt("total");
+            else {
+                Log.severe("查询玩家暂存库的商品总数失败！");
+                return 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     public static boolean deleteMarketItem(long id) {
         String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
@@ -296,4 +312,5 @@ public class Mysql {
         }
         return storageItemList;
     }
+
 }

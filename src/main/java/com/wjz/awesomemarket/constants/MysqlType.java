@@ -77,6 +77,7 @@ public class MysqlType {
             ";\n";
 
     public static String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s`";
+    public static String SELECT_ALL_STORAGE_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s` where owner = ?";
 
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +
