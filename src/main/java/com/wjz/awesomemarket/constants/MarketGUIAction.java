@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.constants;
 
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
+import com.wjz.awesomemarket.inventoryHolder.StorageHolder;
 import com.wjz.awesomemarket.utils.GUI;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -42,7 +43,8 @@ public enum MarketGUIAction {
         @Override
         public void action(Player player,int slot){
             //调用storageGUI。
-
+            StorageHolder storageHolder= (StorageHolder) player.getOpenInventory().getTopInventory().getHolder();
+            GUI.openStorage(player);
         }
     }
     ;

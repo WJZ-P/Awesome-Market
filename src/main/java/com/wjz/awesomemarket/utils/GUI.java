@@ -3,6 +3,7 @@ package com.wjz.awesomemarket.utils;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
+import com.wjz.awesomemarket.inventoryHolder.StorageHolder;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,4 +23,8 @@ public class GUI {
         player.openInventory(new ConfirmHolder(marketHolder,slot).getInventory());
     }
 
+    public static void openStorage(Player player){
+        player.playSound(player.getLocation(),Sound.BLOCK_CHEST_CLOSE,1.0f,1.0f);
+        player.openInventory(new StorageHolder(player,1).getInventory());
+    }
 }

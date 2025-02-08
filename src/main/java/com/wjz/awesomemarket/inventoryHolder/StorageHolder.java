@@ -46,7 +46,7 @@ public class StorageHolder implements InventoryHolder {
         return storageGUI;
     }
 
-    StorageHolder(Player player, int currentPage) {
+    public StorageHolder(Player player, int currentPage) {
         this.currentPage = currentPage;
         this.player = player;
         this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(player.getName()) / 45);
