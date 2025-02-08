@@ -78,3 +78,14 @@ confirm-GUI:
 
 storage-GUI:
   title: §9暂存库
+  prev-page: §e上一页
+  next-page: §e下一页
+
+  item:
+    - §8=========================
+    - §3购得时间：§d%buy_time%
+    - §3物品价格：§e%price% §6%currency%
+    - §3出售玩家：§a%player%
+    - ""
+    - §a§l点击入库!
+    - §8=========================

@@ -3,6 +3,7 @@ package com.wjz.awesomemarket.utils;
 import com.wjz.awesomemarket.constants.MysqlType;
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.entity.MarketItem;
+import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -268,21 +269,24 @@ public class Mysql {
         }
     }
 
-    public static List<MarketItem> getStorageList(Player player) {
-        List<MarketItem> storageItemList = new ArrayList<>();
+    public static List<StorageItem> getStorageList(Player player, int page) {
+        List<StorageItem> storageItemList = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            String query = String.format(MysqlType.SELECT_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE, player.getName());
+            String query = String.format(MysqlType.SELECT_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, player.getName());
+            preparedStatement.setInt(2, page - 1);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
                     //先创建一个marketItem
                     String itemDetail = rs.getString("item_detail");
                     String seller = rs.getString("seller");
                     double price = rs.getDouble("price");
-                    PriceType priceType = PriceType.getType(rs.getString("priceType"));
-                    long id = rs.getLong("id");
-                    MarketItem marketItem = new MarketItem(MarketTools.deserializeItem(itemDetail), seller, price, priceType, id);
-                    storageItemList.add(marketItem);
+                    PriceType priceType=PriceType.getType(rs.getString("priceType"));
+                    long purchaseTime = rs.getLong("store_time");
+                    long id=rs.getLong("id");
+                    StorageItem storageItem = new StorageItem(id,MarketTools.deserializeItem(itemDetail), seller, purchaseTime,price,priceType);
+                    storageItemList.add(storageItem);
                 }
             }
             return storageItemList;

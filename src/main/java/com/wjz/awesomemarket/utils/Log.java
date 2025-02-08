@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Log {
@@ -50,5 +51,9 @@ public class Log {
 
     public static void severeDirectly(String severe) {
         logger.severe(severe);
+    }
+
+    public static List<String> getStringList(String path){
+        return langConfig.getStringList(path);
     }
 }

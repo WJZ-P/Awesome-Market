@@ -76,7 +76,7 @@ public class MysqlType {
             "ENGINE=InnoDB\n" +
             ";\n";
 
-    public static final String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s`";
+    public static String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s`";
 
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +
@@ -93,6 +93,6 @@ public class MysqlType {
     public static String INSERT_INTO_STORAGE_TABLE="INSERT INTO `%s` "+
             "(id, owner, seller, item_detail, item_type, store_time, price, priceType) "+
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    public static String SELECT_ITEM_FROM_STORAGE_TABLE="SELECT * FROM `%s` WHERE owner = `%s`";
+    public static String SELECT_ITEM_FROM_STORAGE_TABLE="SELECT * FROM `%s` WHERE owner = ? ORDER BY store_time DESC LIMIT 45 OFFSET ?;";
 
 }
