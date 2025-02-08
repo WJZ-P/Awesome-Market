@@ -3,8 +3,8 @@ package com.wjz.awesomemarket.inventoryHolder;
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.utils.Log;
+import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -14,7 +14,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
-import java.util.List;
 
 public class ConfirmHolder implements InventoryHolder {
     private final int marketPage;//
@@ -43,10 +42,14 @@ public class ConfirmHolder implements InventoryHolder {
                 .replace("%currency%", marketItem.getPriceTypeName())
                 .replace("%player%", marketItem.getSellerName());
         //创建两个按钮物品
-        ItemStack confirmBtn = createButton(Material.GREEN_STAINED_GLASS_PANE, Log.getString("confirm-GUI.buy.confirm"),
+        ItemStack confirmBtn = createButton(UsefulTools.getCustomSkull(
+                        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTc5YTVjOTVlZTE3YWJmZWY0NWM4ZGMyMjQxODk5NjQ5NDRkNTYwZjE5YTQ0ZjE5ZjhhNDZhZWYzZmVlNDc1NiJ9fX0="),
+                Log.getString("confirm-GUI.buy.confirm"),
                 buyLore, "confirm");
 
-        ItemStack cancelBtn = createButton(Material.RED_STAINED_GLASS_PANE, Log.getString("confirm-GUI.buy.cancel"),
+        ItemStack cancelBtn = createButton(UsefulTools.getCustomSkull(
+                        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1NDgzNjJhMjRjMGZhODQ1M2U0ZDkzZTY4YzU5NjlkZGJkZTU3YmY2NjY2YzAzMTljMWVkMWU4NGQ4OTA2NSJ9fX0="),
+                Log.getString("confirm-GUI.buy.cancel"),
                 Log.getString("confirm-GUI.buy.cancel-lore"), "cancel");
 
         //设置物品
@@ -68,9 +71,8 @@ public class ConfirmHolder implements InventoryHolder {
         return this.marketItem;
     }
 
-    private ItemStack createButton(Material material, String name, String lore, String action) {
-        ItemStack button = new ItemStack(material);
-        ItemMeta meta = button.getItemMeta();
+    private ItemStack createButton(ItemStack itemStack, String name, String lore, String action) {
+        ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Collections.singletonList(lore));
 
@@ -81,7 +83,7 @@ public class ConfirmHolder implements InventoryHolder {
                 action
         );
 
-        button.setItemMeta(meta);
-        return button;
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 }

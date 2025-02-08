@@ -82,7 +82,7 @@ public class MysqlType {
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
     public static String SHOW_ITEMS_BY_PAGE = "SELECT * FROM `%s` " +
-            "ORDER BY on_sell_time ASC " +
+            "ORDER BY on_sell_time DESC " +
             "LIMIT 45 OFFSET ?;";
 
     public static String DELETE_ITEM_FROM_MARKET = "DELETE FROM `%s` WHERE ID = ?";
