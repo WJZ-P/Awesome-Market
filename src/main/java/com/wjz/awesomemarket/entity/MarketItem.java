@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.Instant;
+
 public class MarketItem {
     private ItemStack itemStack;
     private String seller;//出售者
@@ -67,7 +69,9 @@ public class MarketItem {
                     .replace("%money%", String.format("%.2f", price))
                     .replace("%currency%", priceType.getName())
                     .replace("%seller%", seller)
-                    .replace("%item%", itemStack.getItemMeta().getDisplayName());
+                    .replace("%item%", itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
+                            ? itemStack.getItemMeta().getDisplayName()
+                            : itemStack.getType().getItemTranslationKey());
             player.sendMessage(buySuccess);
 
             //扣款之后把物品给玩家
@@ -79,7 +83,7 @@ public class MarketItem {
                 //说明玩家背包满了
                 //那就需要把物品放到暂存库里
                 Mysql.addItemToTempStorage(id,player.getName(),seller,MarketTools.serializeItem(itemStack),String.valueOf(itemStack.getType()),
-                        System.currentTimeMillis(),price,priceType.getName());
+                Instant.now().getEpochSecond(),price, String.valueOf(priceType));
                 player.sendMessage(Log.getString("add_item_to_storage"));
             }
             //下面创建交易单数据。

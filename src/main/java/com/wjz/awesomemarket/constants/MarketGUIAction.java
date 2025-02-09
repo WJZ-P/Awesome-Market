@@ -42,8 +42,6 @@ public enum MarketGUIAction {
     STORAGE{
         @Override
         public void action(Player player,int slot){
-            //调用storageGUI。
-            StorageHolder storageHolder= (StorageHolder) player.getOpenInventory().getTopInventory().getHolder();
             GUI.openStorage(player);
         }
     }

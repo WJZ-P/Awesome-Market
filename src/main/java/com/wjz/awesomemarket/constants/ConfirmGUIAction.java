@@ -36,6 +36,8 @@ public enum ConfirmGUIAction {
                 fw.setFireworkMeta(fwm);
                 player.spawnParticle(Particle.BUBBLE_COLUMN_UP, loc, 30, 0.5, 0.5, 0.5, 0.1);
                 player.playSound(loc, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 1.0F, 1.0F);
+                player.playSound(player.getLocation(),Sound.ENTITY_VILLAGER_YES,1.0F,1.0F);
+                player.playSound(player.getLocation(),Sound.ENTITY_PLAYER_LEVELUP,1.5F,0.8F);
                 //接下来就可以让玩家返回商店继续购买了
                 player.openInventory(new MarketHolder(((ConfirmHolder) player.getOpenInventory().getTopInventory().
                         getHolder()).getMarketPage()).getInventory());

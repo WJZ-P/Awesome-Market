@@ -6,7 +6,7 @@ public class MysqlType {
     public static String EXPIRE_ITEMS_TABLE = "expire_items";
     public static String TRANSACTIONS_TABLE = "transactions";
     public static String PLAYER_STORAGE_TABLE="player_storage";
-    public static String CREATE_PLAYER_STORAGE_TABLE="CREATE TABLE `player_storage` (\n" +
+    public static String CREATE_PLAYER_STORAGE_TABLE="CREATE TABLE IF NOT EXISTS `player_storage` (\n" +
             "\t`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,\n" +
             "\t`owner` VARCHAR(50) NULL DEFAULT NULL COMMENT '物品拥有者' COLLATE 'utf8mb4_general_ci',\n" +
             "\t`seller` VARCHAR(50) NOT NULL COMMENT '卖家' COLLATE 'utf8mb4_general_ci',\n" +
@@ -91,6 +91,7 @@ public class MysqlType {
     public static String INSERT_INTO_TRANSACTION = "INSERT INTO `%s` " +
             "(item_detail, item_type, seller, buyer, payment, price, trade_time) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    //插入到暂存库中
     public static String INSERT_INTO_STORAGE_TABLE="INSERT INTO `%s` "+
             "(id, owner, seller, item_detail, item_type, store_time, price, priceType) "+
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

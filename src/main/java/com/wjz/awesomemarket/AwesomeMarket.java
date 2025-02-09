@@ -2,6 +2,7 @@ package com.wjz.awesomemarket;
 
 import com.wjz.awesomemarket.Listeners.ConfirmListener;
 import com.wjz.awesomemarket.Listeners.MarketListener;
+import com.wjz.awesomemarket.Listeners.StorageListener;
 import com.wjz.awesomemarket.utils.*;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.Bukkit;
@@ -51,7 +52,7 @@ public final class AwesomeMarket extends JavaPlugin {
         //注册事件监听器
         Bukkit.getPluginManager().registerEvents(new MarketListener(),this);
         Bukkit.getPluginManager().registerEvents(new ConfirmListener(),this);
-
+        Bukkit.getPluginManager().registerEvents(new StorageListener(),this);
 
     }
 

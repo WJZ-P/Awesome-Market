@@ -27,7 +27,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StorageHolder implements InventoryHolder {
     private final Inventory storageGUI;
-    private int currentPage;
+    private int currentPage = 1;
+    private int marketPage;
     private final Player player;//这个holder的打开者
     private final int maxPage;
     private List<StorageItem> storageItems;
@@ -46,8 +47,16 @@ public class StorageHolder implements InventoryHolder {
         return storageGUI;
     }
 
-    public StorageHolder(Player player, int currentPage) {
-        this.currentPage = currentPage;
+    public Player getPlayer() {
+        return player;
+    }
+
+    public int getMarketPage() {
+        return marketPage;
+    }
+
+    public StorageHolder(Player player, int marketPage) {
+        this.marketPage = marketPage;
         this.player = player;
         this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(player.getName()) / 45);
 
