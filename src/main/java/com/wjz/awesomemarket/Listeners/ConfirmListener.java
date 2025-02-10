@@ -17,11 +17,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ConfirmListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof ConfirmHolder)) return;
+        Inventory clickedInventory = event.getClickedInventory();
+        if (clickedInventory == null || !(clickedInventory.getHolder() instanceof ConfirmHolder)) return;//点击的容器是否是确认界面
         if (event.getCurrentItem() == null) return;//如果点击的是空的地方
         Player player = (Player) event.getWhoClicked();
         ItemMeta itemMeta = event.getCurrentItem().getItemMeta();

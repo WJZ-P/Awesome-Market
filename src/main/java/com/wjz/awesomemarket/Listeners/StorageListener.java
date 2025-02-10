@@ -10,15 +10,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Objects;
 
 public class StorageListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof StorageHolder)) return;//点击的容器是否是暂存库
+        Inventory clickedInventory = event.getClickedInventory();
+        if (clickedInventory == null || !(clickedInventory.getHolder() instanceof StorageHolder)) return;//点击的容器是否是暂存库
         if (event.getCurrentItem() == null) return;//如果点击的是空的地方
-        Player player = (Player) event.getWhoClicked();
         ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
 
         event.setCancelled(true);//取消点击事件防止玩家移动物品
@@ -30,6 +33,6 @@ public class StorageListener implements Listener {
         );
         if (actionString == null) return;//没标识就不做动作
         StorageGUIAction action = StorageGUIAction.getType(actionString);
-        action.action((StorageHolder) event.getInventory().getHolder());
+        action.action((StorageHolder) event.getInventory().getHolder(), event.getSlot());
     }
 }

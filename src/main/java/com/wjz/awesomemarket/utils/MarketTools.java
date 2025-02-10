@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.utils;
 
 import com.wjz.awesomemarket.AwesomeMarket;
+import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.constants.PriceType;
 import org.bukkit.Material;
 import org.bukkit.Sound;

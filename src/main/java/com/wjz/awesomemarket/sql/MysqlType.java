@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.constants;
+package com.wjz.awesomemarket.sql;
 
 public class MysqlType {
 
@@ -75,19 +75,20 @@ public class MysqlType {
             "COLLATE='utf8mb4_general_ci'\n" +
             "ENGINE=InnoDB\n" +
             ";\n";
-
+    //选择某个表的全部数据数量
     public static String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s`";
     public static String SELECT_ALL_STORAGE_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s` where owner = ?";
-
+    //往全球市场插入物品
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    //从全球市场根据页数获取物品
     public static String SHOW_ITEMS_BY_PAGE = "SELECT * FROM `%s` " +
             "ORDER BY on_sell_time DESC " +
             "LIMIT 45 OFFSET ?;";
-
+    //从市场里删除物品
     public static String DELETE_ITEM_FROM_MARKET = "DELETE FROM `%s` WHERE ID = ?";
-
+    //插入交易记录
     public static String INSERT_INTO_TRANSACTION = "INSERT INTO `%s` " +
             "(item_detail, item_type, seller, buyer, payment, price, trade_time) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -95,6 +96,8 @@ public class MysqlType {
     public static String INSERT_INTO_STORAGE_TABLE="INSERT INTO `%s` "+
             "(id, owner, seller, item_detail, item_type, store_time, price, priceType) "+
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    //从暂存库根据玩家名选择对应物品
     public static String SELECT_ITEM_FROM_STORAGE_TABLE="SELECT * FROM `%s` WHERE owner = ? ORDER BY store_time DESC LIMIT 45 OFFSET ?;";
-
+    //从暂存库里面删除物品
+    public static String DELETE_ITEM_FROM_STORAGE_TABLE="DELETE FROM `%s` WHERE id = ?";
 }

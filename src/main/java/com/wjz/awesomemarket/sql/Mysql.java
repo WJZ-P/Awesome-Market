@@ -1,10 +1,11 @@
-package com.wjz.awesomemarket.utils;
+package com.wjz.awesomemarket.sql;
 
-import com.wjz.awesomemarket.constants.MysqlType;
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
+import com.wjz.awesomemarket.utils.Log;
+import com.wjz.awesomemarket.utils.MarketTools;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
@@ -153,11 +154,12 @@ public class Mysql {
         }
         return 0;
     }
+
     public static int getStorageTotalItemsCount(String playerName) {
         String query = String.format(MysqlType.SELECT_ALL_STORAGE_ITEMS_COUNT, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement preparedStatement=connection.prepareStatement(query);
-            preparedStatement.setString(1,playerName);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, playerName);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) return rs.getInt("total");
             else {
@@ -171,12 +173,12 @@ public class Mysql {
     }
 
     public static boolean deleteMarketItem(long id) {
-        String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
             preparedStatement.setLong(1, id);
             int rowsAffected = preparedStatement.executeUpdate();
-            return rowsAffected > 0;//删除失败
+            return rowsAffected > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -298,10 +300,10 @@ public class Mysql {
                     String itemDetail = rs.getString("item_detail");
                     String seller = rs.getString("seller");
                     double price = rs.getDouble("price");
-                    PriceType priceType=PriceType.getType(rs.getString("priceType"));
+                    PriceType priceType = PriceType.getType(rs.getString("priceType"));
                     long purchaseTime = rs.getLong("store_time");
-                    long id=rs.getLong("id");
-                    StorageItem storageItem = new StorageItem(id,MarketTools.deserializeItem(itemDetail), seller, purchaseTime,price,priceType);
+                    long id = rs.getLong("id");
+                    StorageItem storageItem = new StorageItem(id, MarketTools.deserializeItem(itemDetail), seller, purchaseTime, price, priceType);
                     storageItemList.add(storageItem);
                 }
             }
@@ -313,4 +315,18 @@ public class Mysql {
         return storageItemList;
     }
 
+    //从数据库删除暂存库的某个物品
+    public boolean deleteStorageItem(long id) {
+        try (Connection connection = dataSource.getConnection()) {
+            String query = String.format(MysqlType.DELETE_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setLong(1, id);
+            int rowaffected = preparedStatement.executeUpdate();
+            return rowaffected != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.severeDirectly("暂存库物品删除失败！");
+            return false;
+        }
+    }
 }

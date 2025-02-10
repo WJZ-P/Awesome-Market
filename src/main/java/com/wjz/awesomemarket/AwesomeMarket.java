@@ -3,6 +3,7 @@ package com.wjz.awesomemarket;
 import com.wjz.awesomemarket.Listeners.ConfirmListener;
 import com.wjz.awesomemarket.Listeners.MarketListener;
 import com.wjz.awesomemarket.Listeners.StorageListener;
+import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.*;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.Bukkit;

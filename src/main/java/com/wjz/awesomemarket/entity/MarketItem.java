@@ -3,7 +3,9 @@ package com.wjz.awesomemarket.entity;
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
-import com.wjz.awesomemarket.utils.Mysql;
+import com.wjz.awesomemarket.sql.Mysql;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -65,13 +67,14 @@ public class MarketItem {
         if (Mysql.deleteMarketItem(this.id)) {
             priceType.take(player, price);
             //成功删除了物品，并且成功扣款
+
+            //创建翻译键
+            String itemName=LegacyComponentSerializer.legacySection().serialize(Component.translatable(itemStack.getType().getItemTranslationKey()));
             String buySuccess = Log.getString("buy_success")
                     .replace("%money%", String.format("%.2f", price))
                     .replace("%currency%", priceType.getName())
                     .replace("%seller%", seller)
-                    .replace("%item%", itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName()
-                            ? itemStack.getItemMeta().getDisplayName()
-                            : itemStack.getType().getItemTranslationKey());
+                    .replace("%item%", itemStack.displayName().toString());
             player.sendMessage(buySuccess);
 
             //扣款之后把物品给玩家

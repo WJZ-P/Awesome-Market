@@ -1,7 +1,7 @@
 package com.wjz.awesomemarket.cache;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.utils.Mysql;
+import com.wjz.awesomemarket.sql.Mysql;
 import org.bukkit.Bukkit;
 
 public class MarketCache {

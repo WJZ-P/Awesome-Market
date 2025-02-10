@@ -24,7 +24,7 @@ public class GUI {
     }
 
     public static void openStorage(Player player){
-        player.playSound(player.getLocation(),Sound.BLOCK_CHEST_CLOSE,1.0f,1.0f);
+        player.playSound(player.getLocation(),Sound.BLOCK_CHEST_OPEN,1.0f,1.0f);
         player.openInventory(new StorageHolder(player,1).getInventory());
     }
 }

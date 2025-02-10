@@ -1,10 +1,10 @@
 package com.wjz.awesomemarket.inventoryHolder;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.cache.MarketCache;
+import com.wjz.awesomemarket.constants.SkullType;
 import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.utils.Log;
-import com.wjz.awesomemarket.utils.Mysql;
+import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -28,19 +28,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class StorageHolder implements InventoryHolder {
     private final Inventory storageGUI;
     private int currentPage = 1;
-    private int marketPage;
+    private final int marketPage;
     private final Player player;//这个holder的打开者
     private final int maxPage;
     private List<StorageItem> storageItems;
     public static final String PREV_PAGE_KEY = "prev_page";
     public static final String NEXT_PAGE_KEY = "next_page";
+    public static final String MARKET_KEY = "market";
     public static final String STORAGE_ITEM_KEY = "storage_item";
     private static final int PREV_PAGE_SLOT = 45;
     private static final int NEXT_PAGE_SLOT = 53;
+    private static final int MARKET_SLOT = 49;
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), MarketHolder.ACTION_KEY);
 
-    private AtomicBoolean canTurnPage = new AtomicBoolean(true);
+    private final AtomicBoolean canTurnPage = new AtomicBoolean(true);
 
     @Override
     public @NotNull Inventory getInventory() {
@@ -53,6 +55,10 @@ public class StorageHolder implements InventoryHolder {
 
     public int getMarketPage() {
         return marketPage;
+    }
+
+    public StorageItem getStorageItem(int slot) {
+        return storageItems.get(slot);
     }
 
     public StorageHolder(Player player, int marketPage) {
@@ -96,7 +102,7 @@ public class StorageHolder implements InventoryHolder {
         return true;
     }
 
-    private void loadAndSetStorageItems(Player player) {
+    public void loadAndSetStorageItems(Player player) {
         //加载物品的时候不允许翻页
         this.canTurnPage.set(false);
         //从数据库中加载物品，使用异步
@@ -153,9 +159,10 @@ public class StorageHolder implements InventoryHolder {
     private void loadFuncBar() {
         //功能栏
         ItemStack prevBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("storage-GUI.prev-page"), null, GUI_ACTION_KEY);
-        ItemStack nextBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("storage-GUI.NEXT-page"), null, GUI_ACTION_KEY);
-
+        ItemStack nextBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("storage-GUI.next-page"), null, GUI_ACTION_KEY);
+        ItemStack marketBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ENDER_CHEST), MARKET_KEY, Log.getString("storage-GUI.market"), null, GUI_ACTION_KEY);
         storageGUI.setItem(PREV_PAGE_SLOT, prevBtn);
         storageGUI.setItem(NEXT_PAGE_SLOT, nextBtn);
+        storageGUI.setItem(MARKET_SLOT,marketBtn);
     }
 }

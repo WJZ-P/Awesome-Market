@@ -31,6 +31,8 @@ market_name: "§e§l全球市场"
 
 buy_success: §b[AwesomeMarket] §a您花费§e %money%§6 %currency% §a 购买了§e%seller%§a的§7[§r %item%§7 ] §a！
 add_item_to_storage: §b[AwesomeMarket] §c背包空间不足! 物品已移至暂存库!
+get_storage_item_fail: §b[AwesomeMarket] §c背包空间不足! 请先清理出足够的背包!
+take_item_from_storage: §b[AwesomeMarket] §a物品已成功入库!
 
 buy_fail:
   lack-of-eco: §b[AwesomeMarket] §c余额不足! 您仍需§e %money% §6 %currency% §c以购买!
@@ -77,10 +79,10 @@ confirm-GUI:
     cancel-lore: §d我再想想...
 
 storage-GUI:
-  title: §9暂存库
+  title: §9§l暂存库
   prev-page: §e上一页
   next-page: §e下一页
-
+  market: §e点击返回全球市场
   item:
     - §8=========================
     - §3购得时间：§d%buy_time%
