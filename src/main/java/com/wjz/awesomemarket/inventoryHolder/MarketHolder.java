@@ -45,11 +45,10 @@ public class MarketHolder implements InventoryHolder {
     private final AtomicBoolean canTurnPage = new AtomicBoolean(true);
     private final Inventory marketGUI;
     private int currentPage = 1;//默认打开第一页
-    private int maxPage = MarketCache.getTotalPages(false);
     private List<MarketItem> marketItemList = new ArrayList<>();//存放物品。
-
     private PriceType priceType=PriceType.ALL;//根据物品货币类型筛选
     private SortType sortType=SortType.TIME_DESC;//默认查询时间倒序
+    private int maxPage = MarketCache.getTotalPages(sortType,priceType,false);
 
     @Override
     public Inventory getInventory() {
@@ -111,7 +110,7 @@ public class MarketHolder implements InventoryHolder {
         if (!canTurnPage.get()) return false;//不允许翻页就直接返回false
 
         if (currentPage >= maxPage) {
-            int newMaxPage = MarketCache.getTotalPages(true);
+            int newMaxPage = MarketCache.getTotalPages(sortType,priceType,true);
             if (maxPage != newMaxPage) {
                 //如果是最后一页，但是还有下一页，说明页数更新了
                 maxPage = newMaxPage;
@@ -140,9 +139,9 @@ public class MarketHolder implements InventoryHolder {
     //加载功能栏,非static是因为页数每个对象不一样
     private void loadFuncBar() {
         ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"),
-                Collections.singletonList(String.format(Log.getString("market-GUI.name.prev-page-lore"), this.currentPage, getTotalPages(false))),GUI_ACTION_KEY);
+                Collections.singletonList(String.format(Log.getString("market-GUI.name.prev-page-lore"), this.currentPage, getTotalPages(sortType,priceType,false))),GUI_ACTION_KEY);
         ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"),
-                Collections.singletonList(String.format(Log.getString("market-GUI.name.next-page-lore"), this.currentPage, getTotalPages(false))),GUI_ACTION_KEY);
+                Collections.singletonList(String.format(Log.getString("market-GUI.name.next-page-lore"), this.currentPage, getTotalPages(sortType,priceType,false))),GUI_ACTION_KEY);
 
         ItemStack storageBtn = createNavItemStack(new ItemStack(Material.ENDER_CHEST), MarketHolder.STORAGE_KEY, Log.getString("market-GUI.name.storage"),
                 Collections.singletonList(Log.getString("market-GUI.name.storage-lore")),GUI_ACTION_KEY);

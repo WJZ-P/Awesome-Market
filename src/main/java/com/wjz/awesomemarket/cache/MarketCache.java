@@ -1,6 +1,8 @@
 package com.wjz.awesomemarket.cache;
 
 import com.wjz.awesomemarket.AwesomeMarket;
+import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.sql.Mysql;
 import org.bukkit.Bukkit;
 
@@ -10,7 +12,7 @@ public class MarketCache {
     private static long lastUpdate = System.currentTimeMillis();
     private static final int ITEMS_PER_PAGE = 45;
 
-    public static int getTotalPages(boolean forceRefresh) {
+    public static int getTotalPages(SortType sortType, PriceType priceType, boolean forceRefresh) {
         //五分钟刷新一次缓存
         if (forceRefresh || System.currentTimeMillis() - lastUpdate > 300_000) {
             //创建异步任务去更新
