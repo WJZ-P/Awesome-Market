@@ -65,8 +65,10 @@ public class UsefulTools {
         return navItem;
     }
 
+    //获取物品名称，返回翻译键或者
 
-    //♡~版本比较方法
+
+    //版本比较方法
     public static boolean isVersionNewerThan(String targetVersion) {
         //获取当前版本
         String currentVersion = Bukkit.getBukkitVersion().split("-")[0];

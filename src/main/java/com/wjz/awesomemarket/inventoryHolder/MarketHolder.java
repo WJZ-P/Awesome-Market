@@ -2,11 +2,11 @@ package com.wjz.awesomemarket.inventoryHolder;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.cache.MarketCache;
-import com.wjz.awesomemarket.constants.SkullType;
+import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.sql.Mysql;
-import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -28,6 +28,9 @@ public class MarketHolder implements InventoryHolder {
     public static final String NEXT_PAGE_KEY = "next_page";
     public static final String COMMODITY_KEY = "commodity";
     public static final String STORAGE_KEY = "storage";
+    public static final String HELP_BOOK_KEY="help_book";
+    private static final String SORT_TYPE_KEY = "sort_type";
+    private static final String CURRENCY_TYPE_KEY = "currency_type";
     public static final String ACTION_KEY = "gui_action";
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), MarketHolder.ACTION_KEY);
@@ -35,8 +38,8 @@ public class MarketHolder implements InventoryHolder {
     private static final int STORAGE_SLOT = 46;
     private static final int NEXT_PAGE_SLOT = 53;
     private static final int SORT_TYPE_SLOT = 47;
-    private static final int PAGE_INFO_SLOT = 49;
     private static final int CURRENCY_TYPE_SLOT = 51;
+    private static final int HELP_BOOK_SLOT=52;
 
     //非static变量
     private final AtomicBoolean canTurnPage = new AtomicBoolean(true);
@@ -44,6 +47,9 @@ public class MarketHolder implements InventoryHolder {
     private int currentPage = 1;//默认打开第一页
     private int maxPage = MarketCache.getTotalPages(false);
     private List<MarketItem> marketItemList = new ArrayList<>();//存放物品。
+
+    private PriceType priceType=null;//根据物品货币类型筛选
+    private SortType sortType=SortType.TIME_DESC;//默认查询时间倒序
 
     @Override
     public Inventory getInventory() {
@@ -117,12 +123,20 @@ public class MarketHolder implements InventoryHolder {
         ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"),
                 Collections.singletonList(String.format(Log.getString("market-GUI.name.next-page-lore"), this.currentPage, getTotalPages(false))),GUI_ACTION_KEY);
 
-        ItemStack storageBtn = createNavItemStack(UsefulTools.getCustomSkull(SkullType.STORAGE_DATA), MarketHolder.STORAGE_KEY, Log.getString("market-GUI.name.storage"),
+        ItemStack storageBtn = createNavItemStack(new ItemStack(Material.ENDER_CHEST), MarketHolder.STORAGE_KEY, Log.getString("market-GUI.name.storage"),
                 Collections.singletonList(Log.getString("market-GUI.name.storage-lore")),GUI_ACTION_KEY);
-
+        ItemStack helpBook=createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK),HELP_BOOK_KEY,Log.getString("market-GUI.name.help-book"),
+                Log.getStringList("market-GUI.name.help-book-lore"),GUI_ACTION_KEY);
+        ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), MarketHolder.SORT_TYPE_KEY, Log.getString("market-GUI.name.sort-type"),
+                Log.getStringList("market-GUI.name.sort-type-lore"),GUI_ACTION_KEY);
+        ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.CURRENCY_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
+                Log.getStringList("market-GUI.name.currency-type-lore"),GUI_ACTION_KEY);
         this.marketGUI.setItem(MarketHolder.PREV_PAGE_SLOT, prevBtn);
         this.marketGUI.setItem(MarketHolder.NEXT_PAGE_SLOT, nextBtn);
         this.marketGUI.setItem(MarketHolder.STORAGE_SLOT, storageBtn);
+        this.marketGUI.setItem(HELP_BOOK_SLOT,helpBook);
+        this.marketGUI.setItem(SORT_TYPE_SLOT,sortTypeBtn);
+        this.marketGUI.setItem(CURRENCY_TYPE_SLOT,currencyTypeBtn);
     }
 
     //加载物品
@@ -131,7 +145,7 @@ public class MarketHolder implements InventoryHolder {
         //使用异步方法来填充物品。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //获取物品
-            List<ItemStack> items = Mysql.getAndSetItemsByPage(this.currentPage, this.marketItemList);
+            List<ItemStack> items = Mysql.getAndSetItemsWithCondition(currentPage,priceType,sortType, marketItemList);
             //这里要对传入的items做处理
 
             //获取完毕后，切换回主线程更新UI

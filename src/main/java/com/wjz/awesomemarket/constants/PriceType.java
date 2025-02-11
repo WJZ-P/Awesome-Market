@@ -1,12 +1,8 @@
 package com.wjz.awesomemarket.constants;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.utils.CurrencyManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.wjz.awesomemarket.utils.CurrencyManager.economy;
 import static com.wjz.awesomemarket.utils.CurrencyManager.ppAPI;
@@ -59,6 +55,9 @@ public enum PriceType {
     public abstract double calculateTax(double price);
     public abstract double look(Player player);
     public abstract boolean take(Player player, double amount);
+    public String toSQL(){
+        return "payment = '" +this.name().toLowerCase()+"' ";
+    }
 
     public static PriceType getType(String type) {
         if (type == null || type.isEmpty()) {

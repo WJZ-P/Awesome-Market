@@ -1,11 +1,8 @@
 package com.wjz.awesomemarket.Listeners;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.constants.ConfirmGUIAction;
-import com.wjz.awesomemarket.entity.MarketItem;
+import com.wjz.awesomemarket.GUI.ConfirmGUIAction;
 import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
-import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,9 +12,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-
-import java.util.List;
-import java.util.Objects;
 
 public class ConfirmListener implements Listener {
     @EventHandler

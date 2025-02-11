@@ -5,7 +5,7 @@ import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import com.wjz.awesomemarket.sql.Mysql;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -68,14 +68,15 @@ public class MarketItem {
             priceType.take(player, price);
             //成功删除了物品，并且成功扣款
 
-            //创建翻译键
-            String itemName=LegacyComponentSerializer.legacySection().serialize(Component.translatable(itemStack.getType().getItemTranslationKey()));
+            //这里直接使用翻译键，后面再做适配
             String buySuccess = Log.getString("buy_success")
                     .replace("%money%", String.format("%.2f", price))
                     .replace("%currency%", priceType.getName())
-                    .replace("%seller%", seller)
-                    .replace("%item%", itemStack.displayName().toString());
-            player.sendMessage(buySuccess);
+                    .replace("%seller%", seller);//%item%留给翻译键做处理
+            Component message = Component.text(buySuccess).replaceText(b->b.matchLiteral("%item%")
+                    .replacement(Component.translatable(itemStack.getType().translationKey())))
+                            .color(NamedTextColor.WHITE).hoverEvent(itemStack.asHoverEvent());
+            player.sendMessage(message);
 
             //扣款之后把物品给玩家
             Inventory playerInv = player.getInventory();

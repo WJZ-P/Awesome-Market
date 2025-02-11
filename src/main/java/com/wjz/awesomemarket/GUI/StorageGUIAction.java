@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.constants;
+package com.wjz.awesomemarket.GUI;
 
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.wjz.awesomemarket.inventoryHolder.StorageHolder;

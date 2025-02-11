@@ -82,9 +82,9 @@ public class MysqlType {
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
-    //从全球市场根据页数获取物品
-    public static String SHOW_ITEMS_BY_PAGE = "SELECT * FROM `%s` " +
-            "ORDER BY on_sell_time DESC " +
+    //从全球市场查询物品,第二个%s应该用查询条件,第三个%s类似on_sell_time DESC
+    public static String SHOW_ITEMS_BY_PAGE = "SELECT * FROM `%table%` %condition% " +
+            "ORDER BY %sort% " +
             "LIMIT 45 OFFSET ?;";
     //从市场里删除物品
     public static String DELETE_ITEM_FROM_MARKET = "DELETE FROM `%s` WHERE ID = ?";

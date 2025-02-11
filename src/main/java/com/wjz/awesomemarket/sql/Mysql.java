@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.sql;
 
 import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
@@ -46,6 +47,7 @@ public class Mysql {
         hikariConfig.setIdleTimeout(mysqlConfig.getLong("pool.idleTimeout"));
         hikariConfig.setMaxLifetime(mysqlConfig.getLong("pool.maxLifetime"));
         hikariConfig.setConnectionTimeout(mysqlConfig.getLong("pool.connectionTimeout"));
+        hikariConfig.setKeepaliveTime(300_000);
         String driver = "com.mysql.cj.jdbc.Driver";
         //MC不同版本driver不一样，这里先尝试。
         try {
@@ -173,7 +175,8 @@ public class Mysql {
     }
 
     public static boolean deleteMarketItem(long id) {
-        String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
+        Log.infoDirectly(deleteQuery);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
             preparedStatement.setLong(1, id);
@@ -186,9 +189,14 @@ public class Mysql {
         return false;
     }
 
-    public static List<ItemStack> getAndSetItemsByPage(int page, List<MarketItem> marketItemList) {
+    public static List<ItemStack> getAndSetItemsWithCondition(int page, PriceType sortPriceType, SortType sortType, List<MarketItem> marketItemList) {
         List<ItemStack> items = new ArrayList<>();
-        String query = String.format(MysqlType.SHOW_ITEMS_BY_PAGE, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+        String query = MysqlType.SHOW_ITEMS_BY_PAGE
+                .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE)
+                .replace("%condition%", sortPriceType == null ? "" : "WHERE " + sortPriceType.toSQL())
+                .replace("%sort%", sortType.toSQL());
+        //然后插入sortType
+        query = String.format(query, sortType.toSQL());
 
         try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement(query)) {
             int offset = (page - 1) * 45;

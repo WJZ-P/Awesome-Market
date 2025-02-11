@@ -29,7 +29,7 @@ empty_item_error_sell: "§b[AwesomeMarket] §e请把要上架的商品置于主�
 
 market_name: "§e§l全球市场"
 
-buy_success: §b[AwesomeMarket] §a您花费§e %money%§6 %currency% §a 购买了§e%seller%§a的§7[§r %item%§7 ] §a！
+buy_success: §b[AwesomeMarket] §a您花费§e %money%§6 %currency% §a 购买了§e%seller%§a的§7[§r%item%§7] §a！
 add_item_to_storage: §b[AwesomeMarket] §c背包空间不足! 物品已移至暂存库!
 get_storage_item_fail: §b[AwesomeMarket] §c背包空间不足! 请先清理出足够的背包!
 take_item_from_storage: §b[AwesomeMarket] §a物品已成功入库!
@@ -37,6 +37,12 @@ take_item_from_storage: §b[AwesomeMarket] §a物品已成功入库!
 buy_fail:
   lack-of-eco: §b[AwesomeMarket] §c余额不足! 您仍需§e %money% §6 %currency% §c以购买!
   has-been-bought: §b[AwesomeMarket] §c购买失败! 手慢了! 物品已被买走...
+
+sort:
+  time_desc: §6最新商品
+  time_asc: §6最旧商品
+  price_desc: §6高价优先
+  price_asc: §6低价优先
 
 market-GUI:
   name:
@@ -46,22 +52,30 @@ market-GUI:
     next-page: §e下一页
     next-page-lore: §e%d / %d 页
 
-    sort-type:
-      - §c点击选择排序类型
-      -
-      - §e当前排序规则：§a%s
+    sort-type: §c排序规则
+    sort-type-lore:
+      - §e当前：§6%sort%
+      - ""
+      - §a§l点击切换
 
-    currency-type:
-      - §c点击选择商品货币
-      -
-      - §e当前货币类型：§a%s
+    currency-type: §b货币类型
+    currency-type-lore:
+      - §e当前：§6%currency%
+      - ""
+      - §a§l点击切换
 
     storage: §9暂存库
     storage-lore: §5背包已满时购得物品会存于此处
 
+    help-book: §3帮助
+    help-book-lore:
+      - §a§l /amt sell 货币类型 价格 §r§a- 上架主手物品
+
+
+
     commodity:
       - §8=========================
-      - §x§3§5§f§b§f§b§m=§x§3§a§f§9§f§a§m=§x§4§0§f§7§f§8§m=§x§4§5§f§5§f§7§m=§x§4§a§f§3§f§5§m=§m §m     §x§4§a§f§3§f§5§l商§x§4§7§f§4§f§6§l品§x§4§4§f§4§f§7§l信§x§4§1§f§5§f§8§l息§m§l   §m§l §m§l §x§4§2§f§3§f§9§m=§x§4§b§e§9§f§a§m=§x§5§4§d§f§f§c§m=§x§5§d§d§6§f§d§m=§x§6§6§c§c§f§f§m=
+      - ""
       - ""
       - §3物品价格：§e%price% §6%currency%
       - §3出售玩家：§a%player%

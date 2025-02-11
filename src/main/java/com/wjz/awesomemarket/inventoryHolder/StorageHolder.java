@@ -160,7 +160,7 @@ public class StorageHolder implements InventoryHolder {
         //功能栏
         ItemStack prevBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("storage-GUI.prev-page"), null, GUI_ACTION_KEY);
         ItemStack nextBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("storage-GUI.next-page"), null, GUI_ACTION_KEY);
-        ItemStack marketBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ENDER_CHEST), MARKET_KEY, Log.getString("storage-GUI.market"), null, GUI_ACTION_KEY);
+        ItemStack marketBtn = UsefulTools.createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("storage-GUI.market"), null, GUI_ACTION_KEY);
         storageGUI.setItem(PREV_PAGE_SLOT, prevBtn);
         storageGUI.setItem(NEXT_PAGE_SLOT, nextBtn);
         storageGUI.setItem(MARKET_SLOT,marketBtn);
