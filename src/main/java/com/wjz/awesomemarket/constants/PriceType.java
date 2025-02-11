@@ -50,13 +50,35 @@ public enum PriceType {
                     getConfigurationSection("currency.tax");
             return price * taxConfig.getDouble("point");
         }
-    };
+    },
+    ALL {//所有货币类型。只需要重载toSQL方法即可。
 
+        public double calculateTax(double price) {
+            return 0;
+        }
+
+        public double look(Player player) {
+            return 0;
+        }
+
+        public boolean take(Player player, double amount) {
+            return false;
+        }
+
+        @Override
+        public String toSQL() {
+            return "";
+        }
+    };
+    private static final PriceType[] VALUES = values();
     public abstract double calculateTax(double price);
+
     public abstract double look(Player player);
+
     public abstract boolean take(Player player, double amount);
-    public String toSQL(){
-        return "payment = '" +this.name().toLowerCase()+"' ";
+
+    public String toSQL() {
+        return "WHERE payment = '" + this.name().toLowerCase() + "' ";
     }
 
     public static PriceType getType(String type) {
@@ -70,4 +92,7 @@ public enum PriceType {
         return AwesomeMarket.getInstance().getConfig().getString("currency.name." + this.toString().toLowerCase());
     }
 
+    public PriceType next() {
+        return VALUES[(this.ordinal() + 1) % VALUES.length];
+    }
 }

@@ -52,7 +52,7 @@ market-GUI:
     next-page: §e下一页
     next-page-lore: §e%d / %d 页
 
-    sort-type: §c排序规则
+    sort-type: §c商品排序
     sort-type-lore:
       - §e当前：§6%sort%
       - ""
@@ -75,7 +75,6 @@ market-GUI:
 
     commodity:
       - §8=========================
-      - ""
       - ""
       - §3物品价格：§e%price% §6%currency%
       - §3出售玩家：§a%player%

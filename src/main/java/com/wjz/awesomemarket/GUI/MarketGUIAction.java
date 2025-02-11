@@ -1,5 +1,7 @@
 package com.wjz.awesomemarket.GUI;
 
+import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.wjz.awesomemarket.utils.GUI;
 import org.bukkit.Sound;
@@ -45,13 +47,26 @@ public enum MarketGUIAction {
         }
     },
     HELP_BOOK {
-        public void action(Player player, int slot) {//啥也不用干
+        public void action(Player player, int slot) {
+            //播放一点声音
+            player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0f, 1.0f);
         }
     },
     SORT_TYPE {
-        @Override
-        public void action(Player player,int slot){
-            MarketHolder marketHolder=(MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+        public void action(Player player, int slot) {
+            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            SortType sortType=marketHolder.getSortType();
+            marketHolder.setSortType(sortType.next());//切换到下一个排序类型
+            marketHolder.reload();
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, // 清脆的"叮"声
+                    1.0f, (float) (0.8 + 0.1 * sortType.ordinal())); // 根据排序类型改变音高
+        }
+    },PRICE_TYPE{
+        public void action(Player player, int slot) {
+            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            marketHolder.setPriceType(marketHolder.getPriceType().next());
+            marketHolder.reload();
+            player.playSound(player.getLocation(),Sound.ENTITY_ITEM_PICKUP,1.0F,1.0F);
 
         }
     };

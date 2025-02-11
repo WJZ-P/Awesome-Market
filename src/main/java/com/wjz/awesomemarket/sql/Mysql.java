@@ -176,7 +176,6 @@ public class Mysql {
 
     public static boolean deleteMarketItem(long id) {
         String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
-        Log.infoDirectly(deleteQuery);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
             preparedStatement.setLong(1, id);
@@ -193,7 +192,7 @@ public class Mysql {
         List<ItemStack> items = new ArrayList<>();
         String query = MysqlType.SHOW_ITEMS_BY_PAGE
                 .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE)
-                .replace("%condition%", sortPriceType == null ? "" : "WHERE " + sortPriceType.toSQL())
+                .replace("%condition%", sortPriceType.toSQL())
                 .replace("%sort%", sortType.toSQL());
         //然后插入sortType
         query = String.format(query, sortType.toSQL());

@@ -30,7 +30,7 @@ public class MarketHolder implements InventoryHolder {
     public static final String STORAGE_KEY = "storage";
     public static final String HELP_BOOK_KEY="help_book";
     private static final String SORT_TYPE_KEY = "sort_type";
-    private static final String CURRENCY_TYPE_KEY = "currency_type";
+    private static final String PRICE_TYPE_KEY = "price_type";
     public static final String ACTION_KEY = "gui_action";
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), MarketHolder.ACTION_KEY);
@@ -48,12 +48,29 @@ public class MarketHolder implements InventoryHolder {
     private int maxPage = MarketCache.getTotalPages(false);
     private List<MarketItem> marketItemList = new ArrayList<>();//存放物品。
 
-    private PriceType priceType=null;//根据物品货币类型筛选
+    private PriceType priceType=PriceType.ALL;//根据物品货币类型筛选
     private SortType sortType=SortType.TIME_DESC;//默认查询时间倒序
 
     @Override
     public Inventory getInventory() {
         return marketGUI;
+    }
+    //获得排序类型
+    public SortType getSortType() {
+        return sortType;
+    }
+
+    public void setSortType(SortType sortType) {
+        this.sortType = sortType;
+    }
+
+    //获得价格类型
+    public PriceType getPriceType() {
+        return priceType;
+    }
+
+    public void setPriceType(PriceType priceType) {
+        this.priceType = priceType;
     }
 
     public MarketHolder(int currentPage) {
@@ -115,6 +132,10 @@ public class MarketHolder implements InventoryHolder {
     public int getCurrentPage() {
         return this.currentPage;
     }
+    public void reload(){
+        this.loadFuncBar();
+        this.loadMarketItems();
+    }
 
     //加载功能栏,非static是因为页数每个对象不一样
     private void loadFuncBar() {
@@ -127,10 +148,18 @@ public class MarketHolder implements InventoryHolder {
                 Collections.singletonList(Log.getString("market-GUI.name.storage-lore")),GUI_ACTION_KEY);
         ItemStack helpBook=createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK),HELP_BOOK_KEY,Log.getString("market-GUI.name.help-book"),
                 Log.getStringList("market-GUI.name.help-book-lore"),GUI_ACTION_KEY);
+
+        //这里设置对应的lore
+        List<String> sortLore=Log.getStringList("market-GUI.name.sort-type-lore");
+        sortLore.replaceAll(s -> s.replace("%sort%", sortType.getString()));
+        List<String> priceLore=Log.getStringList("market-GUI.name.currency-type-lore");
+        priceLore.replaceAll(s -> s.replace("%currency%",priceType.getName()));
+
         ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), MarketHolder.SORT_TYPE_KEY, Log.getString("market-GUI.name.sort-type"),
-                Log.getStringList("market-GUI.name.sort-type-lore"),GUI_ACTION_KEY);
-        ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.CURRENCY_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
-                Log.getStringList("market-GUI.name.currency-type-lore"),GUI_ACTION_KEY);
+                sortLore,GUI_ACTION_KEY);
+
+        ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
+                priceLore,GUI_ACTION_KEY);
         this.marketGUI.setItem(MarketHolder.PREV_PAGE_SLOT, prevBtn);
         this.marketGUI.setItem(MarketHolder.NEXT_PAGE_SLOT, nextBtn);
         this.marketGUI.setItem(MarketHolder.STORAGE_SLOT, storageBtn);
