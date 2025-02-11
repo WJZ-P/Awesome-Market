@@ -78,7 +78,7 @@ public enum PriceType {
     public abstract boolean take(Player player, double amount);
 
     public String toSQL() {
-        return "WHERE payment = '" + this.name().toLowerCase() + "' ";
+        return "AND payment = '" + this.name().toLowerCase() + "' ";
     }
 
     public static PriceType getType(String type) {

@@ -188,7 +188,7 @@ public class Mysql {
         return false;
     }
 
-    public static List<ItemStack> getAndSetItemsWithCondition(int page, PriceType sortPriceType, SortType sortType, List<MarketItem> marketItemList) {
+    public static List<ItemStack> getAndSetItemsWithCondition(SQLFilter sqlFilter, List<MarketItem> marketItemList) {
         List<ItemStack> items = new ArrayList<>();
         String query = MysqlType.SHOW_ITEMS_BY_PAGE
                 .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE)
