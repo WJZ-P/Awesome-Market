@@ -1,7 +1,6 @@
 package com.wjz.awesomemarket.sql;
 
 import com.wjz.awesomemarket.constants.PriceType;
-import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
@@ -175,7 +174,7 @@ public class Mysql {
     }
 
     public static boolean deleteMarketItem(long id) {
-        String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
+        String deleteQuery = String.format(MysqlType.DELETE_ITEM_FROM_MARKET, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
             preparedStatement.setLong(1, id);
@@ -188,67 +187,37 @@ public class Mysql {
         return false;
     }
 
-    public static List<ItemStack> getAndSetItemsWithCondition(SQLFilter sqlFilter, List<MarketItem> marketItemList) {
-        List<ItemStack> items = new ArrayList<>();
+    public static List<MarketItem> getMarketItems(SQLFilter sqlFilter) {
+        List<MarketItem> marketItems = new ArrayList<>();
         String query = MysqlType.SHOW_ITEMS_BY_PAGE
                 .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE)
-                .replace("%condition%", sortPriceType.toSQL())
-                .replace("%sort%", sortType.toSQL());
-        //然后插入sortType
-        query = String.format(query, sortType.toSQL());
+                .replace("%condition%", sqlFilter.getCondition())
+                .replace("%sort%", sqlFilter.getLimit());
 
         try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement(query)) {
-            int offset = (page - 1) * 45;
-            pstmt.setInt(1, offset);
+            pstmt.setInt(1, sqlFilter.getOffset());
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
-                    ItemMeta meta = itemStack.getItemMeta();
-                    List<String> oldLore = itemStack.getLore();
-                    if (oldLore == null) oldLore = new ArrayList<>();
-                    //要给物品上描述信息
-                    List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity");
-                    //添加lore
-                    //price,currency,player,on_sell_time
-
-                    //这里格式化时间
-                    long timeStamp = rs.getLong("on_sell_time");
-                    LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStamp), ZoneId.systemDefault());
-
-                    //下面获取一些信息
+                    //封装成marketItem
                     String seller = rs.getString("seller");
                     double price = rs.getDouble("price");
                     PriceType priceType = PriceType.getType(rs.getString("payment"));
                     long id = rs.getLong("id");
-
-                    //封装好item，放入list内
-                    marketItemList.add(new MarketItem(itemStack.clone(), seller, price, priceType, id));
-
-                    //修改要展示到UI上的物品描述
-                    for (int i = 0; i < commodityLore.size(); i++) {
-                        String modifiedLore = commodityLore.get(i).replace("%player%", seller).replace("%price%", String.format("%.2f", price)).replace("%currency%", priceType.getName()).replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-                        commodityLore.set(i, modifiedLore);
-                    }
-                    //商品lore添加完毕后追加到原lore后
-                    oldLore.addAll(commodityLore);
-                    meta.setLore(oldLore);
-                    //添加商品的NBT标签
-                    meta.getPersistentDataContainer().set(MarketHolder.GUI_ACTION_KEY, PersistentDataType.STRING, MarketHolder.COMMODITY_KEY);
-                    //设置好的meta数据写入到item中
-                    itemStack.setItemMeta(meta);
-
-                    items.add(itemStack);
+                    long onSellTime=rs.getLong("on_sell_time");
+                    MarketItem marketItem=new MarketItem(itemStack,seller,price,priceType,id,onSellTime);
+                    marketItems.add(marketItem);
                 }
             }
-            return items;
+            return marketItems;
 
         } catch (SQLException e) {
             Log.severeDirectly("根据页数查询物品失败");
             e.printStackTrace();
         }
 
-        return items;
+        return marketItems;
     }
 
     //交易完成后要增加交易记录
@@ -294,7 +263,7 @@ public class Mysql {
         }
     }
 
-    public static List<StorageItem> getStorageList(Player player, int page) {
+    public static List<StorageItem> getStorageItems(Player player, int page) {
         List<StorageItem> storageItemList = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             String query = String.format(MysqlType.SELECT_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
@@ -323,7 +292,7 @@ public class Mysql {
     }
 
     //从数据库删除暂存库的某个物品
-    public boolean deleteStorageItem(long id) {
+    public static boolean deleteStorageItem(long id) {
         try (Connection connection = dataSource.getConnection()) {
             String query = String.format(MysqlType.DELETE_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
             PreparedStatement preparedStatement = connection.prepareStatement(query);

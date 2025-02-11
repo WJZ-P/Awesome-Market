@@ -46,7 +46,7 @@ public enum StorageGUIAction {
                 return;
             }
             //处理入库操作
-            if(Mysql.deleteMarketItem(storageHolder.getStorageItem(slot).getId())){
+            if(Mysql.deleteStorageItem(storageHolder.getStorageItem(slot).getId())){
                 //说明物品删除成功，那就把物品给玩家
                 player.getInventory().addItem(storageHolder.getStorageItem(slot).getItemStack());
                 player.sendMessage(Log.getString("take_item_from_storage"));

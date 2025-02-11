@@ -13,19 +13,21 @@ import org.bukkit.inventory.ItemStack;
 import java.time.Instant;
 
 public class MarketItem {
-    private ItemStack itemStack;
-    private String seller;//出售者
-    private double price;//价格
-    private PriceType priceType;//价格类型
-    private long id;//id是数据库中的id。根据这个索引物品。
+    private final ItemStack itemStack;
+    private final String seller;//出售者
+    private final double price;//价格
+    private final PriceType priceType;//价格类型
+    private final long id;//id是数据库中的id。根据这个索引物品。
+    private final long onSellTime;
 
 
-    public MarketItem(ItemStack itemStack, String seller, double price, PriceType priceType, long id) {
+    public MarketItem(ItemStack itemStack, String seller, double price, PriceType priceType, long id, long time) {
         this.itemStack = itemStack;
         this.id = id;
         this.price = price;
         this.seller = seller;
         this.priceType = priceType;
+        this.onSellTime = time;
     }
 
     public ItemStack getItemStack() {
@@ -40,9 +42,9 @@ public class MarketItem {
         return this.id;
     }
 
-    public String getPriceTypeName() {
-        return this.priceType.getName();
-    }
+    public long getOnSellTime() {return onSellTime;}
+
+    public PriceType getPriceType() {return this.priceType;}
 
     public String getSellerName() {
         return this.seller;
@@ -73,9 +75,9 @@ public class MarketItem {
                     .replace("%money%", String.format("%.2f", price))
                     .replace("%currency%", priceType.getName())
                     .replace("%seller%", seller);//%item%留给翻译键做处理
-            Component message = Component.text(buySuccess).replaceText(b->b.matchLiteral("%item%")
-                    .replacement(Component.translatable(itemStack.getType().translationKey())))
-                            .color(NamedTextColor.WHITE).hoverEvent(itemStack.asHoverEvent());
+            Component message = Component.text(buySuccess).replaceText(b -> b.matchLiteral("%item%")
+                            .replacement(Component.translatable(itemStack.getType().translationKey())))
+                    .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent());
             player.sendMessage(message);
 
             //扣款之后把物品给玩家
@@ -86,8 +88,8 @@ public class MarketItem {
             } else {
                 //说明玩家背包满了
                 //那就需要把物品放到暂存库里
-                Mysql.addItemToTempStorage(id,player.getName(),seller,MarketTools.serializeItem(itemStack),String.valueOf(itemStack.getType()),
-                Instant.now().getEpochSecond(),price, String.valueOf(priceType));
+                Mysql.addItemToTempStorage(id, player.getName(), seller, MarketTools.serializeItem(itemStack), String.valueOf(itemStack.getType()),
+                        Instant.now().getEpochSecond(), price, String.valueOf(priceType));
                 player.sendMessage(Log.getString("add_item_to_storage"));
             }
             //下面创建交易单数据。

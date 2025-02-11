@@ -107,7 +107,7 @@ public class StorageHolder implements InventoryHolder {
         this.canTurnPage.set(false);
         //从数据库中加载物品，使用异步
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
-            List<StorageItem> storageList = Mysql.getStorageList(player, currentPage);
+            List<StorageItem> storageList = Mysql.getStorageItems(player, currentPage);
             this.storageItems = storageList;
             //然后载入物品
             //获取完毕后，切换回主线程更新UI

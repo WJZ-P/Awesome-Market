@@ -39,7 +39,7 @@ public class ConfirmHolder implements InventoryHolder {
 
         String buyLore = Log.getString("confirm-GUI.buy.confirm-lore")
                 .replace("%price%", String.format("%.2f", marketItem.getPrice()))
-                .replace("%currency%", marketItem.getPriceTypeName())
+                .replace("%currency%", marketItem.getPriceType().getName())
                 .replace("%player%", marketItem.getSellerName());
         //创建两个按钮物品
         ItemStack confirmBtn = createButton(UsefulTools.getCustomSkull(
