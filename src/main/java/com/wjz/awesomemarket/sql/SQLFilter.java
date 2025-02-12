@@ -4,6 +4,8 @@ import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.constants.SortType;
 import org.bukkit.entity.Player;
 
+import java.util.StringJoiner;
+
 /**
  * SQL Filter SQL语句，用于过滤数据
  */
@@ -35,6 +37,17 @@ public class SQLFilter {
     }
 
     public int getOffset() {
-        return page - 1;
+        return 45 * (page - 1);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner("|")
+                .add(sortType != null ? sortType.name() : "null")
+                .add(priceType != null ? priceType.name() : "null")
+                .add("page=" + page)
+                .add(seller != null ? seller : "null")
+                .add(item_type != null ? item_type : "null")
+                .toString();
     }
 }

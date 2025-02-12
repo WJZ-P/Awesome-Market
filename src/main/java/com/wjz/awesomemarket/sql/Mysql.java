@@ -3,7 +3,6 @@ package com.wjz.awesomemarket.sql;
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StorageItem;
-import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import com.zaxxer.hikari.HikariConfig;
@@ -11,14 +10,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.sql.*;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,13 +134,15 @@ public class Mysql {
      *
      * @return
      */
-    public static int getTotalItemsCount() {
-        String query = String.format(MysqlType.SELECT_ALL_ITEMS_COUNT, mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE);
+    public static int getItemsCountWithFilter(String tableName,SQLFilter sqlFilter) {
+        String query = MysqlType.SELECT_ALL_ITEMS_COUNT.replace("%table%",mysqlConfig.getString("table-prefix") + tableName)
+                .replace("%condition%",sqlFilter.getCondition());
+
         try (Connection connection = dataSource.getConnection()) {
             ResultSet rs = connection.createStatement().executeQuery(query);
             if (rs.next()) return rs.getInt("total");
             else {
-                Log.severe("查询数据库on_selling商品总数失败！");
+                Log.severe("查询"+tableName+"表数据总数失败！");
                 return 0;
             }
         } catch (SQLException e) {

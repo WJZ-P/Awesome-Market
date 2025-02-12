@@ -76,7 +76,7 @@ public class MysqlType {
             "ENGINE=InnoDB\n" +
             ";\n";
     //选择某个表的全部数据数量
-    public static String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s`";
+    public static String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%table%` %condition%";
     public static String SELECT_ALL_STORAGE_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s` where owner = ?";
     //往全球市场插入物品
     public static String INSERT_ITEM_TO_MARKET = "INSERT INTO `%s` " +
