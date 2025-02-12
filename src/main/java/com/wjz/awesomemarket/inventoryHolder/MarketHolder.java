@@ -42,6 +42,7 @@ public class MarketHolder implements InventoryHolder {
     public static final String HELP_BOOK_KEY="help_book";
     private static final String SORT_TYPE_KEY = "sort_type";
     private static final String PRICE_TYPE_KEY = "price_type";
+    private static final String STATISTIC_KEY="statistic";
     public static final String ACTION_KEY = "gui_action";
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), MarketHolder.ACTION_KEY);
@@ -159,29 +160,32 @@ public class MarketHolder implements InventoryHolder {
         ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"),
                 Collections.singletonList(String.format(Log.getString("market-GUI.name.prev-page-lore"), this.currentPage,
                         maxPage)),GUI_ACTION_KEY);
-
         ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"),
                 Collections.singletonList(String.format(Log.getString("market-GUI.name.next-page-lore"), this.currentPage,
                         maxPage)),GUI_ACTION_KEY);
-
         ItemStack storageBtn = createNavItemStack(new ItemStack(Material.ENDER_CHEST), MarketHolder.STORAGE_KEY, Log.getString("market-GUI.name.storage"),
                 Collections.singletonList(Log.getString("market-GUI.name.storage-lore")),GUI_ACTION_KEY);
         ItemStack helpBook=createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK),HELP_BOOK_KEY,Log.getString("market-GUI.name.help-book"),
                 Log.getStringList("market-GUI.name.help-book-lore"),GUI_ACTION_KEY);
-        //展示统计信息等
-        ItemStack ownerHead= UsefulTools.getPlayerHead(owner);
+
+
 
         //这里设置对应的lore
         List<String> sortLore=Log.getStringList("market-GUI.name.sort-type-lore");
         sortLore.replaceAll(s -> s.replace("%sort%", sortType.getString()));
         List<String> priceLore=Log.getStringList("market-GUI.name.currency-type-lore");
         priceLore.replaceAll(s -> s.replace("%currency%",priceType.getName()));
+        List<String> statisticLore=Log.getStringList("market-GUI.name.statistic-lore").replaceAll(s->
+                s.replace("%player%",owner.getName())
+                        .replace("%buy_count%",));
 
         ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), MarketHolder.SORT_TYPE_KEY, Log.getString("market-GUI.name.sort-type"),
                 sortLore,GUI_ACTION_KEY);
-
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
                 priceLore,GUI_ACTION_KEY);
+        ItemStack statisticItem= createNavItemStack(UsefulTools.getPlayerHead(owner),STATISTIC_KEY,Log.getString("market-GUI.name.statistic"),
+                statisticLore,GUI_ACTION_KEY);//展示统计信息
+
         //如果不是默认排序。物品就带附魔颜色
         if(sortType!=SortType.TIME_DESC){
             ItemMeta meta=sortTypeBtn.getItemMeta();

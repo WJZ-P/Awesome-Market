@@ -88,8 +88,13 @@ market-GUI:
 
     statistic: §6%player%
     statistic-lore:
+      - "§3统计数据"
       - ""
-      -
+      - §a共买入了 §c%buy_count% §a件商品
+      - §a共卖出了 §c%sell_count% §a件商品
+      - "§c总花费:"
+      - " §e%money% §6%currency_money%"
+      - " §e%point% §6%currency_point%"
 
 confirm-GUI:
   buy:

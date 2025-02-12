@@ -6,17 +6,18 @@ import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import com.wjz.awesomemarket.sql.Mysql;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public class MarketItem {
     private final ItemStack itemStack;
-    private final String seller;//出售者
+    private final String sellerName;//出售者
     private final double price;//价格
     private final PriceType priceType;//价格类型
     private final long id;//id是数据库中的id。根据这个索引物品。
@@ -27,7 +28,7 @@ public class MarketItem {
         this.itemStack = itemStack;
         this.id = id;
         this.price = price;
-        this.seller = seller;
+        this.sellerName = seller;
         this.priceType = priceType;
         this.onSellTime = time;
     }
@@ -49,7 +50,7 @@ public class MarketItem {
     public PriceType getPriceType() {return this.priceType;}
 
     public String getSellerName() {
-        return this.seller;
+        return this.sellerName;
     }
 
     /**
@@ -70,13 +71,12 @@ public class MarketItem {
         //下面开始走付款流程。
         if (Mysql.deleteMarketItem(this.id)) {
             priceType.take(player, price);
-            //成功删除了物品，并且成功扣款
-
+            //成功删除了物品
             //这里直接使用翻译键，后面再做适配
             String buySuccess = Log.getString("buy_success")
                     .replace("%money%", String.format("%.2f", price))
                     .replace("%currency%", priceType.getName())
-                    .replace("%seller%", seller);//%item%留给翻译键做处理
+                    .replace("%seller%", sellerName);//%item%留给翻译键做处理
             Component message = Component.text(buySuccess).replaceText(b -> b.matchLiteral("%item%")
                             .replacement(Component.translatable(itemStack.getType().translationKey())))
                     .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent());
@@ -90,15 +90,16 @@ public class MarketItem {
             } else {
                 //说明玩家背包满了
                 //那就需要把物品放到暂存库里
-                Mysql.addItemToTempStorage(id, player.getName(), seller, MarketTools.serializeItem(itemStack), String.valueOf(itemStack.getType()),
+                Mysql.addItemToTempStorage(id, player.getName(), sellerName, MarketTools.serializeItem(itemStack), String.valueOf(itemStack.getType()),
                         Instant.now().getEpochSecond(), price, String.valueOf(priceType));
                 player.sendMessage(Log.getString("add_item_to_storage"));
             }
+
             //下面的操作都可以异步进行
             Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(),()->{
                 //下面创建交易单数据。
                 Mysql.addTradeTransaction(MarketTools.serializeItem(itemStack),
-                        String.valueOf(itemStack.getType()), seller, player.getName(), String.valueOf(priceType), price);
+                        String.valueOf(itemStack.getType()), sellerName, player.getName(), String.valueOf(priceType), price);
                 //然后更新统计数据
                 Mysql.upsertStatistic(player,price,priceType,true);
             });

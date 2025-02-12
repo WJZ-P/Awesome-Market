@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.constants;
 
 import com.wjz.awesomemarket.AwesomeMarket;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -15,6 +16,11 @@ public enum PriceType {
             if (playerBalance < amount) return false;
             economy.withdrawPlayer(player, amount);
             return true;
+        }
+
+        @Override
+        public boolean give(OfflinePlayer player, double amount) {
+            return economy.depositPlayer(player,amount).transactionSuccess();
         }
 
         @Override
@@ -37,6 +43,10 @@ public enum PriceType {
             if (playerBalance < amount) return false;
             ppAPI.take(player.getUniqueId(), (int) amount);
             return true;
+        }
+
+        public boolean give(OfflinePlayer player, double amount) {
+            return ppAPI.give(player.getUniqueId(), (int) amount);
         }
 
         @Override
@@ -66,6 +76,11 @@ public enum PriceType {
         }
 
         @Override
+        public boolean give(OfflinePlayer player, double amount) {
+            return false;
+        }
+
+        @Override
         public String toSQL() {
             return "";
         }
@@ -76,6 +91,7 @@ public enum PriceType {
     public abstract double look(Player player);
 
     public abstract boolean take(Player player, double amount);
+    public abstract boolean give(OfflinePlayer player,double amount);
 
     public String toSQL() {
         return "AND payment = '" + this.name().toLowerCase() + "' ";
