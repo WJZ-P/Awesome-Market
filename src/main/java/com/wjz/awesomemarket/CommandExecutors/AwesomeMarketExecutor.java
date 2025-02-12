@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.utils.CommandExecutors;
+package com.wjz.awesomemarket.CommandExecutors;
 
 import com.wjz.awesomemarket.utils.GUI;
 import com.wjz.awesomemarket.utils.MarketTools;

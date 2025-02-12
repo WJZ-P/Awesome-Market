@@ -39,6 +39,6 @@ public class MarketListener implements Listener {
         );
         if (actionString == null) return;//没标识就不做动作
         MarketGUIAction action = MarketGUIAction.getType(actionString);
-        action.action(player, event.getSlot());
+        action.action(player, event.getSlot(),event);
     }
 }

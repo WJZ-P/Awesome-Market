@@ -8,11 +8,15 @@ import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.sql.SQLFilter;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.sql.Mysql;
+import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -28,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.wjz.awesomemarket.cache.MarketCache.getTotalPages;
 import static com.wjz.awesomemarket.utils.UsefulTools.createNavItemStack;
+import static com.wjz.awesomemarket.utils.UsefulTools.getPlayerHead;
 
 public class MarketHolder implements InventoryHolder {
     public static final String PREV_PAGE_KEY = "prev_page";
@@ -56,6 +61,7 @@ public class MarketHolder implements InventoryHolder {
     private SortType sortType=SortType.TIME_DESC;//默认查询时间倒序
     private String sellerName;//用于筛选特定玩家的物品
     private String itemType;//用于筛选特定的物品类型
+    private Player owner;//这个容器的拥有者
     private int maxPage = MarketCache.getTotalPages(new SQLFilter(sortType,priceType,sellerName,itemType,currentPage),false);
     @Override
     public Inventory getInventory() {
@@ -69,6 +75,8 @@ public class MarketHolder implements InventoryHolder {
     public void setSortType(SortType sortType) {
         this.sortType = sortType;
     }
+    public void setSellerName(String sellerName) {this.sellerName=sellerName;}
+    public void setItemType(String itemType){this.itemType=itemType;}
 
     //获得价格类型
     public PriceType getPriceType() {
@@ -79,9 +87,10 @@ public class MarketHolder implements InventoryHolder {
         this.priceType = priceType;
     }
 
-    public MarketHolder(int currentPage) {
+    public MarketHolder(Player owner,int currentPage) {
         this.currentPage = currentPage;
         this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
+        this.owner=owner;
         //下面对marketGUI做初始化处理
 
         //以灰色玻璃板作为默认填充
@@ -159,6 +168,8 @@ public class MarketHolder implements InventoryHolder {
                 Collections.singletonList(Log.getString("market-GUI.name.storage-lore")),GUI_ACTION_KEY);
         ItemStack helpBook=createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK),HELP_BOOK_KEY,Log.getString("market-GUI.name.help-book"),
                 Log.getStringList("market-GUI.name.help-book-lore"),GUI_ACTION_KEY);
+        //展示统计信息等
+        ItemStack ownerHead= UsefulTools.getPlayerHead(owner);
 
         //这里设置对应的lore
         List<String> sortLore=Log.getStringList("market-GUI.name.sort-type-lore");
@@ -171,6 +182,20 @@ public class MarketHolder implements InventoryHolder {
 
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
                 priceLore,GUI_ACTION_KEY);
+        //如果不是默认排序。物品就带附魔颜色
+        if(sortType!=SortType.TIME_DESC){
+            ItemMeta meta=sortTypeBtn.getItemMeta();
+            meta.addEnchant(Enchantment.UNBREAKING,1,true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            sortTypeBtn.setItemMeta(meta);
+        }
+        if(priceType!=PriceType.ALL){
+            ItemMeta meta=currencyTypeBtn.getItemMeta();
+            meta.addEnchant(Enchantment.UNBREAKING,1,true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            currencyTypeBtn.setItemMeta(meta);
+        }
+
         this.marketGUI.setItem(MarketHolder.PREV_PAGE_SLOT, prevBtn);
         this.marketGUI.setItem(MarketHolder.NEXT_PAGE_SLOT, nextBtn);
         this.marketGUI.setItem(MarketHolder.STORAGE_SLOT, storageBtn);

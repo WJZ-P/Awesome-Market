@@ -39,12 +39,12 @@ public enum ConfirmGUIAction {
                 player.playSound(player.getLocation(),Sound.ENTITY_VILLAGER_YES,1.0F,1.0F);
                 player.playSound(player.getLocation(),Sound.ENTITY_PLAYER_LEVELUP,1.5F,0.8F);
                 //接下来就可以让玩家返回商店继续购买了
-                player.openInventory(new MarketHolder(((ConfirmHolder) player.getOpenInventory().getTopInventory().
+                player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
                         getHolder()).getMarketPage()).getInventory());
             }else{
                 //购买失败了，说明东西已经被买走了
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.0F);
-                player.openInventory(new MarketHolder(((ConfirmHolder) player.getOpenInventory().getTopInventory().
+                player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
                         getHolder()).getMarketPage()).getInventory());
             }
         }
@@ -54,7 +54,7 @@ public enum ConfirmGUIAction {
         public void action(Player player, MarketItem marketItem) {
             //取消购买
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
-            player.openInventory(new MarketHolder(((ConfirmHolder) player.getOpenInventory().getTopInventory().
+            player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
                     getHolder()).getMarketPage()).getInventory());
         }
     };

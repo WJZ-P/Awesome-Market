@@ -62,7 +62,7 @@ public enum StorageGUIAction {
         @Override
         public void action(StorageHolder storageHolder,int slot) {
             //打开市场
-            storageHolder.getPlayer().openInventory(new MarketHolder(storageHolder.getMarketPage()).getInventory());
+            storageHolder.getPlayer().openInventory(new MarketHolder(storageHolder.getPlayer(), storageHolder.getMarketPage()).getInventory());
             storageHolder.getPlayer().playSound(storageHolder.getPlayer().getLocation(),Sound.UI_BUTTON_CLICK,1.0F,1.0F);
         }
     };

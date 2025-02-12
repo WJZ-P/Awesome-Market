@@ -12,7 +12,7 @@ public class GUI {
 
         //播放声音
         player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 0.6f);
-        player.openInventory(new MarketHolder(1).getInventory());
+        player.openInventory(new MarketHolder(player,1).getInventory());
     }
 
     public static void openConfirm(Player player,MarketHolder marketHolder, int slot) {
