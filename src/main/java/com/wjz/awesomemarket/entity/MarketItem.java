@@ -1,11 +1,13 @@
 package com.wjz.awesomemarket.entity;
 
+import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import com.wjz.awesomemarket.sql.Mysql;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -92,9 +94,14 @@ public class MarketItem {
                         Instant.now().getEpochSecond(), price, String.valueOf(priceType));
                 player.sendMessage(Log.getString("add_item_to_storage"));
             }
-            //下面创建交易单数据。
-            Mysql.addTradeTransaction(MarketTools.serializeItem(itemStack),
-                    String.valueOf(itemStack.getType()), seller, player.getName(), String.valueOf(priceType), price);
+            //下面的操作都可以异步进行
+            Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(),()->{
+                //下面创建交易单数据。
+                Mysql.addTradeTransaction(MarketTools.serializeItem(itemStack),
+                        String.valueOf(itemStack.getType()), seller, player.getName(), String.valueOf(priceType), price);
+                //然后更新统计数据
+                Mysql.upsertStatistic(player,price,priceType,true);
+            });
             return true;
 
         } else {

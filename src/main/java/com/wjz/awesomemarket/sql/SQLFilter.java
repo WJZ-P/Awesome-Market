@@ -31,8 +31,8 @@ public class SQLFilter {
     public String getCondition() {
         return new StringBuilder().append("WHERE 1=1 ")
                 .append(priceType == null ? "" : priceType.toSQL())
-                .append(seller == null ? "" : " AND seller = " + seller)
-                .append(item_type == null ? "" : " AND item_type=" + item_type)
+                .append(seller == null ? "" : " AND seller = '" + seller+"'")
+                .append(item_type == null ? "" : " AND item_type ='" + item_type+"'")
                 .toString();
     }
 

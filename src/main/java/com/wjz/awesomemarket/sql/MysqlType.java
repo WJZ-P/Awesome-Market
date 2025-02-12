@@ -5,8 +5,9 @@ public class MysqlType {
     public static String ON_SELL_ITEMS_TABLE = "on_selling_items";
     public static String EXPIRE_ITEMS_TABLE = "expire_items";
     public static String TRANSACTIONS_TABLE = "transactions";
-    public static String PLAYER_STORAGE_TABLE="player_storage";
-    public static String CREATE_PLAYER_STORAGE_TABLE="CREATE TABLE IF NOT EXISTS `player_storage` (\n" +
+    public static String PLAYER_STORAGE_TABLE = "player_storage";
+    public static String STATISTIC_TABLE = "statistic";
+    public static String CREATE_PLAYER_STORAGE_TABLE = "CREATE TABLE IF NOT EXISTS `player_storage` (\n" +
             "\t`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,\n" +
             "\t`owner` VARCHAR(50) NULL DEFAULT NULL COMMENT '物品拥有者' COLLATE 'utf8mb4_general_ci',\n" +
             "\t`seller` VARCHAR(50) NOT NULL COMMENT '卖家' COLLATE 'utf8mb4_general_ci',\n" +
@@ -75,6 +76,19 @@ public class MysqlType {
             "COLLATE='utf8mb4_general_ci'\n" +
             "ENGINE=InnoDB\n" +
             ";\n";
+    public static String CREATE_STATISTIC_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (\n" +
+            "\t`player_uuid` CHAR(36) NOT NULL COMMENT '玩家UUID' COLLATE 'utf8mb4_general_ci',\n" +
+            "\t`cost_money` DOUBLE UNSIGNED ZEROFILL NOT NULL,\n" +
+            "\t`cost_point` DOUBLE UNSIGNED ZEROFILL NOT NULL,\n" +
+            "\t`buy_money` DOUBLE UNSIGNED ZEROFILL NOT NULL DEFAULT '0000000000000000000000',\n" +
+            "\t`buy_point` DOUBLE UNSIGNED ZEROFILL NOT NULL," +
+            "\t`sell_count` INT(10) UNSIGNED ZEROFILL NOT NULL,\n" +
+            "\t`buy_count` INT(10) UNSIGNED ZEROFILL NOT NULL,\n" +
+            "\tPRIMARY KEY (`player_uuid`) USING BTREE\n" +
+            ")\n" +
+            "COLLATE='utf8mb4_general_ci'\n" +
+            "ENGINE=InnoDB\n" +
+            ";";
     //选择某个表的全部数据数量
     public static String SELECT_ALL_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%table%` %condition%";
     public static String SELECT_ALL_STORAGE_ITEMS_COUNT = "SELECT COUNT(*) AS total FROM `%s` where owner = ?";
@@ -93,11 +107,21 @@ public class MysqlType {
             "(item_detail, item_type, seller, buyer, payment, price, trade_time) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
     //插入到暂存库中
-    public static String INSERT_INTO_STORAGE_TABLE="INSERT INTO `%s` "+
-            "(id, owner, seller, item_detail, item_type, store_time, price, priceType) "+
+    public static String INSERT_INTO_STORAGE_TABLE = "INSERT INTO `%s` " +
+            "(id, owner, seller, item_detail, item_type, store_time, price, priceType) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     //从暂存库根据玩家名选择对应物品
-    public static String SELECT_ITEM_FROM_STORAGE_TABLE="SELECT * FROM `%s` WHERE owner = ? ORDER BY store_time DESC LIMIT 45 OFFSET ?;";
+    public static String SELECT_ITEM_FROM_STORAGE_TABLE = "SELECT * FROM `%s` WHERE owner = ? ORDER BY store_time DESC LIMIT 45 OFFSET ?;";
     //从暂存库里面删除物品
-    public static String DELETE_ITEM_FROM_STORAGE_TABLE="DELETE FROM `%s` WHERE id = ?";
+    public static String DELETE_ITEM_FROM_STORAGE_TABLE = "DELETE FROM `%s` WHERE id = ?";
+    //往统计记录里面插入或更新数据
+    public static String UPSERT_STATISTIC = "INSERT INTO `%s` (player_uuid, cost_money, cost_point, buy_money, buy_point, sell_count, buy_count) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+            "ON DUPLICATE KEY UPDATE " +
+            "cost_money = cost_money + VALUES(cost_money), " +
+            "cost_point = cost_point + VALUES(cost_point), " +
+            "buy_money = buy_money + VALUES(buy_money), " +
+            "buy_point = buy_point + VALUES(buy_point)" +
+            "sell_count = sell_count + VALUES(sell_count), " +
+            "buy_count = buy_count + VALUES(buy_count)";
 }

@@ -4,6 +4,7 @@ import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.wjz.awesomemarket.utils.GUI;
+import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -24,7 +25,7 @@ public enum MarketGUIAction {
 
     }, NEXT_PAGE {
         @Override
-        public void action(Player player, int slot,InventoryClickEvent event) {
+        public void action(Player player, int slot, InventoryClickEvent event) {
             MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
             if (marketHolder != null && !marketHolder.turnNextPage()) {//最后一页无法下一页
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
@@ -37,22 +38,23 @@ public enum MarketGUIAction {
 
         @Override
         public void action(Player player, int slot, InventoryClickEvent event) {
-            ClickType clickType=event.getClick();
-            InventoryAction action=event.getAction();
+            ClickType clickType = event.getClick();
+            InventoryAction action = event.getAction();
             MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
             if (clickType.isLeftClick()) {
                 //调用confirmGUI。
                 GUI.openConfirm(player, marketHolder, slot);//传入UI中的具体物品。
-            } else if (clickType.isRightClick() && !clickType.isShiftClick()) {
-                //鼠标右键就筛选这名玩家的所有物品。
-                marketHolder.setSellerName(marketHolder.getMarketItem(slot).getSellerName());
-                marketHolder.reload();
-                player.openInventory(marketHolder.getInventory());
-            }else if (clickType.isShiftClick() && clickType.isRightClick()){
-                //shift+右键
-                marketHolder.setItemType(String.valueOf(marketHolder.getMarketItem(slot).getItemStack().getType()));
-                marketHolder.reload();
-                player.openInventory(marketHolder.getInventory());
+            } else {
+                if (clickType.isRightClick() && !clickType.isShiftClick()) {
+                    //鼠标右键就只显示该类物品
+                    marketHolder.setItemType(String.valueOf(marketHolder.getMarketItem(slot).getItemStack().getType()));
+                    marketHolder.reload();
+                } else if (clickType.isShiftClick() && clickType.isRightClick()) {
+                    //shift+右键 显示卖家所有商品
+                    marketHolder.setSellerName(marketHolder.getMarketItem(slot).getSellerName());
+                    marketHolder.reload();
+                }
+                player.playSound(player.getLocation(),Sound.ENTITY_ENDER_DRAGON_FLAP,0.5f,1.5f);
             }
 
         }
@@ -65,12 +67,20 @@ public enum MarketGUIAction {
     },
     HELP_BOOK {
         public void action(Player player, int slot, InventoryClickEvent event) {
+            //点击恢复默认排序
+            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            marketHolder.setItemType(null);
+            marketHolder.setSellerName(null);
+            marketHolder.setSortType(SortType.TIME_DESC);
+            marketHolder.setPriceType(PriceType.ALL);
+            marketHolder.reload();
+
             //播放一点声音
             player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0f, 1.0f);
         }
     },
     SORT_TYPE {
-        public void action(Player player, int slot,InventoryClickEvent event) {
+        public void action(Player player, int slot, InventoryClickEvent event) {
             MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
             SortType sortType = marketHolder.getSortType();
             marketHolder.setSortType(sortType.next());//切换到下一个排序类型
@@ -79,7 +89,7 @@ public enum MarketGUIAction {
                     1.0f, (float) (0.8 + 0.1 * sortType.ordinal())); // 根据排序类型改变音高
         }
     }, PRICE_TYPE {
-        public void action(Player player, int slot,InventoryClickEvent event) {
+        public void action(Player player, int slot, InventoryClickEvent event) {
             MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
             marketHolder.setPriceType(marketHolder.getPriceType().next());
             marketHolder.reload();

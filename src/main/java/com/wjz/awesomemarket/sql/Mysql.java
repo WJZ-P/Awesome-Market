@@ -101,6 +101,8 @@ public class Mysql {
             stmt.execute(String.format(MysqlType.CREATE_TRANSACTIONS_TABLE, tablePrefix + MysqlType.TRANSACTIONS_TABLE));
             // 创建 player_storage 表
             stmt.execute(String.format(MysqlType.CREATE_PLAYER_STORAGE_TABLE, tablePrefix + MysqlType.PLAYER_STORAGE_TABLE));
+            // 创建statistic 表
+            stmt.execute(String.format(MysqlType.CREATE_STATISTIC_TABLE, tablePrefix + MysqlType.STATISTIC_TABLE));
 
         } catch (SQLException e) {
             Log.severe("create_mysql_fail");
@@ -134,15 +136,15 @@ public class Mysql {
      *
      * @return
      */
-    public static int getItemsCountWithFilter(String tableName,SQLFilter sqlFilter) {
-        String query = MysqlType.SELECT_ALL_ITEMS_COUNT.replace("%table%",mysqlConfig.getString("table-prefix") + tableName)
-                .replace("%condition%",sqlFilter.getCondition());
+    public static int getItemsCountWithFilter(String tableName, SQLFilter sqlFilter) {
+        String query = MysqlType.SELECT_ALL_ITEMS_COUNT.replace("%table%", mysqlConfig.getString("table-prefix") + tableName)
+                .replace("%condition%", sqlFilter.getCondition());
 
         try (Connection connection = dataSource.getConnection()) {
             ResultSet rs = connection.createStatement().executeQuery(query);
             if (rs.next()) return rs.getInt("total");
             else {
-                Log.severe("查询"+tableName+"表数据总数失败！");
+                Log.severe("查询" + tableName + "表数据总数失败！");
                 return 0;
             }
         } catch (SQLException e) {
@@ -188,7 +190,6 @@ public class Mysql {
                 .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE)
                 .replace("%condition%", sqlFilter.getCondition())
                 .replace("%sort%", sqlFilter.getLimit());
-
         try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, sqlFilter.getOffset());
 
@@ -200,8 +201,8 @@ public class Mysql {
                     double price = rs.getDouble("price");
                     PriceType priceType = PriceType.getType(rs.getString("payment"));
                     long id = rs.getLong("id");
-                    long onSellTime=rs.getLong("on_sell_time");
-                    MarketItem marketItem=new MarketItem(itemStack,seller,price,priceType,id,onSellTime);
+                    long onSellTime = rs.getLong("on_sell_time");
+                    MarketItem marketItem = new MarketItem(itemStack, seller, price, priceType, id, onSellTime);
                     marketItems.add(marketItem);
                 }
             }
@@ -233,6 +234,27 @@ public class Mysql {
         } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("创建交易单失败！");
+        }
+    }
+
+    //交易完成后还需要增加统计记录
+    public static void upsertStatistic(Player player, double price, PriceType priceType, boolean isBuy) {
+        String query = String.format(MysqlType.UPSERT_STATISTIC, mysqlConfig.getString("table-prefix") + MysqlType.STATISTIC_TABLE);
+        boolean isMoney = String.valueOf(priceType).equalsIgnoreCase("money");
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, player.getUniqueId().toString());
+            pstmt.setDouble(2, isBuy ? 0 : isMoney ? price : 0);//花费的钱
+            pstmt.setDouble(3, isBuy ? 0 : isMoney ? 0 : price);//花费的点券
+            pstmt.setDouble(4, isBuy ? isMoney ? 0 : price : 0);//购买的钱
+            pstmt.setDouble(5, isBuy ? isMoney ? price : 0 : 0);//购买的点券
+            pstmt.setInt(6, isBuy ? 0 : 1);//卖出的数量
+            pstmt.setInt(7, isBuy ? 1 : 0);//卖出的数量
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.severeDirectly("UPSERT统计数据失败！");
         }
     }
 
