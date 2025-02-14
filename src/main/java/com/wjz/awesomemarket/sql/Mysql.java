@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.sql;
 
 import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.constants.StorageType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StatisticInfo;
 import com.wjz.awesomemarket.entity.StorageItem;
@@ -283,11 +284,12 @@ public class Mysql {
         } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("UPSERT统计数据失败！");
+            return null;
         }
     }
 
     //把物品放到暂存库中
-    public static void addItemToTempStorage(long id, String owner, String seller, String itemDetail, String itemType, long storeTime, double price, String priceType) {
+    public static void addItemToTempStorage(long id, String owner, String seller, String itemDetail, String itemType, long storeTime, double price, String priceType, String storageType) {
         try (Connection connection = dataSource.getConnection()) {
             String query = String.format(MysqlType.INSERT_INTO_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -299,6 +301,7 @@ public class Mysql {
             preparedStatement.setLong(6, storeTime);
             preparedStatement.setDouble(7, price);
             preparedStatement.setString(8, priceType);
+            preparedStatement.setString(9,storageType);
             preparedStatement.execute();
 
 

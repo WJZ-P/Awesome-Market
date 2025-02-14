@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.entity;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.constants.StorageType;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import com.wjz.awesomemarket.sql.Mysql;
@@ -91,7 +92,7 @@ public class MarketItem {
                 //说明玩家背包满了
                 //那就需要把物品放到暂存库里
                 Mysql.addItemToTempStorage(id, player.getName(), sellerName, MarketTools.serializeItem(itemStack), String.valueOf(itemStack.getType()),
-                        Instant.now().getEpochSecond(), price, String.valueOf(priceType));
+                        Instant.now().getEpochSecond(), price, String.valueOf(priceType),String.valueOf(StorageType.WAITING_FOR_CLAIM));
                 player.sendMessage(Log.getString("add_item_to_storage"));
             }
 
@@ -110,5 +111,14 @@ public class MarketItem {
             player.sendMessage(Log.getString("buy_fail.has-been-bought"));
             return false;
         }
+    }
+    //处理购物后事项，可异步处理。
+    private void handlePostPurchase(Player player){
+        //注意这里放入暂存箱是放入卖家的暂存箱。
+        //这里可以对物品先做处理，修改下lore。
+        ItemStack cashItem
+
+        Mysql.addItemToTempStorage(id, player.getName(), sellerName, MarketTools.serializeItem(itemStack), String.valueOf(itemStack.getType()),
+                Instant.now().getEpochSecond(), price, String.valueOf(priceType),String.valueOf(StorageType.WAITING_FOR_CLAIM));
     }
 }

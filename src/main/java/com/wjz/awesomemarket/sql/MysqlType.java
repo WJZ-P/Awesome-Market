@@ -16,6 +16,7 @@ public class MysqlType {
             "\t`store_time` BIGINT(20) NOT NULL COMMENT '存入时间戳',\n" +
             "\t`price` DOUBLE NULL DEFAULT NULL,\n" +
             "\t`priceType` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
+            "\t`storageType` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n"+
             "\tPRIMARY KEY (`id`) USING BTREE,\n" +
             "\tINDEX `owner` (`owner`) USING BTREE\n" +
             ")\n" +
@@ -108,8 +109,8 @@ public class MysqlType {
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
     //插入到暂存库中
     public static String INSERT_INTO_STORAGE_TABLE = "INSERT INTO `%s` " +
-            "(id, owner, seller, item_detail, item_type, store_time, price, priceType) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            "(id, owner, seller, item_detail, item_type, store_time, price, priceType, storageType) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     //从暂存库根据玩家名选择对应物品
     public static String SELECT_ITEM_FROM_STORAGE_TABLE = "SELECT * FROM `%s` WHERE owner = ? ORDER BY store_time DESC LIMIT 45 OFFSET ?;";
     //从暂存库里面删除物品
