@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.sql;
 
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.entity.MarketItem;
+import com.wjz.awesomemarket.entity.StatisticInfo;
 import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.wjz.awesomemarket.utils.MarketTools.deserializeItem;
 
@@ -252,6 +254,32 @@ public class Mysql {
             pstmt.setInt(7, isBuy ? 1 : 0);//卖出的数量
             pstmt.executeUpdate();
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.severeDirectly("UPSERT统计数据失败！");
+        }
+    }
+
+    //根据UUID查询统计记录
+    public static StatisticInfo searchStatistic(Player player) {
+        String query = String.format(MysqlType.SELECT_FROM_STATISTIC, mysqlConfig.getString("table-prefix") + MysqlType.STATISTIC_TABLE);
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt=connection.prepareStatement(query);
+            pstmt.setString(1,player.getUniqueId().toString());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                ResultSet new_rs=rs;
+                if(!rs.next()){
+                    //如果没有记录，则创建一条默认的统计记录
+                    upsertStatistic(player,0,PriceType.MONEY,true);
+                     new_rs = pstmt.executeQuery();
+                }
+                return new StatisticInfo(new_rs.getDouble("cost_money"),
+                        new_rs.getDouble("cost_point"),
+                        new_rs.getDouble("buy_money"),
+                        new_rs.getDouble("buy_point"),
+                        new_rs.getInt("sell_count"),
+                        new_rs.getInt("buy_count"));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("UPSERT统计数据失败！");

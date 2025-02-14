@@ -5,6 +5,7 @@ import com.wjz.awesomemarket.cache.MarketCache;
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.entity.MarketItem;
+import com.wjz.awesomemarket.entity.StatisticInfo;
 import com.wjz.awesomemarket.sql.SQLFilter;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.sql.Mysql;
@@ -39,10 +40,10 @@ public class MarketHolder implements InventoryHolder {
     public static final String NEXT_PAGE_KEY = "next_page";
     public static final String COMMODITY_KEY = "commodity";
     public static final String STORAGE_KEY = "storage";
-    public static final String HELP_BOOK_KEY="help_book";
+    public static final String HELP_BOOK_KEY = "help_book";
     private static final String SORT_TYPE_KEY = "sort_type";
     private static final String PRICE_TYPE_KEY = "price_type";
-    private static final String STATISTIC_KEY="statistic";
+    private static final String STATISTIC_KEY = "statistic";
     public static final String ACTION_KEY = "gui_action";
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), MarketHolder.ACTION_KEY);
@@ -51,23 +52,26 @@ public class MarketHolder implements InventoryHolder {
     private static final int NEXT_PAGE_SLOT = 53;
     private static final int SORT_TYPE_SLOT = 47;
     private static final int CURRENCY_TYPE_SLOT = 51;
-    private static final int HELP_BOOK_SLOT=52;
+    private static final int HELP_BOOK_SLOT = 52;
+    public static final int STATISTIC_SLOT = 49;
 
     //非static变量
     private final AtomicBoolean canTurnPage = new AtomicBoolean(true);
     private final Inventory marketGUI;
     private int currentPage = 1;//默认打开第一页
     private List<MarketItem> marketItemList = new ArrayList<>();//存放物品。
-    private PriceType priceType=PriceType.ALL;//根据物品货币类型筛选
-    private SortType sortType=SortType.TIME_DESC;//默认查询时间倒序
+    private PriceType priceType = PriceType.ALL;//根据物品货币类型筛选
+    private SortType sortType = SortType.TIME_DESC;//默认查询时间倒序
     private String sellerName;//用于筛选特定玩家的物品
     private String itemType;//用于筛选特定的物品类型
-    private Player owner;//这个容器的拥有者
-    private int maxPage = MarketCache.getTotalPages(new SQLFilter(sortType,priceType,sellerName,itemType,currentPage),false);
+    private final Player owner;//这个容器的拥有者
+    private int maxPage = MarketCache.getTotalPages(new SQLFilter(sortType, priceType, sellerName, itemType, currentPage), false);
+
     @Override
     public Inventory getInventory() {
         return marketGUI;
     }
+
     //获得排序类型
     public SortType getSortType() {
         return sortType;
@@ -76,8 +80,14 @@ public class MarketHolder implements InventoryHolder {
     public void setSortType(SortType sortType) {
         this.sortType = sortType;
     }
-    public void setSellerName(String sellerName) {this.sellerName=sellerName;}
-    public void setItemType(String itemType){this.itemType=itemType;}
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
 
     //获得价格类型
     public PriceType getPriceType() {
@@ -88,10 +98,10 @@ public class MarketHolder implements InventoryHolder {
         this.priceType = priceType;
     }
 
-    public MarketHolder(Player owner,int currentPage) {
+    public MarketHolder(Player owner, int currentPage) {
         this.currentPage = currentPage;
         this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
-        this.owner=owner;
+        this.owner = owner;
         //下面对marketGUI做初始化处理
 
         //以灰色玻璃板作为默认填充
@@ -127,7 +137,7 @@ public class MarketHolder implements InventoryHolder {
         if (!canTurnPage.get()) return false;//不允许翻页就直接返回false
 
         if (currentPage >= maxPage) {
-            int newMaxPage = MarketCache.getTotalPages(new SQLFilter(sortType,priceType,sellerName,itemType,currentPage),true);
+            int newMaxPage = MarketCache.getTotalPages(new SQLFilter(sortType, priceType, sellerName, itemType, currentPage), true);
             if (maxPage != newMaxPage) {
                 //如果是最后一页，但是还有下一页，说明页数更新了
                 maxPage = newMaxPage;
@@ -148,54 +158,51 @@ public class MarketHolder implements InventoryHolder {
     public int getCurrentPage() {
         return this.currentPage;
     }
-    public void reload(){
-        this.currentPage=1;//重新设置成第一页
+
+    public void reload() {
+        this.currentPage = 1;//重新设置成第一页
         this.loadFuncBar();
         this.loadMarketItems();
     }
 
     //加载功能栏,非static是因为页数每个对象不一样
     private void loadFuncBar() {
-        this.maxPage=getTotalPages(new SQLFilter(sortType,priceType,sellerName,itemType,currentPage),false);
+        this.maxPage = getTotalPages(new SQLFilter(sortType, priceType, sellerName, itemType, currentPage), false);
         ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.PREV_PAGE_KEY, Log.getString("market-GUI.name.prev-page"),
                 Collections.singletonList(String.format(Log.getString("market-GUI.name.prev-page-lore"), this.currentPage,
-                        maxPage)),GUI_ACTION_KEY);
+                        maxPage)), GUI_ACTION_KEY);
         ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), MarketHolder.NEXT_PAGE_KEY, Log.getString("market-GUI.name.next-page"),
                 Collections.singletonList(String.format(Log.getString("market-GUI.name.next-page-lore"), this.currentPage,
-                        maxPage)),GUI_ACTION_KEY);
+                        maxPage)), GUI_ACTION_KEY);
         ItemStack storageBtn = createNavItemStack(new ItemStack(Material.ENDER_CHEST), MarketHolder.STORAGE_KEY, Log.getString("market-GUI.name.storage"),
-                Collections.singletonList(Log.getString("market-GUI.name.storage-lore")),GUI_ACTION_KEY);
-        ItemStack helpBook=createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK),HELP_BOOK_KEY,Log.getString("market-GUI.name.help-book"),
-                Log.getStringList("market-GUI.name.help-book-lore"),GUI_ACTION_KEY);
-
-
+                Collections.singletonList(Log.getString("market-GUI.name.storage-lore")), GUI_ACTION_KEY);
+        ItemStack helpBook = createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK), HELP_BOOK_KEY, Log.getString("market-GUI.name.help-book"),
+                Log.getStringList("market-GUI.name.help-book-lore"), GUI_ACTION_KEY);
 
         //这里设置对应的lore
-        List<String> sortLore=Log.getStringList("market-GUI.name.sort-type-lore");
+        List<String> sortLore = Log.getStringList("market-GUI.name.sort-type-lore");
         sortLore.replaceAll(s -> s.replace("%sort%", sortType.getString()));
-        List<String> priceLore=Log.getStringList("market-GUI.name.currency-type-lore");
-        priceLore.replaceAll(s -> s.replace("%currency%",priceType.getName()));
-        List<String> statisticLore=Log.getStringList("market-GUI.name.statistic-lore").replaceAll(s->
-                s.replace("%player%",owner.getName())
-                        .replace("%buy_count%",));
+        List<String> priceLore = Log.getStringList("market-GUI.name.currency-type-lore");
+        priceLore.replaceAll(s -> s.replace("%currency%", priceType.getName()));
+
 
         ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), MarketHolder.SORT_TYPE_KEY, Log.getString("market-GUI.name.sort-type"),
-                sortLore,GUI_ACTION_KEY);
+                sortLore, GUI_ACTION_KEY);
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
-                priceLore,GUI_ACTION_KEY);
-        ItemStack statisticItem= createNavItemStack(UsefulTools.getPlayerHead(owner),STATISTIC_KEY,Log.getString("market-GUI.name.statistic"),
-                statisticLore,GUI_ACTION_KEY);//展示统计信息
+                priceLore, GUI_ACTION_KEY);
+        ItemStack statisticItem = createNavItemStack(UsefulTools.getPlayerHead(owner), STATISTIC_KEY, Log.getString("market-GUI.name.statistic"),
+                Log.getStringList("market-GUI.name.statistic-loading"), GUI_ACTION_KEY);//展示统计信息
 
         //如果不是默认排序。物品就带附魔颜色
-        if(sortType!=SortType.TIME_DESC){
-            ItemMeta meta=sortTypeBtn.getItemMeta();
-            meta.addEnchant(Enchantment.UNBREAKING,1,true);
+        if (sortType != SortType.TIME_DESC) {
+            ItemMeta meta = sortTypeBtn.getItemMeta();
+            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             sortTypeBtn.setItemMeta(meta);
         }
-        if(priceType!=PriceType.ALL){
-            ItemMeta meta=currencyTypeBtn.getItemMeta();
-            meta.addEnchant(Enchantment.UNBREAKING,1,true);
+        if (priceType != PriceType.ALL) {
+            ItemMeta meta = currencyTypeBtn.getItemMeta();
+            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             currencyTypeBtn.setItemMeta(meta);
         }
@@ -203,9 +210,33 @@ public class MarketHolder implements InventoryHolder {
         this.marketGUI.setItem(MarketHolder.PREV_PAGE_SLOT, prevBtn);
         this.marketGUI.setItem(MarketHolder.NEXT_PAGE_SLOT, nextBtn);
         this.marketGUI.setItem(MarketHolder.STORAGE_SLOT, storageBtn);
-        this.marketGUI.setItem(HELP_BOOK_SLOT,helpBook);
-        this.marketGUI.setItem(SORT_TYPE_SLOT,sortTypeBtn);
-        this.marketGUI.setItem(CURRENCY_TYPE_SLOT,currencyTypeBtn);
+        this.marketGUI.setItem(HELP_BOOK_SLOT, helpBook);
+        this.marketGUI.setItem(SORT_TYPE_SLOT, sortTypeBtn);
+        this.marketGUI.setItem(CURRENCY_TYPE_SLOT, currencyTypeBtn);
+        this.marketGUI.setItem(STATISTIC_SLOT, statisticItem);
+
+        //这里用异步任务来异步更新统计数据
+        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
+            //获取统计数据
+            StatisticInfo statisticInfo = Mysql.searchStatistic(owner);
+            List<String> statisticLore = Log.getStringList("market-GUI.name.statistic-lore");
+            statisticLore.replaceAll(s -> s.replace("%buy_count%", String.valueOf(statisticInfo.buy_count)
+                    .replace("%sell_count%",String.valueOf(statisticInfo.sell_count))
+                    .replace("%money%",String.format("%.2f",statisticInfo.cost_money))
+                    .replace("%point%",String.format("%.2f",statisticInfo.cost_point))
+                    .replace("%currency_money%",PriceType.MONEY.getName())
+                    .replace("%currency_point%",PriceType.POINT.getName())
+                    .replace("%money_get%",String.format("%.2f",statisticInfo.buy_money))
+                    .replace("%point_get%",String.format("%.2f",statisticInfo.buy_point))
+            ));
+            ItemMeta meta=statisticItem.getItemMeta();
+            meta.setLore(statisticLore);
+            statisticItem.setItemMeta(meta);
+            //设置完成后使用同步进行物品栏的更新
+            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(),()->{
+               marketGUI.setItem(STATISTIC_SLOT,statisticItem);
+            });
+        });
     }
 
     //加载物品
@@ -214,7 +245,7 @@ public class MarketHolder implements InventoryHolder {
         //使用异步方法来填充物品。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //获取物品
-            this.marketItemList = Mysql.getMarketItems(new SQLFilter(sortType,priceType,sellerName,itemType,currentPage));
+            this.marketItemList = Mysql.getMarketItems(new SQLFilter(sortType, priceType, sellerName, itemType, currentPage));
 
             //获取完毕后，切换回主线程更新UI
             Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
@@ -222,7 +253,7 @@ public class MarketHolder implements InventoryHolder {
                 for (MarketItem marketItem : this.marketItemList) {
                     if (slot >= 45) break;
                     //下面开始设置UI里面的物品
-                    ItemStack itemStack=marketItem.getItemStack().clone();
+                    ItemStack itemStack = marketItem.getItemStack().clone();
                     ItemMeta meta = itemStack.getItemMeta();
                     List<String> oldLore = itemStack.getLore();
                     if (oldLore == null) oldLore = new ArrayList<>();

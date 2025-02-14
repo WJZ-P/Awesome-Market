@@ -86,7 +86,8 @@ market-GUI:
       - §a§l点击购买
       - §8=========================
 
-    statistic: §6%player%
+    statistic: §6统计数据
+    statistic-loading: §c正在加载...
     statistic-lore:
       - "§3统计数据"
       - ""
@@ -95,6 +96,9 @@ market-GUI:
       - "§c总花费:"
       - " §e%money% §6%currency_money%"
       - " §e%point% §6%currency_point%"
+      - "§c总收入:"
+      - " §e%money_get% §6%currency_money%"
+      - " §e%point_get% §6%currency_point%"
 
 confirm-GUI:
   buy:
