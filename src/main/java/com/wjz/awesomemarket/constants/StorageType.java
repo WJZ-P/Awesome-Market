@@ -6,6 +6,9 @@ public enum StorageType {
     //被下架的物品
     DELISTED {},
     //物品被购买后，金额放在此处。
-    RECEIPT{}
-    ;
+    RECEIPT {};
+
+    public static StorageType getType(String type) {
+        return valueOf(type.toUpperCase());
+    }
 }

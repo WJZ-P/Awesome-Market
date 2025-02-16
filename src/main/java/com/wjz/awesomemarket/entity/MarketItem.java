@@ -12,6 +12,7 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -136,51 +137,55 @@ public class MarketItem {
     private void handlePostPurchase(Player customer) {
         //下面创建交易单数据。
         Mysql.addTradeTransaction(MarketTools.serializeItem(itemStack),
-                String.valueOf(itemStack.getType()), sellerName, customer.getName(), String.valueOf(priceType), price);
+                String.valueOf(itemStack.getType()), sellerName, customer.getName(), String.valueOf(priceType), price,0);
         //然后更新统计数据
         Mysql.upsertStatistic(customer.getUniqueId(), price, priceType, true);//这个是给买家更新数据。
         Mysql.upsertStatistic(Bukkit.getOfflinePlayer(sellerName).getUniqueId(), price, priceType, false);//这个是给卖家更新数据。
         //注意这里放入暂存箱是放入卖家的暂存箱。
 
-        //这里可以对物品先做处理，修改下lore。
-        ItemStack receipt = new ItemStack(Material.PAPER);
-        ItemMeta meta = receipt.getItemMeta();
-        meta.addEnchant(Enchantment.UNBREAKING, 1, true);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        //设置翻译键
-        meta.displayName(Component.text(Log.getString("storage-GUI.receipt")));
-        //先获取lore
-        List<String> receiptLore = Log.getStringList("storage-GUI.receipt-lore");
-        //然后设置物品的lore
-        List<Component> lore = new ArrayList<>();
-        //先初始化一下要用到的时间
-        String formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
-        for (String text : receiptLore) {
-            Component component = Component.text(text).replaceText(b -> b.matchLiteral("%item%")
-                            .replacement(itemStack.getItemMeta().hasDisplayName() ? itemStack.displayName() : Component.translatable(itemStack.getType().translationKey())
-                                    .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())))
-                    .replaceText(b -> b.matchLiteral("%money%").replacement(String.format("%.2f", price))
-                            .matchLiteral("%currency%").replacement(priceType.getName())
-                            .matchLiteral("%player%").replacement(sellerName)
-                            .matchLiteral("%time%").replacement(formattedDateTime));
-            lore.add(component);
-        }
-        meta.lore(lore);
-        receipt.setItemMeta(meta);
-
-        //这里物品的主人也是卖家
-        Mysql.addItemToTempStorage(sellerName, sellerName, MarketTools.serializeItem(receipt), String.valueOf(Material.PAPER),
-                Instant.now().getEpochSecond(), price, String.valueOf(priceType), String.valueOf(StorageType.RECEIPT));
+//        //这里可以对物品先做处理，修改下lore。
+//        ItemStack receipt = new ItemStack(Material.PAPER);
+//        ItemMeta meta = receipt.getItemMeta();
+//        meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+//        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+//        //设置翻译键
+//        meta.displayName(Component.text(Log.getString("storage-GUI.receipt")));
+//        //先获取lore
+//        List<String> receiptLore = Log.getStringList("storage-GUI.receipt-lore");
+//        //然后设置物品的lore
+//        List<Component> lore = new ArrayList<>();
+//        //先初始化一下要用到的时间
+//        String formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+//        for (String text : receiptLore) {
+//            Component component = Component.text(text).replaceText(b -> b.matchLiteral("%item%")
+//                            .replacement(itemStack.getItemMeta().hasDisplayName() ? itemStack.displayName() : Component.translatable(itemStack.getType().translationKey())
+//                                    .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())))
+//                    .replaceText(b -> b.matchLiteral("%money%").replacement(String.format("%.2f", price))
+//                            .matchLiteral("%currency%").replacement(priceType.getName())
+//                            .matchLiteral("%player%").replacement(sellerName)
+//                            .matchLiteral("%time%").replacement(formattedDateTime));
+//            lore.add(component);
+//        }
+//        meta.lore(lore);
+//        receipt.setItemMeta(meta);
 
         //然后需要给卖家这边发送消息，如果在线的话
         Player seller = Bukkit.getPlayer(sellerName);
         if (seller == null) return;
-        //配置好需要发送给卖家的消息
-        Component componentText = Component.text(Log.getString("tip.item-is-sold"))
-                .replaceText(b -> b.matchLiteral("%item%").replacement(itemStack.getItemMeta().hasDisplayName() ? itemStack.displayName()
-                        : Component.translatable(itemStack.getType().translationKey())
-                        .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent()))
-                        .matchLiteral("%buyer%").replacement(sellerName));
-        seller.sendMessage(componentText);
+
+        //下面处理卖家在线的情况
+
+        //告诉卖家物品已经被购买
+        String msg=Log.getString("tip.item-is-sold").replace("%buyer%",customer.getName());
+        Component message = Component.text(msg).replaceText(b -> b.matchLiteral("%item%")
+                .replacement(Component.translatable(itemStack.getType().translationKey())
+                        .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())));
+        seller.sendMessage(message);
+        seller.playSound(seller.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+        seller.playSound(seller.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
+
+        Mysql.claimTransaction(sellerName);
+
+
     }
 }

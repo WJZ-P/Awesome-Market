@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.inventoryHolder;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.SkullType;
+import com.wjz.awesomemarket.constants.StorageType;
 import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.sql.Mysql;
@@ -9,6 +10,7 @@ import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -35,7 +37,8 @@ public class StorageHolder implements InventoryHolder {
     public static final String PREV_PAGE_KEY = "prev_page";
     public static final String NEXT_PAGE_KEY = "next_page";
     public static final String MARKET_KEY = "market";
-    public static final String STORAGE_ITEM_KEY = "storage_item";
+    public static final String WAITING_FOR_CLAIM_KEY = "waiting_for_claim";
+    public static final String RECEIPT_KEY = "receipt";
     private static final int PREV_PAGE_SLOT = 45;
     private static final int NEXT_PAGE_SLOT = 53;
     private static final int MARKET_SLOT = 49;
@@ -116,30 +119,40 @@ public class StorageHolder implements InventoryHolder {
                 for (StorageItem storageItem : storageList) {
                     if (slot >= 45) break;
 
-                    //要给itemstack设置一些属性
-                    ItemStack itemStack = storageItem.getItemStack().clone();
-                    ItemMeta meta = itemStack.getItemMeta();
-                    List<String> oldLore = itemStack.getLore();
-                    if (oldLore == null) oldLore = new ArrayList<>();
-                    List<String> lore = Log.getStringList("storage-GUI.item");
-                    for (int i = 0; i < lore.size(); i++) {
-                        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(storageItem.getPurchaseTime()), ZoneId.systemDefault());
+                    //下面根据不同的storage类型进行操作
+                    switch (storageItem.getStorageType()){
+                        case StorageType.WAITING_FOR_CLAIM -> {
+                            //等待领取的物品
 
-                        lore.set(i, lore.get(i)
-                                .replace("%buy_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                                .replace("%price%", String.valueOf(storageItem.getPrice()))
-                                .replace("%currency%", storageItem.getPriceType().getName())
-                                .replace("%player%", storageItem.getSeller()));
+                            //要给itemstack设置一些属性
+                            ItemStack itemStack = storageItem.getItemStack().clone();
+                            ItemMeta meta = itemStack.getItemMeta();
+                            List<String> oldLore = itemStack.getLore();
+                            if (oldLore == null) oldLore = new ArrayList<>();
+                            List<String> lore = Log.getStringList("storage-GUI.item");
+                            for (int i = 0; i < lore.size(); i++) {
+                                LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(storageItem.getPurchaseTime()), ZoneId.systemDefault());
+
+                                lore.set(i, lore.get(i)
+                                        .replace("%buy_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                                        .replace("%price%", String.valueOf(storageItem.getPrice()))
+                                        .replace("%currency%", storageItem.getPriceType().getName())
+                                        .replace("%player%", storageItem.getSeller()));
+                            }
+                            //商品lore添加完毕后追加到原lore后
+                            oldLore.addAll(lore);
+                            meta.setLore(oldLore);
+                            //添加商品的NBT标签
+                            meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, WAITING_FOR_CLAIM_KEY);
+                            //设置好的meta数据写入到item中
+                            itemStack.setItemMeta(meta);
+                            storageGUI.setItem(slot, itemStack);
+                            slot++;
+                            break;
+                        }
                     }
-                    //商品lore添加完毕后追加到原lore后
-                    oldLore.addAll(lore);
-                    meta.setLore(oldLore);
-                    //添加商品的NBT标签
-                    meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, STORAGE_ITEM_KEY);
-                    //设置好的meta数据写入到item中
-                    itemStack.setItemMeta(meta);
-                    storageGUI.setItem(slot, itemStack);
-                    slot++;
+
+
                 }
                 if (slot < 45) {//物品不足一页时填充
                     //以灰色玻璃板作为默认填充

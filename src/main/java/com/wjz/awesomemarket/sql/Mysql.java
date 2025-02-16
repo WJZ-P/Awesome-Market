@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.sql;
 
 import com.wjz.awesomemarket.constants.PriceType;
+import com.wjz.awesomemarket.constants.StorageType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StatisticInfo;
 import com.wjz.awesomemarket.entity.StorageItem;
@@ -8,6 +9,8 @@ import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -219,7 +222,7 @@ public class Mysql {
     }
 
     //交易完成后要增加交易记录
-    public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price) {
+    public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price,int isClaimed) {
         try (Connection connection = dataSource.getConnection()) {
             String query = String.format(MysqlType.INSERT_INTO_TRANSACTION, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -230,12 +233,50 @@ public class Mysql {
             preparedStatement.setString(5, payment);
             preparedStatement.setDouble(6, price);
             preparedStatement.setLong(7, System.currentTimeMillis());
-
+            preparedStatement.setInt(8,isClaimed);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("创建交易单失败！");
+        }
+    }
+    //根据卖家的玩家名更新单据。同时给卖家钱。必须保证卖家是在线的
+    public static void claimTransaction(String sellerName) {
+        try (Connection connection = dataSource.getConnection()) {
+            //首先要先查询出所有需要确认的单据
+            String query = String.format(MysqlType.SELECT_UNCLAIMED_TRANSACTION_BY_SELLER, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1,sellerName);
+            //先把所有未确认的账单确认。给玩家钱
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    //下面准备给钱
+                    double price=rs.getDouble("price");
+                    PriceType priceType=PriceType.getType(rs.getString("payment"));
+                    Player seller= Bukkit.getPlayer(sellerName);
+                    priceType.give(seller,price);
+
+                    //这里准备发送信息
+                    ItemStack itemStack=deserializeItem(rs.getString("item_detail"));
+                    String receiveTip=Log.getString("tip.receive-money").
+                            replace("%money%",String.format("%,.2f",price)).replace("%currency%",priceType.getName());
+                    Component message = Component.text(receiveTip).replaceText(b -> b.matchLiteral("%item%")
+                            .replacement(Component.translatable(itemStack.getType().translationKey())
+                                    .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())));
+
+                    seller.sendMessage(message);
+                }
+            }
+            //然后更新所有未确认账单为确认
+            query = String.format(MysqlType.UPDATE_TRANSACTION_BY_SELLER, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
+            pstmt = connection.prepareStatement(query);
+            pstmt.setString(1,sellerName);
+            pstmt.execute();
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+            Log.severeDirectly("单据更新失败！");
         }
     }
 
@@ -339,7 +380,8 @@ public class Mysql {
                     PriceType priceType = PriceType.getType(rs.getString("priceType"));
                     long purchaseTime = rs.getLong("store_time");
                     long id = rs.getLong("id");
-                    StorageItem storageItem = new StorageItem(id, MarketTools.deserializeItem(itemDetail), seller, purchaseTime, price, priceType);
+                    StorageType storageType=StorageType.getType(rs.getString("storageType"));
+                    StorageItem storageItem = new StorageItem(id, MarketTools.deserializeItem(itemDetail), seller, purchaseTime, price, priceType,storageType);
                     storageItemList.add(storageItem);
                 }
             }

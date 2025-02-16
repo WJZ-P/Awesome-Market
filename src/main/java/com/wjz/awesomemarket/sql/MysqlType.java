@@ -71,6 +71,7 @@ public class MysqlType {
             "\t`payment` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
             "\t`price` DOUBLE UNSIGNED NULL DEFAULT NULL,\n" +
             "\t`trade_time` BIGINT(20) NULL DEFAULT NULL,\n" +
+            "\t`isClaimed` TINYINT(3) UNSIGNED ZEROFILL NOT NULL,"+
             "\tPRIMARY KEY (`id`) USING BTREE\n" +
             ")\n" +
             "COMMENT='记录玩家之间的交易记录\\r\\nRecord trades between players.'\n" +
@@ -105,8 +106,13 @@ public class MysqlType {
     public static String DELETE_ITEM_FROM_MARKET = "DELETE FROM `%s` WHERE ID = ?";
     //插入交易记录
     public static String INSERT_INTO_TRANSACTION = "INSERT INTO `%s` " +
-            "(item_detail, item_type, seller, buyer, payment, price, trade_time) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            "(item_detail, item_type, seller, buyer, payment, price, trade_time, isClaimed) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    //根据seller名查询交易记录
+    public static String SELECT_UNCLAIMED_TRANSACTION_BY_SELLER = "SELECT * FROM `%s` WHERE seller = ? AND isClaimed = 0;";
+    //根据玩家名更新交易记录，设置成已确认
+    public static String UPDATE_TRANSACTION_BY_SELLER = "UPDATE `%s` SET isClaimed = 1 WHERE seller = ? AND isClaimed = 0;";
+
     //插入到暂存库中
     public static String INSERT_INTO_STORAGE_TABLE = "INSERT INTO `%s` " +
             "(owner, seller, item_detail, item_type, store_time, price, priceType, storageType) " +
