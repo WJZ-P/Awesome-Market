@@ -109,8 +109,8 @@ public class MysqlType {
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
     //插入到暂存库中
     public static String INSERT_INTO_STORAGE_TABLE = "INSERT INTO `%s` " +
-            "(id, owner, seller, item_detail, item_type, store_time, price, priceType, storageType) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "(owner, seller, item_detail, item_type, store_time, price, priceType, storageType) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     //从暂存库根据玩家名选择对应物品
     public static String SELECT_ITEM_FROM_STORAGE_TABLE = "SELECT * FROM `%s` WHERE owner = ? ORDER BY store_time DESC LIMIT 45 OFFSET ?;";
     //从暂存库里面删除物品
@@ -122,9 +122,11 @@ public class MysqlType {
             "cost_money = cost_money + VALUES(cost_money), " +
             "cost_point = cost_point + VALUES(cost_point), " +
             "buy_money = buy_money + VALUES(buy_money), " +
-            "buy_point = buy_point + VALUES(buy_point)" +
+            "buy_point = buy_point + VALUES(buy_point)," +
             "sell_count = sell_count + VALUES(sell_count), " +
             "buy_count = buy_count + VALUES(buy_count)";
     //根据uuid查询统计记录
     public static String SELECT_FROM_STATISTIC = "SELECT * FROM `%s` WHERE player_uuid = ?";
+    //插入记录行
+    public static String INSERT_INTO_STATISTIC = "INSERT INTO `%s` (player_uuid) VALUES (?)";
 }

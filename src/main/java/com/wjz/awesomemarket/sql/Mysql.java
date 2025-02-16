@@ -1,7 +1,6 @@
 package com.wjz.awesomemarket.sql;
 
 import com.wjz.awesomemarket.constants.PriceType;
-import com.wjz.awesomemarket.constants.StorageType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StatisticInfo;
 import com.wjz.awesomemarket.entity.StorageItem;
@@ -241,12 +240,25 @@ public class Mysql {
     }
 
     //交易完成后还需要增加统计记录
-    public static void upsertStatistic(Player player, double price, PriceType priceType, boolean isBuy) {
+    public static void upsertStatistic(UUID playerUUID, double price, PriceType priceType, boolean isBuy) {
         String query = String.format(MysqlType.UPSERT_STATISTIC, mysqlConfig.getString("table-prefix") + MysqlType.STATISTIC_TABLE);
         boolean isMoney = String.valueOf(priceType).equalsIgnoreCase("money");
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement pstmt = connection.prepareStatement(query);
-            pstmt.setString(1, player.getUniqueId().toString());
+
+            if(price==0){//说明是新建数据
+                pstmt.setString(1, playerUUID.toString());
+                pstmt.setDouble(2, 0);
+                pstmt.setDouble(3, 0);
+                pstmt.setDouble(4, 0);
+                pstmt.setDouble(5, 0);
+                pstmt.setInt(6, 0);
+                pstmt.setInt(7, 0);
+                pstmt.executeUpdate();
+                return;
+            }
+
+            pstmt.setString(1, playerUUID.toString());//用户的UUID
             pstmt.setDouble(2, isBuy ? 0 : isMoney ? price : 0);//花费的钱
             pstmt.setDouble(3, isBuy ? 0 : isMoney ? 0 : price);//花费的点券
             pstmt.setDouble(4, isBuy ? isMoney ? 0 : price : 0);//购买的钱
@@ -271,8 +283,9 @@ public class Mysql {
                 ResultSet new_rs=rs;
                 if(!rs.next()){
                     //如果没有记录，则创建一条默认的统计记录
-                    upsertStatistic(player,0,PriceType.MONEY,true);
+                    upsertStatistic(player.getUniqueId(),0,PriceType.MONEY,true);
                      new_rs = pstmt.executeQuery();
+                     new_rs.next();
                 }
                 return new StatisticInfo(new_rs.getDouble("cost_money"),
                         new_rs.getDouble("cost_point"),
@@ -289,19 +302,18 @@ public class Mysql {
     }
 
     //把物品放到暂存库中
-    public static void addItemToTempStorage(long id, String owner, String seller, String itemDetail, String itemType, long storeTime, double price, String priceType, String storageType) {
+    public static void addItemToTempStorage(String owner, String seller, String itemDetail, String itemType, long storeTime, double price, String priceType, String storageType) {
         try (Connection connection = dataSource.getConnection()) {
             String query = String.format(MysqlType.INSERT_INTO_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setLong(1, id);
-            preparedStatement.setString(2, owner);
-            preparedStatement.setString(3, seller);
-            preparedStatement.setString(4, itemDetail);
-            preparedStatement.setString(5, itemType);
-            preparedStatement.setLong(6, storeTime);
-            preparedStatement.setDouble(7, price);
-            preparedStatement.setString(8, priceType);
-            preparedStatement.setString(9,storageType);
+            preparedStatement.setString(1, owner);
+            preparedStatement.setString(2, seller);
+            preparedStatement.setString(3, itemDetail);
+            preparedStatement.setString(4, itemType);
+            preparedStatement.setLong(5, storeTime);
+            preparedStatement.setDouble(6, price);
+            preparedStatement.setString(7, priceType);
+            preparedStatement.setString(8,storageType);
             preparedStatement.execute();
 
 

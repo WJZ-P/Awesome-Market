@@ -190,7 +190,7 @@ public class MarketHolder implements InventoryHolder {
                 sortLore, GUI_ACTION_KEY);
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
                 priceLore, GUI_ACTION_KEY);
-        ItemStack statisticItem = createNavItemStack(UsefulTools.getPlayerHead(owner), STATISTIC_KEY, Log.getString("market-GUI.name.statistic"),
+        ItemStack statisticItem = createNavItemStack(UsefulTools.getPlayerHead(owner), STATISTIC_KEY, Log.getString("market-GUI.name.statistic").replace("%player%",owner.getName()),
                 Log.getStringList("market-GUI.name.statistic-loading"), GUI_ACTION_KEY);//展示统计信息
 
         //如果不是默认排序。物品就带附魔颜色
@@ -220,7 +220,7 @@ public class MarketHolder implements InventoryHolder {
             //获取统计数据
             StatisticInfo statisticInfo = Mysql.searchStatistic(owner);
             List<String> statisticLore = Log.getStringList("market-GUI.name.statistic-lore");
-            statisticLore.replaceAll(s -> s.replace("%buy_count%", String.valueOf(statisticInfo.buy_count)
+            statisticLore.replaceAll(s -> s.replace("%buy_count%", String.valueOf(statisticInfo.buy_count))
                     .replace("%sell_count%",String.valueOf(statisticInfo.sell_count))
                     .replace("%money%",String.format("%.2f",statisticInfo.cost_money))
                     .replace("%point%",String.format("%.2f",statisticInfo.cost_point))
@@ -228,7 +228,7 @@ public class MarketHolder implements InventoryHolder {
                     .replace("%currency_point%",PriceType.POINT.getName())
                     .replace("%money_get%",String.format("%.2f",statisticInfo.buy_money))
                     .replace("%point_get%",String.format("%.2f",statisticInfo.buy_point))
-            ));
+            );
             ItemMeta meta=statisticItem.getItemMeta();
             meta.setLore(statisticLore);
             statisticItem.setItemMeta(meta);
