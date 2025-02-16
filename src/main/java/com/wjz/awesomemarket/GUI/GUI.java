@@ -14,6 +14,11 @@ public class GUI {
         player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 0.6f);
         player.openInventory(new MarketHolder(player,1).getInventory());
     }
+    public static void openMarket(Player player, int page) {
+        //播放声音
+        player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 0.6f);
+        player.openInventory(new MarketHolder(player,page).getInventory());
+    }
 
     public static void openConfirm(Player player,MarketHolder marketHolder, int slot) {
         //播放声音

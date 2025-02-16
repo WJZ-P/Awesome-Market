@@ -42,7 +42,7 @@ public enum ConfirmGUIAction {
                 player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
                         getHolder()).getMarketPage()).getInventory());
             }else{
-                //购买失败了，说明东西已经被买走了
+                //购买失败，物品已经不在数据库或无法购买自己物品
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.0F);
                 player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
                         getHolder()).getMarketPage()).getInventory());

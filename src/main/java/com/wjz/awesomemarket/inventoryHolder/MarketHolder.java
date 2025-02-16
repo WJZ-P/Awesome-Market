@@ -190,7 +190,7 @@ public class MarketHolder implements InventoryHolder {
                 sortLore, GUI_ACTION_KEY);
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
                 priceLore, GUI_ACTION_KEY);
-        ItemStack statisticItem = createNavItemStack(UsefulTools.getPlayerHead(owner), STATISTIC_KEY, Log.getString("market-GUI.name.statistic").replace("%player%",owner.getName()),
+        ItemStack statisticItem = createNavItemStack(UsefulTools.getPlayerHead(owner), STATISTIC_KEY, Log.getString("market-GUI.name.statistic").replace("%player%", owner.getName()),
                 Log.getStringList("market-GUI.name.statistic-loading"), GUI_ACTION_KEY);//展示统计信息
 
         //如果不是默认排序。物品就带附魔颜色
@@ -221,20 +221,20 @@ public class MarketHolder implements InventoryHolder {
             StatisticInfo statisticInfo = Mysql.searchStatistic(owner);
             List<String> statisticLore = Log.getStringList("market-GUI.name.statistic-lore");
             statisticLore.replaceAll(s -> s.replace("%buy_count%", String.valueOf(statisticInfo.buy_count))
-                    .replace("%sell_count%",String.valueOf(statisticInfo.sell_count))
-                    .replace("%money%",String.format("%.2f",statisticInfo.cost_money))
-                    .replace("%point%",String.format("%.2f",statisticInfo.cost_point))
-                    .replace("%currency_money%",PriceType.MONEY.getName())
-                    .replace("%currency_point%",PriceType.POINT.getName())
-                    .replace("%money_get%",String.format("%.2f",statisticInfo.buy_money))
-                    .replace("%point_get%",String.format("%.2f",statisticInfo.buy_point))
+                    .replace("%sell_count%", String.valueOf(statisticInfo.sell_count))
+                    .replace("%money%", String.format("%.2f", statisticInfo.cost_money))
+                    .replace("%point%", String.format("%.2f", statisticInfo.cost_point))
+                    .replace("%currency_money%", PriceType.MONEY.getName())
+                    .replace("%currency_point%", PriceType.POINT.getName())
+                    .replace("%money_get%", String.format("%.2f", statisticInfo.buy_money))
+                    .replace("%point_get%", String.format("%.2f", statisticInfo.buy_point))
             );
-            ItemMeta meta=statisticItem.getItemMeta();
+            ItemMeta meta = statisticItem.getItemMeta();
             meta.setLore(statisticLore);
             statisticItem.setItemMeta(meta);
             //设置完成后使用同步进行物品栏的更新
-            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(),()->{
-               marketGUI.setItem(STATISTIC_SLOT,statisticItem);
+            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
+                marketGUI.setItem(STATISTIC_SLOT, statisticItem);
             });
         });
     }
@@ -259,7 +259,7 @@ public class MarketHolder implements InventoryHolder {
                     if (oldLore == null) oldLore = new ArrayList<>();
 
                     //要给物品上描述信息
-                    List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity");
+                    List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity.lore");
                     //添加lore
                     //price,currency,player,on_sell_time
 
@@ -271,11 +271,13 @@ public class MarketHolder implements InventoryHolder {
                     String seller = marketItem.getSellerName();
                     double price = marketItem.getPrice();
                     PriceType priceType = marketItem.getPriceType();
-
+                    boolean isSelfItem = owner.getName().equals(marketItem.getSellerName());//是否是自己的物品
                     //修改要展示到UI上的物品描述
                     commodityLore.replaceAll(s -> s.replace("%player%", seller)
                             .replace("%price%", String.format("%.2f", price))
                             .replace("%currency%", priceType.getName())
+                            .replace("%operation%", isSelfItem ? Log.getString("market-GUI.name.commodity.unlisted")
+                                    : Log.getString("market-GUI.name.commodity.buy"))
                             .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
                     //商品lore添加完毕后追加到原lore后
                     oldLore.addAll(commodityLore);
