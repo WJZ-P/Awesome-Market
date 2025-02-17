@@ -82,7 +82,7 @@ public enum MarketGUIAction {
                             });
                             player.sendMessage(Log.getString("tip.unlisted-storage"));
                         }
-                        player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_CLOSE, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
                         //下架完成后要重新打开市场UI
                         GUI.openMarket(player, marketHolder.getCurrentPage());
 

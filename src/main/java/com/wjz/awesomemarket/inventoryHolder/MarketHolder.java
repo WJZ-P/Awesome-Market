@@ -272,6 +272,7 @@ public class MarketHolder implements InventoryHolder {
                     double price = marketItem.getPrice();
                     PriceType priceType = marketItem.getPriceType();
                     boolean isSelfItem = owner.getName().equals(marketItem.getSellerName());//是否是自己的物品
+
                     //修改要展示到UI上的物品描述
                     commodityLore.replaceAll(s -> s.replace("%player%", seller)
                             .replace("%price%", String.format("%.2f", price))

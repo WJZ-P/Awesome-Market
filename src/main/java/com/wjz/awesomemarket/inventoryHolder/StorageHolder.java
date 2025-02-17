@@ -39,6 +39,7 @@ public class StorageHolder implements InventoryHolder {
     public static final String MARKET_KEY = "market";
     public static final String WAITING_FOR_CLAIM_KEY = "waiting_for_claim";
     public static final String RECEIPT_KEY = "receipt";
+    public static final String DELISTED_KEY = "delisted_item";
     private static final int PREV_PAGE_SLOT = 45;
     private static final int NEXT_PAGE_SLOT = 53;
     private static final int MARKET_SLOT = 49;
@@ -130,9 +131,8 @@ public class StorageHolder implements InventoryHolder {
                             List<String> oldLore = itemStack.getLore();
                             if (oldLore == null) oldLore = new ArrayList<>();
                             List<String> lore = Log.getStringList("storage-GUI.item");
+                            LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(storageItem.getPurchaseTime()), ZoneId.systemDefault());
                             for (int i = 0; i < lore.size(); i++) {
-                                LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(storageItem.getPurchaseTime()), ZoneId.systemDefault());
-
                                 lore.set(i, lore.get(i)
                                         .replace("%buy_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                                         .replace("%price%", String.valueOf(storageItem.getPrice()))
@@ -148,7 +148,31 @@ public class StorageHolder implements InventoryHolder {
                             itemStack.setItemMeta(meta);
                             storageGUI.setItem(slot, itemStack);
                             slot++;
-                            break;
+                        }
+                        case StorageType.DELISTED -> {
+                            //下架的物品
+                            ItemStack itemStack = storageItem.getItemStack().clone();
+                            ItemMeta meta = itemStack.getItemMeta();
+                            List<String> oldLore = itemStack.getLore();
+                            if (oldLore == null) oldLore = new ArrayList<>();
+                            List<String> lore = Log.getStringList("storage-GUI.unlisted-item");
+                            LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(storageItem.getPurchaseTime()), ZoneId.systemDefault());
+                            for (int i = 0; i < lore.size(); i++) {
+                                lore.set(i, lore.get(i)
+                                        .replace("%time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                                        .replace("%price%", String.valueOf(storageItem.getPrice()))
+                                        .replace("%currency%", storageItem.getPriceType().getName())
+                                        .replace("%player%", storageItem.getSeller()));
+                            }
+                            //商品lore添加完毕后追加到原lore后
+                            oldLore.addAll(lore);
+                            meta.setLore(oldLore);
+                            //添加商品的NBT标签
+                            meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, DELISTED_KEY);
+                            //设置好的meta数据写入到item中
+                            itemStack.setItemMeta(meta);
+                            storageGUI.setItem(slot, itemStack);
+                            slot++;
                         }
                     }
 
