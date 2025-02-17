@@ -103,25 +103,24 @@ public class MarketHolder implements InventoryHolder {
         this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
         this.owner = owner;
         //下面对marketGUI做初始化处理
-
-        //以灰色玻璃板作为默认填充
-        ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        ItemMeta bgMeta = background.getItemMeta();
-        bgMeta.setDisplayName(" ");
-        background.setItemMeta(bgMeta);
-        //填充背景板
-        for (int i = 0; i < 54; i++) {
-            marketGUI.setItem(i, background);
-        }
-
+        loadBackground(0,54);
         //加载功能栏
         this.loadFuncBar();
         //加载物品
         this.loadMarketItems();
     }
 
-    public void clean() {
-        marketGUI.clear();
+    public MarketHolder(Player owner, String sellerName, int currentPage) {
+        this.sellerName = sellerName;
+        this.currentPage = currentPage;
+        this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
+        this.owner = owner;
+        //下面对marketGUI做初始化处理
+        loadBackground(0,54);
+        //加载功能栏
+        this.loadFuncBar();
+        //加载物品
+        this.loadMarketItems();
     }
 
     public boolean turnPrevPage() {
@@ -291,17 +290,22 @@ public class MarketHolder implements InventoryHolder {
                     slot++;
                 }
                 if (slot < 45) {//物品不足一页时填充
-                    //以灰色玻璃板作为默认填充
-                    ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-                    ItemMeta bgMeta = background.getItemMeta();
-                    bgMeta.setDisplayName(" ");
-                    background.setItemMeta(bgMeta);
-                    for (int i = slot; i < 45; i++) {
-                        marketGUI.setItem(i, background);
-                    }
+                    loadBackground(slot, 45);
                 }
                 this.canTurnPage.set(true);
             });
         });
+    }
+
+    private void loadBackground(int startSlot,int endSlot) {
+        //以灰色玻璃板作为默认填充
+        ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta bgMeta = background.getItemMeta();
+        bgMeta.setDisplayName(" ");
+        background.setItemMeta(bgMeta);
+        //填充背景板
+        for (int i = startSlot; i < endSlot; i++) {
+            marketGUI.setItem(i, background);
+        }
     }
 }

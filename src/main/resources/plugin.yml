@@ -12,6 +12,3 @@ commands:
   awesomemarket:
     description: 打开全球市场
     aliases: [ amt ]
-  test:
-    description: 测试指令
-

@@ -162,3 +162,12 @@ tip:
   unlisted-fail: §7[§b全球市场§7] §c下架失败! 物品已经被买走啦!
   unlisted-success: §7[§b全球市场§7] §a物品成功下架至背包!
   unlisted-storage: §7[§b全球市场§7] §c背包空间不足! 下架物品已移至暂存库!
+
+command:
+  amt:
+    error:
+      not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!
+  view:
+    error:
+      lack-of-name: §7[§b全球市场§7] §c请输入玩家名!
+      name-not-exist: §7[§b全球市场§7] §c玩家不存在!

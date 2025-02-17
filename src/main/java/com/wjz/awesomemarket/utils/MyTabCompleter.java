@@ -12,15 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MyTabCompleter implements TabCompleter {
-    private static final String[] COMMANDS = new String[]{"sell","buy"};
+    private static final String[] COMMANDS = new String[]{"sell", "buy","view", "help"};
 
 
     /**
-     * @param commandSender
-     * @param command
-     * @param s
-     * @param strings
-     * @return
+     * 指令补全函数
      */
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
@@ -31,14 +27,15 @@ public class MyTabCompleter implements TabCompleter {
         String partialplugin;
         if (args.length == 1) {
             partialplugin = args[0];
-            //这行生成补全列表
+            //这行生成基础指令的补全列表
             StringUtil.copyPartialMatches(partialplugin, Arrays.asList(COMMANDS), completions);
-        }
-        else if(args.length==2){
-            String arg1=args[0];
-            if(arg1.equals("sell")){
-                StringUtil.copyPartialMatches(args[1],Arrays.asList("money","point"),completions);
+
+        } else if (args.length == 2) {
+            String arg1 = args[0];
+            if (arg1.equals("sell")) {
+                StringUtil.copyPartialMatches(args[1], Arrays.asList("money", "point"), completions);
             }
+
         }
 
         return completions;
