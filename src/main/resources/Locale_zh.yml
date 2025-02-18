@@ -164,6 +164,8 @@ tip:
   unlisted-fail: §7[§b全球市场§7] §c下架失败! 物品已经被买走啦!
   unlisted-success: §7[§b全球市场§7] §a物品成功下架至背包!
   unlisted-storage: §7[§b全球市场§7] §c背包空间不足! 下架物品已移至暂存库!
+  unlisted-storage-op: §7[§b全球市场§7] §b已强制把物品下架至玩家暂存库!
+  item-unlisted-by-op: §7[§b全球市场§7] §c你的一件被管理员强制下架至暂存库!
 
 command:
   general:

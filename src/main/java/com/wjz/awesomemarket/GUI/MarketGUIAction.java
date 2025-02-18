@@ -61,27 +61,45 @@ public enum MarketGUIAction {
                     GUI.openConfirm(player, marketHolder, slot);//传入UI中的具体物品。
                 } else {
                     //shift+左键，下架物品
-                    if (!marketHolder.getMarketItem(slot).getSellerName().equals(player.getName())) {
-                        //只有自己可以下架自己的物品
+                    if (!player.hasPermission("awesomemarket.market.withdraw") && !marketHolder.getMarketItem(slot).getSellerName().equals(player.getName())) {
+                        //只有OP或者自己可以下架自己的物品
                         return;
                     }
 
                     //下面准备下架物品
                     MarketItem marketItem = marketHolder.getMarketItem(slot);
                     if (Mysql.deleteMarketItem(marketItem.getId())) {
-                        //如果玩家背包没满的话就可以放到背包里
-                        if (player.getInventory().firstEmpty() != -1) {
+
+                        if (player.hasPermission("awesomemarket.market.withdraw")) {
+                            //OP直接把物品下架到玩家的暂存库
+                            Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
+                                //物品放入暂存库内,存储类型设置为下架。可以用异步处理 查询storage的时候是根据owner查询,存放也要放到原玩家暂存箱去。
+                                Mysql.addItemToTempStorage(marketItem.getSellerName(), marketItem.getSellerName(), MarketTools.serializeItem(marketItem.getItemStack()),
+                                        String.valueOf(marketItem.getItemStack().getType()), Instant.now().getEpochSecond(),
+                                        marketItem.getPrice(), String.valueOf(marketItem.getPriceType()), String.valueOf(StorageType.DELISTED));
+                            });
+                            player.sendMessage(Log.getString("tip.unlisted-storage"));
+                            //如果对方在线，同时给对方发送消息
+                            Player seller = Bukkit.getPlayer(marketItem.getSellerName());
+                            if (seller != null) {
+                                seller.sendMessage(Log.getString("tip.item-unlisted-by-op"));
+                            }
+
+                        } else if (player.getInventory().firstEmpty() != -1) {
+                            //如果玩家背包没满的话就可以放到背包里
                             player.getInventory().addItem(marketItem.getItemStack());
                             player.sendMessage(Log.getString("tip.unlisted-success"));
                         } else {
                             Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
-                                //物品放入暂存库内,存储类型设置为下架。可以用异步处理
-                                Mysql.addItemToTempStorage(player.getName(), player.getName(), MarketTools.serializeItem(marketItem.getItemStack()),
+                                //物品放入暂存库内,存储类型设置为下架。可以用异步处理 查询storage的时候是根据owner查询,存放也要放到原玩家暂存箱去。
+                                Mysql.addItemToTempStorage(marketItem.getSellerName(), marketItem.getSellerName(), MarketTools.serializeItem(marketItem.getItemStack()),
                                         String.valueOf(marketItem.getItemStack().getType()), Instant.now().getEpochSecond(),
                                         marketItem.getPrice(), String.valueOf(marketItem.getPriceType()), String.valueOf(StorageType.DELISTED));
                             });
                             player.sendMessage(Log.getString("tip.unlisted-storage"));
                         }
+
+
                         player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
                         //下架完成后要重新打开市场UI
                         GUI.openMarket(player, marketHolder.getCurrentPage());
@@ -126,7 +144,7 @@ public enum MarketGUIAction {
             player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0f, 1.0f);
         }
     },
-    STATISTIC{
+    STATISTIC {
         public void action(Player player, int slot, InventoryClickEvent event) {
 
         }

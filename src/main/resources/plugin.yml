@@ -28,3 +28,4 @@ permissions:
 
   awesomemarket.market.withdraw: #下架商品
     description: Allow players to withdraw items in market.
+    default: op
