@@ -23,7 +23,7 @@ public class AwesomeMarketExecutor implements CommandExecutor {
         try {
             if (command.getName().equalsIgnoreCase("awesomemarket")) {//判断输入的指令
                 if (!(sender instanceof Player)) {
-                    sender.sendMessage(Log.getString("command.amt.error.not-player"));
+                    sender.sendMessage(Log.getString("command.general.error.not-player"));
                     return true;
                 }
                 //已经判断是玩家了

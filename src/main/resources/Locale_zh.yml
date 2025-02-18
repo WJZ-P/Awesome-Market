@@ -71,6 +71,7 @@ market-GUI:
     help-book-lore:
       - §a§l /amt sell 货币类型 价格 §r§a- 上架主手物品
       - §a§l /amt view 玩家名 §r§a- 查看玩家商店
+      - §a§l /amt find §r§a- 在商店查找主手物品
       - ""
       - §6§l 点击恢复默认排序
 
@@ -165,13 +166,10 @@ tip:
   unlisted-storage: §7[§b全球市场§7] §c背包空间不足! 下架物品已移至暂存库!
 
 command:
-  amt:
-    error:
-      not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!
-
   general:
     error:
       no-permission: §7[§b全球市场§7] §c你没有权限使用该指令!
       lack-of-params: §7[§b全球市场§7] §c参数不足!
       lack-of-name: §7[§b全球市场§7] §c请输入玩家名!
       name-not-exist: §7[§b全球市场§7] §c玩家不存在!
+      not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!

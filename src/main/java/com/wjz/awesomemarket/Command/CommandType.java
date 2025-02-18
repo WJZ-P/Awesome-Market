@@ -31,6 +31,12 @@ public enum CommandType {
 
             switch (strings[1].toLowerCase()) {
                 case "market" -> {  //处理市场指令
+                    //首先检查是否有权限
+                    if (!sender.hasPermission("awesomemarket.market.lookOthers")) {
+                        sender.sendMessage(Log.getString("command.general.error.no-permission"));
+                        return;
+                    }
+
                     String targetName = strings[2];
                     OfflinePlayer player = Bukkit.getOfflinePlayer(targetName);
                     if (!player.hasPlayedBefore()) {
@@ -39,10 +45,16 @@ public enum CommandType {
                         //给sender玩家打开这个人的背包
                         Player playerSender = (Player) sender;
                         playerSender.openInventory(new MarketHolder(player, playerSender, 1).getInventory());
-                        playerSender.playSound(playerSender.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 1.2f);
+                        playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
                     }
                 }
                 case "storage" -> {
+                    //首先检查是否有权限
+                    if (!sender.hasPermission("awesomemarket.storage.lookOthers")) {
+                        sender.sendMessage(Log.getString("command.general.error.no-permission"));
+                        return;
+                    }
+
                     //处理暂存库指令
                     String targetName = strings[2];
                     OfflinePlayer player = Bukkit.getOfflinePlayer(targetName);
@@ -52,6 +64,7 @@ public enum CommandType {
                         //给sender玩家打开这个人的暂存库
                         Player playerSender = (Player) sender;
                         playerSender.openInventory(new StorageHolder(player, playerSender, new MarketHolder(playerSender, 1)).getInventory());
+                        playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
                     }
                 }
             }
@@ -59,7 +72,23 @@ public enum CommandType {
 
         }
     },
-    ;
+    FIND {
+        @Override
+        public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+            //先检查有没有权限
+            if (!sender.hasPermission("awesomemarket.find")) {
+                sender.sendMessage(Log.getString("command.general.error.no-permission"));
+                return;
+            }
+            //创建一个新的市场容器，指定物品类型。
+            Player player = (Player) sender;
+            MarketHolder marketHolder = new MarketHolder(player, 1);
+            marketHolder.setItemType(String.valueOf(player.getInventory().getItemInMainHand().getType()));
+            marketHolder.reload();
+            player.openInventory(marketHolder.getInventory());
+            player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1.0f, 0.8f);
+        }
+    };
 
     public abstract void execute(CommandSender sender, Command command, String s, String[] strings);
 

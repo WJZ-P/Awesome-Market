@@ -8,5 +8,8 @@ OP能看玩家销售记录
 下架玩家物品
 
 实现/amt view player √
+实现/amt view storage √
+
 购买确认界面的小动画
-实现根据手中物品自动搜索商场同类型物品的指令。/amt search
+
+实现根据手中物品自动搜索商场同类型物品的指令。/amt find

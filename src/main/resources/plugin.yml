@@ -21,3 +21,7 @@ permissions:
   awesomemarket.market.lookOthers: #查看其他玩家的暂存库
     description: Allow players to look other players' market
     default: true
+
+  awesomemarket.find:
+    description: Allow players to find items in main hand and show results in market.
+    default: true
