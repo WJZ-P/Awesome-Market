@@ -39,10 +39,15 @@ public class MyTabCompleter implements TabCompleter {
             if (arg1.equals("sell")) {
                 StringUtil.copyPartialMatches(args[1], Arrays.asList("money", "point"), completions);
             } else if (arg1.equals("view")) {
-                StringUtil.copyPartialMatches(args[1], Bukkit.getOnlinePlayers().stream().map(Player::getName).toList(), completions);
+                StringUtil.copyPartialMatches(args[1], Arrays.asList("market", "storage"), completions);
             }
 
-
+        } else if (args.length == 3) {
+            //指令长度为3时候的补全列表
+            String arg2 = args[1];
+            if (arg2.equalsIgnoreCase("market") || arg2.equalsIgnoreCase("storage")) {
+                StringUtil.copyPartialMatches(args[2], Bukkit.getOnlinePlayers().stream().map(Player::getName).toList(), completions);
+            }
         }
 
         return completions;

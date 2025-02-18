@@ -367,7 +367,7 @@ public class Mysql {
         }
     }
 
-    public static List<StorageItem> getStorageItems(Player player, int page) {
+    public static List<StorageItem> getStorageItems(OfflinePlayer player, int page) {
         List<StorageItem> storageItemList = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             String query = String.format(MysqlType.SELECT_ITEM_FROM_STORAGE_TABLE, mysqlConfig.getString("table-prefix") + MysqlType.PLAYER_STORAGE_TABLE);

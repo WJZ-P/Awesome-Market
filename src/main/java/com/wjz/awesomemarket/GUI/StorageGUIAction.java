@@ -13,10 +13,10 @@ public enum StorageGUIAction {
         public void action(StorageHolder storageHolder, int slot) {
             //返回上一页
             if (storageHolder.turnPrevPage()) {
-                storageHolder.getPlayer().playSound(storageHolder.getPlayer().getLocation(),
+                storageHolder.getOpener().playSound(storageHolder.getOpener().getLocation(),
                         Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             } else {
-                storageHolder.getPlayer().playSound(storageHolder.getPlayer().getLocation(),
+                storageHolder.getOpener().playSound(storageHolder.getOpener().getLocation(),
                         Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             }
         }
@@ -25,10 +25,10 @@ public enum StorageGUIAction {
         public void action(StorageHolder storageHolder, int slot) {
             //翻到下一页
             if (storageHolder.turnNextPage()) {
-                storageHolder.getPlayer().playSound(storageHolder.getPlayer().getLocation(),
+                storageHolder.getOpener().playSound(storageHolder.getOpener().getLocation(),
                         Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
             } else {
-                storageHolder.getPlayer().playSound(storageHolder.getPlayer().getLocation(),
+                storageHolder.getOpener().playSound(storageHolder.getOpener().getLocation(),
                         Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             }
         }
@@ -47,10 +47,10 @@ public enum StorageGUIAction {
         @Override
         public void action(StorageHolder storageHolder, int slot) {
             //打开市场
-            Player opener = storageHolder.getPlayer();
+            Player opener=storageHolder.getOpener();
             storageHolder.getMarketHolder().reload();
             opener.openInventory(storageHolder.getMarketHolder().getInventory());
-            storageHolder.getPlayer().playSound(storageHolder.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 1.0F);
+            opener.playSound(storageHolder.getOpener().getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 1.0F);
         }
     };
 
@@ -58,9 +58,9 @@ public enum StorageGUIAction {
         return StorageGUIAction.valueOf(actionString.toUpperCase());
     }
 
-    private static void takeItemToInv(StorageHolder storageHolder, int slot) {
+    private static void takeItemToInv(StorageHolder storageHolder, int slot){
         //物品入库
-        Player player = storageHolder.getPlayer();
+        Player player = storageHolder.getOpener();
         //先检查玩家背包是否已满
         if (player.getInventory().firstEmpty() == -1) {
             player.sendMessage(Log.getString("get_storage_item_fail"));

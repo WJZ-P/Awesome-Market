@@ -10,7 +10,7 @@ import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.data.type.Switch;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -31,14 +31,14 @@ public class StorageHolder implements InventoryHolder {
     private final MarketHolder marketHolder;
     private final Inventory storageGUI;
     private int currentPage = 1;
-    private final Player player;//这个holder的打开者
+    private final Player opener;//这个holder的打开者
+    private final OfflinePlayer owner;//这个容器的拥有者
     private final int maxPage;
     private List<StorageItem> storageItems;
     public static final String PREV_PAGE_KEY = "prev_page";
     public static final String NEXT_PAGE_KEY = "next_page";
     public static final String MARKET_KEY = "market";
     public static final String WAITING_FOR_CLAIM_KEY = "waiting_for_claim";
-    public static final String RECEIPT_KEY = "receipt";
     public static final String DELISTED_KEY = "delisted_item";
     private static final int PREV_PAGE_SLOT = 45;
     private static final int NEXT_PAGE_SLOT = 53;
@@ -53,8 +53,8 @@ public class StorageHolder implements InventoryHolder {
         return storageGUI;
     }
 
-    public Player getPlayer() {
-        return player;
+    public Player getOpener() {
+        return opener;
     }
 
     public MarketHolder getMarketHolder() {
@@ -67,7 +67,8 @@ public class StorageHolder implements InventoryHolder {
 
     public StorageHolder(Player player, MarketHolder marketHolder) {
         this.marketHolder = marketHolder;
-        this.player = player;
+        this.opener = player;
+        this.owner = player;
         this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(player.getName()) / 45);
 
         storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-GUI.title").replace("%player%", player.getName()));
@@ -85,14 +86,38 @@ public class StorageHolder implements InventoryHolder {
         //加载功能栏
         this.loadFuncBar();
         //加载物品
-        this.loadAndSetStorageItems(player);
+        this.loadAndSetStorageItems(owner);
+    }
+
+    public StorageHolder(OfflinePlayer owner, Player opener, MarketHolder marketHolder) {
+        this.marketHolder = marketHolder;
+        this.opener = opener;
+        this.owner = owner;
+        this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(owner.getName()) / 45);
+
+        storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-GUI.title").replace("%player%", owner.getName()));
+
+        //以灰色玻璃板作为默认填充
+        ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta bgMeta = background.getItemMeta();
+        bgMeta.setDisplayName(" ");
+        background.setItemMeta(bgMeta);
+        //填充背景板
+        for (int i = 0; i < 54; i++) {
+            storageGUI.setItem(i, background);
+        }
+
+        //加载功能栏
+        this.loadFuncBar();
+        //加载物品
+        this.loadAndSetStorageItems(owner);
     }
 
     public boolean turnPrevPage() {
         if (currentPage <= 1 || !canTurnPage.get()) return false;
         currentPage -= 1;
         //重新渲染物品和功能栏,渲染功能栏是为了修改当前页数
-        this.loadAndSetStorageItems(player);
+        this.loadAndSetStorageItems(owner);
         this.loadFuncBar();
         return true;
     }
@@ -101,17 +126,17 @@ public class StorageHolder implements InventoryHolder {
         if (!canTurnPage.get() || currentPage >= maxPage) return false;//不允许翻页就直接返回false
 
         currentPage += 1;
-        this.loadAndSetStorageItems(player);
+        this.loadAndSetStorageItems(owner);
         this.loadFuncBar();
         return true;
     }
 
-    public void loadAndSetStorageItems(Player player) {
+    public void loadAndSetStorageItems(OfflinePlayer owner) {
         //加载物品的时候不允许翻页
         this.canTurnPage.set(false);
         //从数据库中加载物品，使用异步
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
-            List<StorageItem> storageList = Mysql.getStorageItems(player, currentPage);
+            List<StorageItem> storageList = Mysql.getStorageItems(owner, currentPage);
             this.storageItems = storageList;
             //然后载入物品
             //获取完毕后，切换回主线程更新UI
