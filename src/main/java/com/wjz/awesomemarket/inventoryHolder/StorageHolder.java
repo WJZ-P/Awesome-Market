@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StorageHolder implements InventoryHolder {
+    private final MarketHolder marketHolder;
     private final Inventory storageGUI;
     private int currentPage = 1;
-    private final int marketPage;
     private final Player player;//这个holder的打开者
     private final int maxPage;
     private List<StorageItem> storageItems;
@@ -57,20 +57,20 @@ public class StorageHolder implements InventoryHolder {
         return player;
     }
 
-    public int getMarketPage() {
-        return marketPage;
+    public MarketHolder getMarketHolder() {
+        return marketHolder;
     }
 
     public StorageItem getStorageItem(int slot) {
         return storageItems.get(slot);
     }
 
-    public StorageHolder(Player player, int marketPage) {
-        this.marketPage = marketPage;
+    public StorageHolder(Player player, MarketHolder marketHolder) {
+        this.marketHolder = marketHolder;
         this.player = player;
         this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(player.getName()) / 45);
 
-        storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-GUI.title"));
+        storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-GUI.title").replace("%player%", player.getName()));
 
         //以灰色玻璃板作为默认填充
         ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
@@ -121,7 +121,7 @@ public class StorageHolder implements InventoryHolder {
                     if (slot >= 45) break;
 
                     //下面根据不同的storage类型进行操作
-                    switch (storageItem.getStorageType()){
+                    switch (storageItem.getStorageType()) {
                         case StorageType.WAITING_FOR_CLAIM -> {
                             //等待领取的物品
 
@@ -200,6 +200,6 @@ public class StorageHolder implements InventoryHolder {
         ItemStack marketBtn = UsefulTools.createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("storage-GUI.market"), null, GUI_ACTION_KEY);
         storageGUI.setItem(PREV_PAGE_SLOT, prevBtn);
         storageGUI.setItem(NEXT_PAGE_SLOT, nextBtn);
-        storageGUI.setItem(MARKET_SLOT,marketBtn);
+        storageGUI.setItem(MARKET_SLOT, marketBtn);
     }
 }

@@ -3,6 +3,7 @@ package com.wjz.awesomemarket.Listeners;
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.GUI.ConfirmGUIAction;
 import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
+import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,19 +31,19 @@ public class ConfirmListener implements Listener {
         );
         if (actionString == null) return;//没标识就不做动作
 
-        ConfirmGUIAction action=ConfirmGUIAction.getType(actionString);
-        ConfirmHolder confirmHolder=(ConfirmHolder)event.getInventory().getHolder();
-        //应该传入marketItem。里面有所需信息
-        action.action(player,confirmHolder.getMarketItem());//执行对应指令
+        ConfirmGUIAction action = ConfirmGUIAction.getType(actionString);
+        ConfirmHolder confirmHolder = (ConfirmHolder) event.getInventory().getHolder();
+        //传入marketHolder
+        action.action(player, confirmHolder.getMarketHolder(), confirmHolder.getItemSlot());//执行对应指令
 
     }
 
     @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent event){
+    public void onInventoryOpen(InventoryOpenEvent event) {
         if (!(event.getInventory().getHolder() instanceof ConfirmHolder)) return;
         //打开UI的时候来一个小动画.
         //首先得获取容器
-        Inventory ConfirmInv=event.getInventory();
+        Inventory ConfirmInv = event.getInventory();
         //使用异步任务来做渲染.先搁置
     }
 }

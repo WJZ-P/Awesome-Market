@@ -14,9 +14,9 @@ import org.bukkit.inventory.meta.FireworkMeta;
 public enum ConfirmGUIAction {
     CONFIRM {
         @Override
-        public void action(Player player, MarketItem marketItem) {
+        public void action(Player player, MarketHolder marketHolder, int slot) {
             //确认购买
-            if (marketItem.purchase(player)) {
+            if (marketHolder.getMarketItem(slot).purchase(player)) {
                 //Log输出等已经在购买方法内部完成
                 //负责播放声音和返回商店界面即可。
 
@@ -36,34 +36,33 @@ public enum ConfirmGUIAction {
                 fw.setFireworkMeta(fwm);
                 player.spawnParticle(Particle.BUBBLE_COLUMN_UP, loc, 30, 0.5, 0.5, 0.5, 0.1);
                 player.playSound(loc, Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 1.0F, 1.0F);
-                player.playSound(player.getLocation(),Sound.ENTITY_VILLAGER_YES,1.0F,1.0F);
-                player.playSound(player.getLocation(),Sound.ENTITY_PLAYER_LEVELUP,1.5F,0.8F);
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0F, 1.0F);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.5F, 0.8F);
                 //接下来就可以让玩家返回商店继续购买了
-                player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
-                        getHolder()).getMarketPage()).getInventory());
-            }else{
+                marketHolder.reload();
+                player.openInventory(marketHolder.getInventory());
+            } else {
                 //购买失败，物品已经不在数据库或无法购买自己物品
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.0F);
-                player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
-                        getHolder()).getMarketPage()).getInventory());
+                marketHolder.reload();
+                player.openInventory(marketHolder.getInventory());
             }
         }
 
     }, CANCEL {
         @Override
-        public void action(Player player, MarketItem marketItem) {
+        public void action(Player player, MarketHolder marketHolder, int slot) {
             //取消购买
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
-            player.openInventory(new MarketHolder(player,((ConfirmHolder) player.getOpenInventory().getTopInventory().
-                    getHolder()).getMarketPage()).getInventory());
+            marketHolder.reload();
+            player.openInventory(marketHolder.getInventory());
         }
     };
 
-    public abstract void action(Player player, MarketItem marketItem);
+    public abstract void action(Player player, MarketHolder marketHolder, int slot);
 
     public static ConfirmGUIAction getType(String type) {
         return ConfirmGUIAction.valueOf(type.toUpperCase());//返回实例
     }
 
-    private static final FileConfiguration langConfig = Log.langConfig;
 }

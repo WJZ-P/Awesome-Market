@@ -47,7 +47,9 @@ public enum StorageGUIAction {
         @Override
         public void action(StorageHolder storageHolder, int slot) {
             //打开市场
-            storageHolder.getPlayer().openInventory(new MarketHolder(storageHolder.getPlayer(), storageHolder.getMarketPage()).getInventory());
+            Player opener = storageHolder.getPlayer();
+            storageHolder.getMarketHolder().reload();
+            opener.openInventory(storageHolder.getMarketHolder().getInventory());
             storageHolder.getPlayer().playSound(storageHolder.getPlayer().getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 1.0F);
         }
     };
@@ -56,7 +58,7 @@ public enum StorageGUIAction {
         return StorageGUIAction.valueOf(actionString.toUpperCase());
     }
 
-    private static void takeItemToInv(StorageHolder storageHolder, int slot){
+    private static void takeItemToInv(StorageHolder storageHolder, int slot) {
         //物品入库
         Player player = storageHolder.getPlayer();
         //先检查玩家背包是否已满

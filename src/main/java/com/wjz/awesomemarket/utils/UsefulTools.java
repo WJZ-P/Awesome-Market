@@ -4,10 +4,7 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.wjz.awesomemarket.constants.SkullType;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -97,6 +94,16 @@ public class UsefulTools {
     }
     //1.16+
     public static ItemStack getPlayerHead(Player player){
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) head.getItemMeta();
+        //1.16+用playerProfile
+        // 1.16+ 使用PlayerProfile
+        PlayerProfile profile = player.getPlayerProfile();
+        meta.setPlayerProfile(profile);
+        head.setItemMeta(meta);
+        return head;
+    }
+    public static ItemStack getPlayerHead(OfflinePlayer player){
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
         //1.16+用playerProfile

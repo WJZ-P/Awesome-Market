@@ -5,6 +5,7 @@ import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,7 +32,8 @@ public enum CommandType {
                 } else {
                     //给sender玩家打开这个人的背包
                     Player playerSender = (Player) sender;
-                    playerSender.openInventory(new MarketHolder(playerSender, player.getName(), 1).getInventory());
+                    playerSender.openInventory(new MarketHolder(player, playerSender, 1).getInventory());
+                    playerSender.playSound(playerSender.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN,1.0f,1.2f);
                 }
             }
         }
@@ -39,7 +41,7 @@ public enum CommandType {
 
     public abstract void execute(CommandSender sender, Command command, String s, String[] strings);
 
-    public CommandType getType(String command) {
+    public static CommandType getType(String command) {
         return CommandType.valueOf(command.toUpperCase());
     }
 }

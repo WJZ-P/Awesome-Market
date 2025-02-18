@@ -1,5 +1,6 @@
 package com.wjz.awesomemarket;
 
+import com.wjz.awesomemarket.Command.MyTabCompleter;
 import com.wjz.awesomemarket.Listeners.ConfirmListener;
 import com.wjz.awesomemarket.Listeners.LoginListener;
 import com.wjz.awesomemarket.Listeners.MarketListener;

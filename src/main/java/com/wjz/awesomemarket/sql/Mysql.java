@@ -11,6 +11,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -98,10 +99,6 @@ public class Mysql {
 
             // 创建 sell 表
             stmt.execute(String.format(MysqlType.CREATE_ON_SELLING_ITEMS_TABLE, tablePrefix + MysqlType.ON_SELL_ITEMS_TABLE));
-
-            // 创建 expire 表
-            stmt.execute(String.format(MysqlType.CREATE_EXPIRE_ITEMS_TABLE, tablePrefix + MysqlType.EXPIRE_ITEMS_TABLE));
-
             // 创建 transaction 表
             stmt.execute(String.format(MysqlType.CREATE_TRANSACTIONS_TABLE, tablePrefix + MysqlType.TRANSACTIONS_TABLE));
             // 创建 player_storage 表
@@ -222,7 +219,7 @@ public class Mysql {
     }
 
     //交易完成后要增加交易记录
-    public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price,int isClaimed) {
+    public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price, int isClaimed) {
         try (Connection connection = dataSource.getConnection()) {
             String query = String.format(MysqlType.INSERT_INTO_TRANSACTION, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -233,7 +230,7 @@ public class Mysql {
             preparedStatement.setString(5, payment);
             preparedStatement.setDouble(6, price);
             preparedStatement.setLong(7, System.currentTimeMillis());
-            preparedStatement.setInt(8,isClaimed);
+            preparedStatement.setInt(8, isClaimed);
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
@@ -241,26 +238,30 @@ public class Mysql {
             Log.severeDirectly("创建交易单失败！");
         }
     }
+
     //根据卖家的玩家名更新单据。同时给卖家钱。必须保证卖家是在线的
     public static void claimTransaction(String sellerName) {
         try (Connection connection = dataSource.getConnection()) {
             //首先要先查询出所有需要确认的单据
             String query = String.format(MysqlType.SELECT_UNCLAIMED_TRANSACTION_BY_SELLER, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
             PreparedStatement pstmt = connection.prepareStatement(query);
-            pstmt.setString(1,sellerName);
+            pstmt.setString(1, sellerName);
             //先把所有未确认的账单确认。给玩家钱
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     //下面准备给钱
-                    double price=rs.getDouble("price");
-                    PriceType priceType=PriceType.getType(rs.getString("payment"));
-                    Player seller= Bukkit.getPlayer(sellerName);
-                    priceType.give(seller,price);
+                    double price = rs.getDouble("price");
+                    PriceType priceType = PriceType.getType(rs.getString("payment"));
+                    Player seller = Bukkit.getPlayer(sellerName);
+                    priceType.give(seller, price);
+
+                    //给钱之后给卖家增加统计信息
+
 
                     //这里准备发送信息
-                    ItemStack itemStack=deserializeItem(rs.getString("item_detail"));
-                    String receiveTip=Log.getString("tip.receive-money").
-                            replace("%money%",String.format("%,.2f",price)).replace("%currency%",priceType.getName());
+                    ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
+                    String receiveTip = Log.getString("tip.receive-money").
+                            replace("%money%", String.format("%,.2f", price)).replace("%currency%", priceType.getName());
                     Component message = Component.text(receiveTip).replaceText(b -> b.matchLiteral("%item%")
                             .replacement(Component.translatable(itemStack.getType().translationKey())
                                     .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())));
@@ -271,41 +272,43 @@ public class Mysql {
             //然后更新所有未确认账单为确认
             query = String.format(MysqlType.UPDATE_TRANSACTION_BY_SELLER, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
             pstmt = connection.prepareStatement(query);
-            pstmt.setString(1,sellerName);
+            pstmt.setString(1, sellerName);
             pstmt.execute();
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("单据更新失败！");
         }
     }
 
     //交易完成后还需要增加统计记录
-    public static void upsertStatistic(UUID playerUUID, double price, PriceType priceType, boolean isBuy) {
+    public static void upsertStatistic(OfflinePlayer player, double price, PriceType priceType, boolean isBuy) {
         String query = String.format(MysqlType.UPSERT_STATISTIC, mysqlConfig.getString("table-prefix") + MysqlType.STATISTIC_TABLE);
         boolean isMoney = String.valueOf(priceType).equalsIgnoreCase("money");
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement pstmt = connection.prepareStatement(query);
 
-            if(price==0){//说明是新建数据
-                pstmt.setString(1, playerUUID.toString());
-                pstmt.setDouble(2, 0);
+            if (price == 0) {//说明是新建数据
+                pstmt.setString(1, player.getUniqueId().toString());
+                pstmt.setString(2, player.getName());
                 pstmt.setDouble(3, 0);
                 pstmt.setDouble(4, 0);
                 pstmt.setDouble(5, 0);
-                pstmt.setInt(6, 0);
+                pstmt.setDouble(6, 0);
                 pstmt.setInt(7, 0);
+                pstmt.setInt(8, 0);
                 pstmt.executeUpdate();
                 return;
             }
 
-            pstmt.setString(1, playerUUID.toString());//用户的UUID
-            pstmt.setDouble(2, isBuy ? 0 : isMoney ? price : 0);//花费的钱
-            pstmt.setDouble(3, isBuy ? 0 : isMoney ? 0 : price);//花费的点券
-            pstmt.setDouble(4, isBuy ? isMoney ? 0 : price : 0);//购买的钱
-            pstmt.setDouble(5, isBuy ? isMoney ? price : 0 : 0);//购买的点券
-            pstmt.setInt(6, isBuy ? 0 : 1);//卖出的数量
-            pstmt.setInt(7, isBuy ? 1 : 0);//卖出的数量
+            pstmt.setString(1, player.getUniqueId().toString());//用户的UUID
+            pstmt.setString(2, player.getName());//用户名
+            pstmt.setDouble(3, !isBuy ? 0 : isMoney ? price : 0);//花费的钱
+            pstmt.setDouble(4, !isBuy ? 0 : isMoney ? 0 : price);//花费的点券
+            pstmt.setDouble(5, !isBuy ? (isMoney ? price : 0) : 0);//获得的钱
+            pstmt.setDouble(6, !isBuy ? (isMoney ? 0 : price) : 0);//获得的点券
+            pstmt.setInt(7, isBuy ? 0 : 1);//卖出的数量
+            pstmt.setInt(8, isBuy ? 1 : 0);//买入的数量
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -315,18 +318,18 @@ public class Mysql {
     }
 
     //根据UUID查询统计记录
-    public static StatisticInfo searchStatistic(Player player) {
+    public static StatisticInfo searchStatistic(OfflinePlayer player) {
         String query = String.format(MysqlType.SELECT_FROM_STATISTIC, mysqlConfig.getString("table-prefix") + MysqlType.STATISTIC_TABLE);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement pstmt=connection.prepareStatement(query);
-            pstmt.setString(1,player.getUniqueId().toString());
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, player.getUniqueId().toString());
             try (ResultSet rs = pstmt.executeQuery()) {
-                ResultSet new_rs=rs;
-                if(!rs.next()){
+                ResultSet new_rs = rs;
+                if (!rs.next()) {
                     //如果没有记录，则创建一条默认的统计记录
-                    upsertStatistic(player.getUniqueId(),0,PriceType.MONEY,true);
-                     new_rs = pstmt.executeQuery();
-                     new_rs.next();
+                    upsertStatistic(player, 0, PriceType.MONEY, true);
+                    new_rs = pstmt.executeQuery();
+                    new_rs.next();
                 }
                 return new StatisticInfo(new_rs.getDouble("cost_money"),
                         new_rs.getDouble("cost_point"),
@@ -354,7 +357,7 @@ public class Mysql {
             preparedStatement.setLong(5, storeTime);
             preparedStatement.setDouble(6, price);
             preparedStatement.setString(7, priceType);
-            preparedStatement.setString(8,storageType);
+            preparedStatement.setString(8, storageType);
             preparedStatement.execute();
 
 
@@ -380,8 +383,8 @@ public class Mysql {
                     PriceType priceType = PriceType.getType(rs.getString("priceType"));
                     long purchaseTime = rs.getLong("store_time");
                     long id = rs.getLong("id");
-                    StorageType storageType=StorageType.getType(rs.getString("storageType"));
-                    StorageItem storageItem = new StorageItem(id, MarketTools.deserializeItem(itemDetail), seller, purchaseTime, price, priceType,storageType);
+                    StorageType storageType = StorageType.getType(rs.getString("storageType"));
+                    StorageItem storageItem = new StorageItem(id, MarketTools.deserializeItem(itemDetail), seller, purchaseTime, price, priceType, storageType);
                     storageItemList.add(storageItem);
                 }
             }

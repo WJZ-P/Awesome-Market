@@ -126,6 +126,11 @@ public enum MarketGUIAction {
             player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0f, 1.0f);
         }
     },
+    STATISTIC{
+        public void action(Player player, int slot, InventoryClickEvent event) {
+
+        }
+    },
     SORT_TYPE {
         public void action(Player player, int slot, InventoryClickEvent event) {
             MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();

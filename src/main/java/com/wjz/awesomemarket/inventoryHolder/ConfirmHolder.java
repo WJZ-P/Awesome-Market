@@ -23,6 +23,7 @@ public class ConfirmHolder implements InventoryHolder {
     private final int CANCEL_SLOT = 15;
     private final MarketItem marketItem;
     private final MarketHolder marketHolder;//存储原来的marketHolder
+    private final int itemSlot;
     public static final String ACTION_KEY = "gui_action";
 
 
@@ -31,7 +32,10 @@ public class ConfirmHolder implements InventoryHolder {
         return this.confirmGUI;
     }
 
+    public int getItemSlot(){return itemSlot;}
+
     public ConfirmHolder(MarketHolder marketHolder, int slot) {
+        this.itemSlot=slot;
         this.marketPage = marketHolder.getCurrentPage();
         this.marketHolder = marketHolder;
         this.marketItem = marketHolder.getMarketItem(slot);

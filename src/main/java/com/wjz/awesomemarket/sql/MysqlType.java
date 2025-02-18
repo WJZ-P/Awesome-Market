@@ -3,7 +3,6 @@ package com.wjz.awesomemarket.sql;
 public class MysqlType {
 
     public static String ON_SELL_ITEMS_TABLE = "on_selling_items";
-    public static String EXPIRE_ITEMS_TABLE = "expire_items";
     public static String TRANSACTIONS_TABLE = "transactions";
     public static String PLAYER_STORAGE_TABLE = "player_storage";
     public static String STATISTIC_TABLE = "statistic";
@@ -16,7 +15,7 @@ public class MysqlType {
             "\t`store_time` BIGINT(20) NOT NULL COMMENT '存入时间戳',\n" +
             "\t`price` DOUBLE NULL DEFAULT NULL,\n" +
             "\t`priceType` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`storageType` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n"+
+            "\t`storageType` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
             "\tPRIMARY KEY (`id`) USING BTREE,\n" +
             "\tINDEX `owner` (`owner`) USING BTREE\n" +
             ")\n" +
@@ -42,25 +41,6 @@ public class MysqlType {
             "COLLATE='utf8mb4_general_ci'\n" +
             "ENGINE=InnoDB\n" +
             ";\n";
-    public static String CREATE_EXPIRE_ITEMS_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (\n" +
-            "\t`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,\n" +
-            "\t`item_detail` LONGTEXT NOT NULL COMMENT 'Serialized item' COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`item_type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`seller` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`payment` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
-            "\t`price` DOUBLE UNSIGNED NULL DEFAULT NULL,\n" +
-            "\t`on_sell_time` BIGINT(20) NULL DEFAULT NULL,\n" +
-            "\t`expiry_time` BIGINT(20) NULL DEFAULT NULL,\n" +
-            "\tPRIMARY KEY (`id`) USING BTREE,\n" +
-            "\tINDEX `on_sell_time` (`on_sell_time`) USING BTREE,\n" +
-            "\tINDEX `price` (`price`) USING BTREE,\n" +
-            "\tINDEX `item_type` (`item_type`) USING BTREE,\n" +
-            "\tINDEX `seller` (`seller`) USING BTREE\n" +
-            ")\n" +
-            "COMMENT='因过期而下架的物品\\r\\nitems that are expired.'\n" +
-            "COLLATE='utf8mb4_general_ci'\n" +
-            "ENGINE=InnoDB;" +
-            ";";
 
     public static String CREATE_TRANSACTIONS_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (\n" +
             "\t`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,\n" +
@@ -71,7 +51,7 @@ public class MysqlType {
             "\t`payment` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',\n" +
             "\t`price` DOUBLE UNSIGNED NULL DEFAULT NULL,\n" +
             "\t`trade_time` BIGINT(20) NULL DEFAULT NULL,\n" +
-            "\t`isClaimed` TINYINT(3) UNSIGNED ZEROFILL NOT NULL,"+
+            "\t`isClaimed` TINYINT(3) UNSIGNED ZEROFILL NOT NULL," +
             "\tPRIMARY KEY (`id`) USING BTREE\n" +
             ")\n" +
             "COMMENT='记录玩家之间的交易记录\\r\\nRecord trades between players.'\n" +
@@ -80,6 +60,7 @@ public class MysqlType {
             ";\n";
     public static String CREATE_STATISTIC_TABLE = "CREATE TABLE IF NOT EXISTS `%s` (\n" +
             "\t`player_uuid` CHAR(36) NOT NULL COMMENT '玩家UUID' COLLATE 'utf8mb4_general_ci',\n" +
+            "\t`player_name` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci'," +
             "\t`cost_money` DOUBLE UNSIGNED ZEROFILL NOT NULL,\n" +
             "\t`cost_point` DOUBLE UNSIGNED ZEROFILL NOT NULL,\n" +
             "\t`buy_money` DOUBLE UNSIGNED ZEROFILL NOT NULL DEFAULT '0000000000000000000000',\n" +
@@ -122,9 +103,10 @@ public class MysqlType {
     //从暂存库里面删除物品
     public static String DELETE_ITEM_FROM_STORAGE_TABLE = "DELETE FROM `%s` WHERE id = ?";
     //往统计记录里面插入或更新数据
-    public static String UPSERT_STATISTIC = "INSERT INTO `%s` (player_uuid, cost_money, cost_point, buy_money, buy_point, sell_count, buy_count) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+    public static String UPSERT_STATISTIC = "INSERT INTO `%s` (player_uuid, player_name, cost_money, cost_point, buy_money, buy_point, sell_count, buy_count) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
             "ON DUPLICATE KEY UPDATE " +
+            "player_name = VALUES(player_name), " +
             "cost_money = cost_money + VALUES(cost_money), " +
             "cost_point = cost_point + VALUES(cost_point), " +
             "buy_money = buy_money + VALUES(buy_money), " +

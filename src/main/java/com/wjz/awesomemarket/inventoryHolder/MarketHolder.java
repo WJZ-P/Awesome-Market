@@ -6,13 +6,14 @@ import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StatisticInfo;
+import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.sql.SQLFilter;
 import com.wjz.awesomemarket.utils.Log;
-import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -33,7 +34,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.wjz.awesomemarket.cache.MarketCache.getTotalPages;
 import static com.wjz.awesomemarket.utils.UsefulTools.createNavItemStack;
-import static com.wjz.awesomemarket.utils.UsefulTools.getPlayerHead;
 
 public class MarketHolder implements InventoryHolder {
     public static final String PREV_PAGE_KEY = "prev_page";
@@ -64,7 +64,8 @@ public class MarketHolder implements InventoryHolder {
     private SortType sortType = SortType.TIME_DESC;//默认查询时间倒序
     private String sellerName;//用于筛选特定玩家的物品
     private String itemType;//用于筛选特定的物品类型
-    private final Player owner;//这个容器的拥有者
+    private final OfflinePlayer owner;//这个容器的拥有者，查看别人的时候别人不一定在线
+    private final Player marketOpener;//这个容器的打开者，必定在线
     private int maxPage = MarketCache.getTotalPages(new SQLFilter(sortType, priceType, sellerName, itemType, currentPage), false);
 
     @Override
@@ -102,21 +103,23 @@ public class MarketHolder implements InventoryHolder {
         this.currentPage = currentPage;
         this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
         this.owner = owner;
+        this.marketOpener = owner;
         //下面对marketGUI做初始化处理
-        loadBackground(0,54);
+        loadBackground(0, 54);
         //加载功能栏
         this.loadFuncBar();
         //加载物品
         this.loadMarketItems();
     }
 
-    public MarketHolder(Player owner, String sellerName, int currentPage) {
-        this.sellerName = sellerName;
+    public MarketHolder(OfflinePlayer viewedPlayer, Player opener, int currentPage) {
+        this.sellerName = viewedPlayer.getName();
         this.currentPage = currentPage;
         this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market_name"));
-        this.owner = owner;
+        this.owner = viewedPlayer;
+        this.marketOpener = opener;
         //下面对marketGUI做初始化处理
-        loadBackground(0,54);
+        loadBackground(0, 54);
         //加载功能栏
         this.loadFuncBar();
         //加载物品
@@ -189,7 +192,8 @@ public class MarketHolder implements InventoryHolder {
                 sortLore, GUI_ACTION_KEY);
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
                 priceLore, GUI_ACTION_KEY);
-        ItemStack statisticItem = createNavItemStack(UsefulTools.getPlayerHead(owner), STATISTIC_KEY, Log.getString("market-GUI.name.statistic").replace("%player%", owner.getName()),
+        ItemStack statisticItem = createNavItemStack(sellerName == null ? UsefulTools.getPlayerHead(marketOpener) : UsefulTools.getPlayerHead(Bukkit.getOfflinePlayer(sellerName)), STATISTIC_KEY, Log.getString("market-GUI.name.statistic").replace("%player%",
+                        sellerName == null ? owner.getName() : sellerName),
                 Log.getStringList("market-GUI.name.statistic-loading"), GUI_ACTION_KEY);//展示统计信息
 
         //如果不是默认排序。物品就带附魔颜色
@@ -217,7 +221,7 @@ public class MarketHolder implements InventoryHolder {
         //这里用异步任务来异步更新统计数据
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //获取统计数据
-            StatisticInfo statisticInfo = Mysql.searchStatistic(owner);
+            StatisticInfo statisticInfo = Mysql.searchStatistic(sellerName == null ? owner : Bukkit.getOfflinePlayer(sellerName));
             List<String> statisticLore = Log.getStringList("market-GUI.name.statistic-lore");
             statisticLore.replaceAll(s -> s.replace("%buy_count%", String.valueOf(statisticInfo.buy_count))
                     .replace("%sell_count%", String.valueOf(statisticInfo.sell_count))
@@ -270,7 +274,7 @@ public class MarketHolder implements InventoryHolder {
                     String seller = marketItem.getSellerName();
                     double price = marketItem.getPrice();
                     PriceType priceType = marketItem.getPriceType();
-                    boolean isSelfItem = owner.getName().equals(marketItem.getSellerName());//是否是自己的物品
+                    boolean isSelfItem = marketOpener.getName().equals(marketItem.getSellerName());//是否是自己的物品
 
                     //修改要展示到UI上的物品描述
                     commodityLore.replaceAll(s -> s.replace("%player%", seller)
@@ -297,7 +301,7 @@ public class MarketHolder implements InventoryHolder {
         });
     }
 
-    private void loadBackground(int startSlot,int endSlot) {
+    private void loadBackground(int startSlot, int endSlot) {
         //以灰色玻璃板作为默认填充
         ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta bgMeta = background.getItemMeta();

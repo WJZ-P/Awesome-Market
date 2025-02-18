@@ -1,8 +1,10 @@
-package com.wjz.awesomemarket.utils;
+package com.wjz.awesomemarket.Command;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MyTabCompleter implements TabCompleter {
-    private static final String[] COMMANDS = new String[]{"sell", "buy","view", "help"};
+    private static final String[] COMMANDS = new String[]{"sell", "buy", "view", "help"};
 
 
     /**
@@ -31,9 +33,13 @@ public class MyTabCompleter implements TabCompleter {
             StringUtil.copyPartialMatches(partialplugin, Arrays.asList(COMMANDS), completions);
 
         } else if (args.length == 2) {
+            //下面是第二个指令的补全列表
+
             String arg1 = args[0];
             if (arg1.equals("sell")) {
                 StringUtil.copyPartialMatches(args[1], Arrays.asList("money", "point"), completions);
+            } else if (arg1.equals("view")) {
+                StringUtil.copyPartialMatches(args[1], Bukkit.getOnlinePlayers().stream().map(Player::getName).toList(), completions);
             }
 
         }

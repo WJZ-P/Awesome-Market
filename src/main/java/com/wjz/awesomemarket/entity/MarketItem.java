@@ -3,30 +3,17 @@ package com.wjz.awesomemarket.entity;
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.constants.StorageType;
+import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
-import com.wjz.awesomemarket.sql.Mysql;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class MarketItem {
     private final ItemStack itemStack;
@@ -139,35 +126,9 @@ public class MarketItem {
         Mysql.addTradeTransaction(MarketTools.serializeItem(itemStack),
                 String.valueOf(itemStack.getType()), sellerName, customer.getName(), String.valueOf(priceType), price,0);
         //然后更新统计数据
-        Mysql.upsertStatistic(customer.getUniqueId(), price, priceType, true);//这个是给买家更新数据。
-        Mysql.upsertStatistic(Bukkit.getOfflinePlayer(sellerName).getUniqueId(), price, priceType, false);//这个是给卖家更新数据。
+        Mysql.upsertStatistic(customer, price, priceType, true);//这个是给买家更新数据。
+        Mysql.upsertStatistic(Bukkit.getOfflinePlayer(sellerName), price, priceType, false);//这个是给卖家更新数据。
         //注意这里放入暂存箱是放入卖家的暂存箱。
-
-//        //这里可以对物品先做处理，修改下lore。
-//        ItemStack receipt = new ItemStack(Material.PAPER);
-//        ItemMeta meta = receipt.getItemMeta();
-//        meta.addEnchant(Enchantment.UNBREAKING, 1, true);
-//        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-//        //设置翻译键
-//        meta.displayName(Component.text(Log.getString("storage-GUI.receipt")));
-//        //先获取lore
-//        List<String> receiptLore = Log.getStringList("storage-GUI.receipt-lore");
-//        //然后设置物品的lore
-//        List<Component> lore = new ArrayList<>();
-//        //先初始化一下要用到的时间
-//        String formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
-//        for (String text : receiptLore) {
-//            Component component = Component.text(text).replaceText(b -> b.matchLiteral("%item%")
-//                            .replacement(itemStack.getItemMeta().hasDisplayName() ? itemStack.displayName() : Component.translatable(itemStack.getType().translationKey())
-//                                    .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())))
-//                    .replaceText(b -> b.matchLiteral("%money%").replacement(String.format("%.2f", price))
-//                            .matchLiteral("%currency%").replacement(priceType.getName())
-//                            .matchLiteral("%player%").replacement(sellerName)
-//                            .matchLiteral("%time%").replacement(formattedDateTime));
-//            lore.add(component);
-//        }
-//        meta.lore(lore);
-//        receipt.setItemMeta(meta);
 
         //然后需要给卖家这边发送消息，如果在线的话
         Player seller = Bukkit.getPlayer(sellerName);
@@ -185,7 +146,6 @@ public class MarketItem {
         seller.playSound(seller.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 
         Mysql.claimTransaction(sellerName);
-
 
     }
 }
