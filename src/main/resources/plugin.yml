@@ -22,6 +22,9 @@ permissions:
     description: Allow players to look other players' market
     default: true
 
-  awesomemarket.find:
+  awesomemarket.find: #查找主手商品
     description: Allow players to find items in main hand and show results in market.
     default: true
+
+  awesomemarket.market.withdraw: #下架商品
+    description: Allow players to withdraw items in market.
