@@ -12,3 +12,12 @@ commands:
   awesomemarket:
     description: 打开全球市场
     aliases: [ amt ]
+
+permissions:
+  awesomemarket.storage.lookOthers: #查看其他玩家的暂存库
+    description: Allow players to look other players' storage
+    default: op
+
+  awesomemarket.market.lookOthers: #查看其他玩家的暂存库
+    description: Allow players to look other players' market
+    default: true

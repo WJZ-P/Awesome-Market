@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MyTabCompleter implements TabCompleter {
-    private static final String[] COMMANDS = new String[]{"sell", "buy", "view", "help"};
-
+    private static final String[] COMMANDS = Arrays.stream(CommandType.class.getEnumConstants())
+            .map(enumConstant -> enumConstant.name().toLowerCase()).toArray(String[]::new);
 
     /**
      * 指令补全函数
@@ -41,6 +41,7 @@ public class MyTabCompleter implements TabCompleter {
             } else if (arg1.equals("view")) {
                 StringUtil.copyPartialMatches(args[1], Bukkit.getOnlinePlayers().stream().map(Player::getName).toList(), completions);
             }
+
 
         }
 

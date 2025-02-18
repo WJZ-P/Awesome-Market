@@ -21,14 +21,14 @@ public enum CommandType {
     VIEW {
         @Override
         public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-            //参数的第第二个就是玩家ID
-            if (strings.length < 2) {
-                sender.sendMessage(Log.getString("command.view.error.lack-of-name"));
+            //view 有两个备选参数，分别是market和storage，分别代表查看市场物品和查看暂存库物品
+            if (strings.length < 3) {
+                sender.sendMessage(Log.getString("command.general.error.lack-of-name"));
             } else {
                 String targetName = strings[1];
                 OfflinePlayer player = Bukkit.getOfflinePlayer(targetName);
                 if (!player.hasPlayedBefore()) {
-                    sender.sendMessage(Log.getString("command.view.error.name-not-exist"));
+                    sender.sendMessage(Log.getString("command.general.error.name-not-exist"));
                 } else {
                     //给sender玩家打开这个人的背包
                     Player playerSender = (Player) sender;
@@ -36,6 +36,18 @@ public enum CommandType {
                     playerSender.playSound(playerSender.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN,1.0f,1.2f);
                 }
             }
+        }
+    },
+    STORAGE{
+        @Override
+        public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+            //没权限就返回
+            if(!sender.hasPermission("awesomemarket.storage.lookOthers")){
+                sender.sendMessage(Log.getString("tip.command.general.no-permission"));
+                return;
+            }
+            Player player = (Player) sender;
+
         }
     };
 
