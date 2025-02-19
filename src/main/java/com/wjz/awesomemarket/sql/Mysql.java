@@ -186,7 +186,6 @@ public class Mysql {
         }
         return false;
     }
-
     public static List<MarketItem> getMarketItems(SQLFilter sqlFilter) {
         List<MarketItem> marketItems = new ArrayList<>();
         String query = MysqlType.SELECT_MARKET_ITEMS_BY_CONDITION
@@ -218,12 +217,38 @@ public class Mysql {
 
         return marketItems;
     }
-
     public List<TransactionItem> getTransactionItems(SQLFilter sqlFilter) {
         List<TransactionItem> transactionItems = new ArrayList<>();
+        String query = MysqlType.SELECT_TRANSACTION_BY_CONDITION
+                .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE)
+                .replace("%condition%", sqlFilter.getCondition())
+                .replace("%sort%", sqlFilter.getLimit());
+        try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, sqlFilter.getOffset());
 
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
+                    //封装成交易记录物品
+                    String seller = rs.getString("seller");
+                    String buyer = rs.getString("buyer");
+                    double price = rs.getDouble("price");
+                    PriceType priceType = PriceType.getType(rs.getString("payment"));
+                    long id = rs.getLong("id");
+                    long tradeTime= rs.getLong("trade_time");
+                    int isClaimed= rs.getInt("isClaimed");
+                    TransactionItem transactionItem=new TransactionItem( itemStack, id, seller, buyer, tradeTime, price, priceType, isClaimed);
+                    transactionItems.add(transactionItem);
+                }
+            }
+            return transactionItems;
+
+        } catch (SQLException e) {
+            Log.severeDirectly("Mysql查询交易记录失败!");
+            e.printStackTrace();
+        }
+        return transactionItems;
     }
-
     //交易完成后要增加交易记录
     public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price, int isClaimed) {
         try (Connection connection = dataSource.getConnection()) {

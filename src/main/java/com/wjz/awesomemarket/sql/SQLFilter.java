@@ -13,8 +13,9 @@ public class SQLFilter {
     private final SortType sortType;//根据筛选类型搜索
     private final PriceType priceType;//根据价格类型搜索
     private final int page;//根据页数来搜索
-    private final String seller;//根据玩家搜索
-    private final String item_type;//根据商品类型搜索
+    private final String seller;//根据卖家搜索
+    private String item_type;//根据商品类型搜索
+    private String buyer;//根据买家搜索
 
     public SQLFilter(SortType sortType, PriceType priceType, String seller, String item_type, int page) {
         this.sortType = sortType;
@@ -24,6 +25,14 @@ public class SQLFilter {
         this.item_type = item_type;
     }
 
+    public SQLFilter(String seller, String buyer, SortType sortType, PriceType priceType, int page) {
+        this.sortType = sortType;
+        this.priceType = priceType;
+        this.page = page;
+        this.seller = seller;
+        this.buyer = buyer;
+    }
+
     public String getLimit() {
         return sortType.toSQL();
     }
@@ -31,8 +40,9 @@ public class SQLFilter {
     public String getCondition() {
         return new StringBuilder().append("WHERE 1=1 ")
                 .append(priceType == null ? "" : priceType.toSQL())
-                .append(seller == null ? "" : " AND seller = '" + seller+"'")
-                .append(item_type == null ? "" : " AND item_type ='" + item_type+"'")
+                .append(seller == null ? "" : " AND seller = '" + seller + "'")
+                .append(buyer == null ? "" : " AND buyer = '" + seller + "'")
+                .append(item_type == null ? "" : " AND item_type ='" + item_type + "'")
                 .toString();
     }
 
@@ -47,6 +57,7 @@ public class SQLFilter {
                 .add(priceType != null ? priceType.name() : "null")
                 .add("page=" + page)
                 .add(seller != null ? seller : "null")
+                .add(buyer != null ? seller : "null")
                 .add(item_type != null ? item_type : "null")
                 .toString();
     }

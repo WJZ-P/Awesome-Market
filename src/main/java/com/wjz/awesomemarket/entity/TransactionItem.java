@@ -12,6 +12,20 @@ public class TransactionItem {
     double price;
     PriceType priceType;
 
+    int isClaimed;
+
+    public TransactionItem(ItemStack itemStack, long id, String seller, String buyer, long tradeTime, double price, PriceType priceType, int isClaimed) {
+        this.itemStack = itemStack;
+        this.id = id;
+        this.seller = seller;
+        this.buyer = buyer;
+        this.tradeTime = tradeTime;
+        this.price = price;
+        this.priceType = priceType;
+        this.isClaimed = isClaimed;
+    }
+
+
     public ItemStack getItemStack() {
         return itemStack;
     }
@@ -38,5 +52,9 @@ public class TransactionItem {
 
     public PriceType getPriceType() {
         return priceType;
+    }
+
+    public int getIsClaimed() {
+        return isClaimed;
     }
 }
