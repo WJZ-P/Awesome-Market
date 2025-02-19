@@ -18,6 +18,7 @@ public class SQLFilter {
     private String item_type;//根据商品类型搜索
     private TradeType tradeType;//根据交易类型搜索，仅交易可用。
     private String buyer;//根据买家搜索
+    private String viewer;//交易单据里面需要用到的对方。也就是查看owner与viewer之间的交易记录用
 
     public SQLFilter(SortType sortType, PriceType priceType, String seller, String item_type, int page) {
         this.sortType = sortType;
@@ -27,13 +28,14 @@ public class SQLFilter {
         this.item_type = item_type;
     }
 
-    public SQLFilter(String seller, String buyer, SortType sortType, PriceType priceType, TradeType tradeType, int page) {
+    public SQLFilter(String owner, String viewer, SortType sortType, PriceType priceType, TradeType tradeType, int page) {
         this.sortType = sortType;
         this.priceType = priceType;
         this.page = page;
-        this.seller = seller;
-        this.buyer = buyer;
+        this.seller = owner;
+        this.buyer = owner;
         this.tradeType = tradeType;
+        this.viewer = viewer;
     }
 
     public String getLimit() {
@@ -44,14 +46,17 @@ public class SQLFilter {
         if (tradeType != null) {//说明查询的是交易记录表
             String condition = null;
             switch (tradeType) {
-                case ALL -> condition = "AND (seller = '%owner%' OR buyer = '%owner%') ";
-                case SELL -> condition = "AND seller = '%seller%' ";
-                case BUY -> condition = "AND buyer = '%buyer%' ";
+                case ALL -> condition = viewer == null ? "AND (seller = '%owner%' OR buyer = '%owner%') " :
+                        "AND ( (seller = '%owner%' AND buyer = '%viewer%') OR (buyer = '%viewer%' AND seller= '%owner%' ) ) ";
+                case SELL ->
+                        condition = viewer == null ? "AND seller = '%owner%' " : "AND (seller = '%owner%' AND buyer = '%viewer%') ";
+                case BUY ->
+                        condition = viewer == null ? "AND buyer = '%owner%' " : "AND (buyer = '%owner%' AND seller= '%viewer%' ) ";
             }
             return new StringBuilder().append("WHERE 1=1 ")
                     .append(sortType == null ? "" : sortType.toSQL())
                     .append(priceType == null ? "" : priceType.toSQL())
-                    .append(condition.replace("%owner%", seller))
+                    .append(condition.replace("%owner%", seller).replace("%viewer%", viewer == null ? "" : viewer))
                     .toString();
         } else {
             //说明查询的是商店物品

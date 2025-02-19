@@ -36,7 +36,7 @@ public class TransactionHolder implements InventoryHolder {
     private int currentPage = 1;
     private final Player opener;//这个holder的打开者
     private final OfflinePlayer owner;//这个容器的拥有者
-    private OfflinePlayer buyer;//买家
+    private OfflinePlayer viewer;//想要查询交易记录的目标玩家
     private int maxPage;
     private boolean showBuyIn = true;//默认展示购买的物品
     private PriceType priceType = PriceType.ALL;//默认展示所有货币的交易记录
@@ -66,13 +66,15 @@ public class TransactionHolder implements InventoryHolder {
     }
 
     public TransactionHolder(MarketHolder marketHolder, Player opener, OfflinePlayer owner) {
+        //默认是购入排序,最大页数应该用异步更新。
+        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getPlugin(AwesomeMarket.class), () -> this.maxPage = Mysql.getItemsCountWithFilter(MysqlType.TRANSACTIONS_TABLE,
+                new SQLFilter(owner.getName(),null, sortType, priceType, tradeType, 1)) / 45 + 1);
+        //这个放在最前面，因为耗时应该较久并且后面要用到
+
         this.transactionGUI = Bukkit.createInventory(this, 54, Log.getString("transaction-GUI.title").replace("%player%", owner.getName()));
         this.marketHolder = marketHolder;
         this.opener = opener;
         this.owner = owner;
-        //默认是购入排序,最大页数应该用异步更新。
-        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getPlugin(AwesomeMarket.class), () -> this.maxPage = Mysql.getItemsCountWithFilter(MysqlType.TRANSACTIONS_TABLE,
-                new SQLFilter(owner.getName(), null, null, null, tradeType, 0)) / 45 + 1);
         loadBackground(0, 54);
         loadFuncBar();
         this.loadAndSetItems();
@@ -144,7 +146,7 @@ public class TransactionHolder implements InventoryHolder {
         if (currentPage <= 1 || !canTurnPage.get()) return false;
         currentPage -= 1;
         //重新渲染物品和功能栏,渲染功能栏是为了修改当前页数
-        this.loadItems();
+        this.loadAndSetItems();
         this.loadFuncBar();
         return true;
     }
@@ -155,7 +157,7 @@ public class TransactionHolder implements InventoryHolder {
 
         currentPage += 1;
         //重新渲染物品和功能栏,渲染功能栏是为了修改当前页数
-        this.loadItems();
+        this.loadAndSetItems();
         this.loadFuncBar();
         return true;
     }
@@ -164,7 +166,10 @@ public class TransactionHolder implements InventoryHolder {
         this.canTurnPage.set(false);//加载物品的时候不可以翻页
         //加载物品
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
-            this.transactionItems=Mysql.getTransactionItems(new SQLFilter(owner.getName()))
+            this.transactionItems=Mysql.getTransactionItems(new SQLFilter(owner.getName(),viewer.getName(), sortType, priceType, tradeType, currentPage));
+            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
+                //转回主线程设置物品
+            });
         });
     }
 }

@@ -253,52 +253,58 @@ public class MarketHolder implements InventoryHolder {
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //获取物品
             this.marketItemList = Mysql.getMarketItems(new SQLFilter(sortType, priceType, sellerName, itemType, currentPage));
+            //创建一个临时的itemStack存放队列
+            List<ItemStack> itemStacks = new ArrayList<>();
 
-            //获取完毕后，切换回主线程更新UI
+            int slot = 0;
+            for (MarketItem marketItem : this.marketItemList) {
+                if (slot >= 45) break;
+                //下面开始设置UI里面的物品
+                ItemStack itemStack = marketItem.getItemStack().clone();
+                ItemMeta meta = itemStack.getItemMeta();
+                List<String> oldLore = itemStack.getLore();
+                if (oldLore == null) oldLore = new ArrayList<>();
+
+                //要给物品上描述信息
+                List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity.lore");
+                //添加lore
+                //price,currency,player,on_sell_time
+
+                //这里格式化时间
+                long timeStamp = marketItem.getOnSellTime();
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStamp), ZoneId.systemDefault());
+
+                //下面获取一些信息
+                String seller = marketItem.getSellerName();
+                double price = marketItem.getPrice();
+                PriceType priceType = marketItem.getPriceType();
+                boolean isSelfItem = marketOpener.getName().equals(marketItem.getSellerName());//是否是自己的物品
+
+                //修改要展示到UI上的物品描述
+                commodityLore.replaceAll(s -> s.replace("%player%", seller)
+                        .replace("%price%", String.format("%.2f", price))
+                        .replace("%currency%", priceType.getName())
+                        .replace("%operation%", isSelfItem ? Log.getString("market-GUI.name.commodity.unlisted")
+                                : Log.getString("market-GUI.name.commodity.buy"))
+                        .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+                //商品lore添加完毕后追加到原lore后
+                oldLore.addAll(commodityLore);
+                meta.setLore(oldLore);
+                //添加商品的NBT标签
+                meta.getPersistentDataContainer().set(MarketHolder.GUI_ACTION_KEY, PersistentDataType.STRING, MarketHolder.COMMODITY_KEY);
+                //设置好的meta数据写入到item中
+                itemStack.setItemMeta(meta);
+                itemStacks.add(itemStack);
+                slot++;
+            }
+
+            //切换回主线程更新UI
+            int finalSlot = slot;
             Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
-                int slot = 0;
-                for (MarketItem marketItem : this.marketItemList) {
-                    if (slot >= 45) break;
-                    //下面开始设置UI里面的物品
-                    ItemStack itemStack = marketItem.getItemStack().clone();
-                    ItemMeta meta = itemStack.getItemMeta();
-                    List<String> oldLore = itemStack.getLore();
-                    if (oldLore == null) oldLore = new ArrayList<>();
-
-                    //要给物品上描述信息
-                    List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity.lore");
-                    //添加lore
-                    //price,currency,player,on_sell_time
-
-                    //这里格式化时间
-                    long timeStamp = marketItem.getOnSellTime();
-                    LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStamp), ZoneId.systemDefault());
-
-                    //下面获取一些信息
-                    String seller = marketItem.getSellerName();
-                    double price = marketItem.getPrice();
-                    PriceType priceType = marketItem.getPriceType();
-                    boolean isSelfItem = marketOpener.getName().equals(marketItem.getSellerName());//是否是自己的物品
-
-                    //修改要展示到UI上的物品描述
-                    commodityLore.replaceAll(s -> s.replace("%player%", seller)
-                            .replace("%price%", String.format("%.2f", price))
-                            .replace("%currency%", priceType.getName())
-                            .replace("%operation%", isSelfItem ? Log.getString("market-GUI.name.commodity.unlisted")
-                                    : Log.getString("market-GUI.name.commodity.buy"))
-                            .replace("%on_sell_time%", localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
-                    //商品lore添加完毕后追加到原lore后
-                    oldLore.addAll(commodityLore);
-                    meta.setLore(oldLore);
-                    //添加商品的NBT标签
-                    meta.getPersistentDataContainer().set(MarketHolder.GUI_ACTION_KEY, PersistentDataType.STRING, MarketHolder.COMMODITY_KEY);
-                    //设置好的meta数据写入到item中
-                    itemStack.setItemMeta(meta);
-                    marketGUI.setItem(slot, itemStack);
-                    slot++;
-                }
-                if (slot < 45) {//物品不足一页时填充
-                    loadBackground(slot, 45);
+                for (ItemStack itemStack : itemStacks)
+                    marketGUI.setItem(finalSlot, itemStack);
+                if (finalSlot < 45) {//物品不足一页时填充
+                    loadBackground(finalSlot, 45);
                 }
                 this.canTurnPage.set(true);
             });
