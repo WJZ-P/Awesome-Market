@@ -187,13 +187,17 @@ public class MarketHolder implements InventoryHolder {
         List<String> priceLore = Log.getStringList("market-GUI.name.currency-type-lore");
         priceLore.replaceAll(s -> s.replace("%currency%", priceType.getName()));
 
+        //判断当前玩家有没有权限打开交易记录
+        boolean canLookTransaction = marketOpener.hasPermission("awesomemarket.transaction.look") || marketOpener.getUniqueId() == owner.getUniqueId();
 
         ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), MarketHolder.SORT_TYPE_KEY, Log.getString("market-GUI.name.sort-type"),
                 sortLore, GUI_ACTION_KEY);
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), MarketHolder.PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
                 priceLore, GUI_ACTION_KEY);
-        ItemStack statisticItem = createNavItemStack(sellerName == null ? UsefulTools.getPlayerHead(marketOpener) : UsefulTools.getPlayerHead(Bukkit.getOfflinePlayer(sellerName)), STATISTIC_KEY, Log.getString("market-GUI.name.statistic").replace("%player%",
-                        sellerName == null ? owner.getName() : sellerName),
+        ItemStack statisticItem = createNavItemStack(sellerName == null ? UsefulTools.getPlayerHead(marketOpener) :
+                        UsefulTools.getPlayerHead(Bukkit.getOfflinePlayer(sellerName)),
+                STATISTIC_KEY, Log.getString("market-GUI.name.statistic")
+                        .replace("%player%", sellerName == null ? owner.getName() : sellerName),
                 Log.getStringList("market-GUI.name.statistic-loading"), GUI_ACTION_KEY);//展示统计信息
 
         //如果不是默认排序。物品就带附魔颜色
@@ -231,6 +235,7 @@ public class MarketHolder implements InventoryHolder {
                     .replace("%currency_point%", PriceType.POINT.getName())
                     .replace("%money_get%", String.format("%.2f", statisticInfo.buy_money))
                     .replace("%point_get%", String.format("%.2f", statisticInfo.buy_point))
+                    .replace("%operation%", canLookTransaction ? Log.getString("market-GUI.name.statistic-look-up") : Log.getString("market-GUI.name.statistic-no-permission-look-up"))
             );
             ItemMeta meta = statisticItem.getItemMeta();
             meta.setLore(statisticLore);

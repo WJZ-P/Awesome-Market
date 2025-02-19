@@ -29,3 +29,6 @@ permissions:
   awesomemarket.market.withdraw: #下架商品
     description: Allow players to withdraw items in market.
     default: op
+  awesomemarket.transaction.look: #查看交易记录
+    description: Allow players to look other players' transaction.
+    default: op

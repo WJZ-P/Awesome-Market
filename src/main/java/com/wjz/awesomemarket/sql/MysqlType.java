@@ -80,9 +80,12 @@ public class MysqlType {
             "(`item_detail`, `item_type`, `seller`, `payment`, `price`, `on_sell_time`, `expiry_time`) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
     //从全球市场查询物品,第二个%s应该用查询条件,第三个%s类似on_sell_time DESC
-    public static String SHOW_ITEMS_BY_PAGE = "SELECT * FROM `%table%` %condition% " +
-            "ORDER BY %sort% " +
-            "LIMIT 45 OFFSET ?;";
+    public static String SELECT_MARKET_ITEMS_BY_CONDITION = "SELECT * FROM `%table%` %condition% " +
+            "ORDER BY %sort% LIMIT 45 OFFSET ?;";
+    //从交易表中根据所给情况进行查询。
+    public static String SELECT_TRANSACTION_BY_CONDITION = "SELECT * FROM `%table%` %condition% " +
+            "ORDER BY %sort% LIMIT 45 OFFSET ?;";
+
     //从市场里删除物品
     public static String DELETE_ITEM_FROM_MARKET = "DELETE FROM `%s` WHERE ID = ?";
     //插入交易记录

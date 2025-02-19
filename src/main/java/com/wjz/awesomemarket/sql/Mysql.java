@@ -5,6 +5,7 @@ import com.wjz.awesomemarket.constants.StorageType;
 import com.wjz.awesomemarket.entity.MarketItem;
 import com.wjz.awesomemarket.entity.StatisticInfo;
 import com.wjz.awesomemarket.entity.StorageItem;
+import com.wjz.awesomemarket.entity.TransactionItem;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import com.zaxxer.hikari.HikariConfig;
@@ -17,9 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.wjz.awesomemarket.utils.MarketTools.deserializeItem;
 
@@ -188,7 +189,7 @@ public class Mysql {
 
     public static List<MarketItem> getMarketItems(SQLFilter sqlFilter) {
         List<MarketItem> marketItems = new ArrayList<>();
-        String query = MysqlType.SHOW_ITEMS_BY_PAGE
+        String query = MysqlType.SELECT_MARKET_ITEMS_BY_CONDITION
                 .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.ON_SELL_ITEMS_TABLE)
                 .replace("%condition%", sqlFilter.getCondition())
                 .replace("%sort%", sqlFilter.getLimit());
@@ -218,6 +219,11 @@ public class Mysql {
         return marketItems;
     }
 
+    public List<TransactionItem> getTransactionItems(SQLFilter sqlFilter) {
+        List<TransactionItem> transactionItems = new ArrayList<>();
+
+    }
+
     //交易完成后要增加交易记录
     public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price, int isClaimed) {
         try (Connection connection = dataSource.getConnection()) {
@@ -229,7 +235,7 @@ public class Mysql {
             preparedStatement.setString(4, buyer);
             preparedStatement.setString(5, payment);
             preparedStatement.setDouble(6, price);
-            preparedStatement.setLong(7, System.currentTimeMillis());
+            preparedStatement.setLong(7, Instant.now().getEpochSecond());
             preparedStatement.setInt(8, isClaimed);
             preparedStatement.executeUpdate();
 

@@ -112,8 +112,11 @@ market-GUI:
       - §b⭐ 收入统计  §8»»
       - "  §7»§e  🌟 §b收入: §c%money_get% §6%currency_money%"
       - "  §7»§e  🌟 §b收入: §c%point_get% §6%currency_point%"
+      - ""
+      - "%operation%"
       - §8»»————————————««
-
+    statistic-look-up: §7»§b 🔍 §a点击查看交易记录
+    statistic-no-permission-look-up: §7»§4 ❌ §c你没有权限查看TA的交易记录!
 confirm-GUI:
   buy:
     title: §c§l确认支付?
