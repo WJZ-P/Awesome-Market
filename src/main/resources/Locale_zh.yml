@@ -175,9 +175,9 @@ transaction-GUI:
     - ""
     - §a§l点击切换
 
-  currency-type: §b货币类型
-  currency-type-lore:
-    - §e当前：§6%currency%
+  trade-type: §b交易类型
+  trade-type-lore:
+    - §e当前：§6%tradeType%
     - ""
     - §a§l点击切换
 
@@ -199,3 +199,8 @@ command:
       lack-of-name: §7[§b全球市场§7] §c请输入玩家名!
       name-not-exist: §7[§b全球市场§7] §c玩家不存在!
       not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!
+
+trade-type:
+  all: §a全部
+  buy: §b购买
+  sell: §c出售

@@ -217,7 +217,7 @@ public class Mysql {
 
         return marketItems;
     }
-    public List<TransactionItem> getTransactionItems(SQLFilter sqlFilter) {
+    public static List<TransactionItem> getTransactionItems(SQLFilter sqlFilter) {
         List<TransactionItem> transactionItems = new ArrayList<>();
         String query = MysqlType.SELECT_TRANSACTION_BY_CONDITION
                 .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE)

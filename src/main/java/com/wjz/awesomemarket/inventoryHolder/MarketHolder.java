@@ -235,7 +235,6 @@ public class MarketHolder implements InventoryHolder {
                     .replace("%currency_point%", PriceType.POINT.getName())
                     .replace("%money_get%", String.format("%.2f", statisticInfo.buy_money))
                     .replace("%point_get%", String.format("%.2f", statisticInfo.buy_point))
-                    .replace("%operation%", canLookTransaction ? Log.getString("market-GUI.name.statistic-look-up") : Log.getString("market-GUI.name.statistic-no-permission-look-up"))
             );
             ItemMeta meta = statisticItem.getItemMeta();
             meta.setLore(statisticLore);
