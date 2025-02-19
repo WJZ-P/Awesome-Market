@@ -160,6 +160,27 @@ storage-GUI:
     - §a§l 未设定
     - §8=============================
 
+transaction-GUI:
+  title: §3§l交易记录 §7- §8%player%
+  market: §e点击返回全球市场
+  prev-page: §e上一页
+  prev-page-lore: §e%d / %d 页
+
+  next-page: §e下一页
+  next-page-lore: §e%d / %d 页
+
+  sort-type: §c商品排序
+  sort-type-lore:
+    - §e当前：§6%sort%
+    - ""
+    - §a§l点击切换
+
+  currency-type: §b货币类型
+  currency-type-lore:
+    - §e当前：§6%currency%
+    - ""
+    - §a§l点击切换
+
 tip:
   item-is-sold: §7[§b全球市场§7] §a您的物品§7[%item%§7]§a已被§6%buyer%§a购买!
   receive-money: §7[§b全球市场§7] §a您获得了§e %money%§6 %currency% §a作为§7[§r%item%§7]§a的售出收益!
