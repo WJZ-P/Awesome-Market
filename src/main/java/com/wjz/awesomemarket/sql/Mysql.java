@@ -223,7 +223,6 @@ public class Mysql {
                 .replace("%table%", mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE)
                 .replace("%condition%", sqlFilter.getCondition())
                 .replace("%sort%", sqlFilter.getLimit());
-        Log.infoDirectly(query);
         try (Connection connection = dataSource.getConnection(); PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, sqlFilter.getOffset());
 

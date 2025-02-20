@@ -154,7 +154,7 @@ storage-GUI:
 transaction-GUI:
   title: §3§l交易记录 §7- §8%player%
   is-claimed: §b ✅ §a§l卖家已收款
-  not-claimed: §4 ❌ §c§l卖家未收款!
+  not-claimed: §4 ❌ §c§l卖家未收款
   transaction-item-lore:
     - §8==========§7§l[§b§l 交易记录 §7§l]§8==========
     - ""
@@ -187,6 +187,12 @@ transaction-GUI:
     - ""
     - §a§l点击切换
 
+  currency-type: §b货币类型
+  currency-type-lore:
+    - §e当前：§6%currency%
+    - ""
+    - §a§l点击切换
+
 tip:
   item-is-sold: §7[§b全球市场§7] §a您的物品§7[%item%§7]§a已被§6%buyer%§a购买!
   receive-money: §7[§b全球市场§7] §a您获得了§e %money%§6 %currency% §a作为§7[§r%item%§7]§a的售出收益!
@@ -208,5 +214,5 @@ command:
 
 trade-type:
   all: §a全部
-  buy: §b购买
+  buy: §6购买
   sell: §c出售

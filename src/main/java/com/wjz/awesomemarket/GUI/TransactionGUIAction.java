@@ -11,7 +11,6 @@ public enum TransactionGUIAction {
         public void action(TransactionHolder transactionHolder, int slot) {
             //打开市场
             Player opener = transactionHolder.getOpener();//交易打开者
-            transactionHolder.getMarketHolder().reload();
             opener.openInventory(transactionHolder.getMarketHolder().getInventory());
             opener.playSound(opener.getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 1.0F);
         }
@@ -46,6 +45,7 @@ public enum TransactionGUIAction {
         public void action(TransactionHolder transactionHolder, int slot) {
             SortType sortType = transactionHolder.getSortType();
             transactionHolder.setSortType(sortType.next());//切换到下一个排序类型
+            transactionHolder.setCurrentPage(1);
             transactionHolder.reload();
             transactionHolder.getOpener().playSound(transactionHolder.getOpener().getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, // 清脆的"叮"声
                     1.0f, (float) (0.8 + 0.1 * sortType.ordinal())); // 根据排序类型改变音高
@@ -54,6 +54,7 @@ public enum TransactionGUIAction {
     PRICE_TYPE {
         public void action(TransactionHolder transactionHolder, int slot) {
             transactionHolder.setPriceType(transactionHolder.getPriceType().next());
+            transactionHolder.setCurrentPage(1);
             transactionHolder.reload();
             transactionHolder.getOpener().playSound(transactionHolder.getOpener(), Sound.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
         }
@@ -61,8 +62,15 @@ public enum TransactionGUIAction {
     TRADE_TYPE{
         public void action(TransactionHolder transactionHolder, int slot) {
             transactionHolder.setTradeType(transactionHolder.getTradeType().next());
+            transactionHolder.setCurrentPage(1);
             transactionHolder.reload();
             transactionHolder.getOpener().playSound(transactionHolder.getOpener(), Sound.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+        }
+    },
+    TRANSACTION{
+        public void action(TransactionHolder transactionHolder, int slot) {
+            Player player= transactionHolder.getOpener();
+            player.playSound(player.getLocation(),Sound.UI_LOOM_TAKE_RESULT, 1.0F, 1.0F);
         }
     };
 
