@@ -16,8 +16,9 @@ public class LoginListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             //玩家上线时，处理确认订单
             Player player = event.getPlayer();
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-            Mysql.claimTransaction(player.getName());
+            if (Mysql.claimTransaction(player.getName())) {
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            }
         });
     }
 }

@@ -186,6 +186,7 @@ public class Mysql {
         }
         return false;
     }
+
     public static List<MarketItem> getMarketItems(SQLFilter sqlFilter) {
         List<MarketItem> marketItems = new ArrayList<>();
         String query = MysqlType.SELECT_MARKET_ITEMS_BY_CONDITION
@@ -217,6 +218,7 @@ public class Mysql {
 
         return marketItems;
     }
+
     public static List<TransactionItem> getTransactionItems(SQLFilter sqlFilter) {
         List<TransactionItem> transactionItems = new ArrayList<>();
         String query = MysqlType.SELECT_TRANSACTION_BY_CONDITION
@@ -236,9 +238,9 @@ public class Mysql {
                     double price = rs.getDouble("price");
                     PriceType priceType = PriceType.getType(rs.getString("payment"));
                     long id = rs.getLong("id");
-                    long tradeTime= rs.getLong("trade_time");
-                    int isClaimed= rs.getInt("isClaimed");
-                    TransactionItem transactionItem=new TransactionItem( itemStack, id, seller, buyer, tradeTime, price, priceType, isClaimed);
+                    long tradeTime = rs.getLong("trade_time");
+                    int isClaimed = rs.getInt("isClaimed");
+                    TransactionItem transactionItem = new TransactionItem(itemStack, id, seller, buyer, tradeTime, price, priceType, isClaimed);
                     transactionItems.add(transactionItem);
                 }
             }
@@ -250,6 +252,7 @@ public class Mysql {
         }
         return transactionItems;
     }
+
     //交易完成后要增加交易记录
     public static void addTradeTransaction(String itemDetail, String itemType, String seller, String buyer, String payment, double price, int isClaimed) {
         try (Connection connection = dataSource.getConnection()) {
@@ -272,8 +275,9 @@ public class Mysql {
     }
 
     //根据卖家的玩家名更新单据。同时给卖家钱。必须保证卖家是在线的
-    public static void claimTransaction(String sellerName) {
+    public static boolean claimTransaction(String sellerName) {
         try (Connection connection = dataSource.getConnection()) {
+            boolean hasClaimed = false;
             //首先要先查询出所有需要确认的单据
             String query = String.format(MysqlType.SELECT_UNCLAIMED_TRANSACTION_BY_SELLER, mysqlConfig.getString("table-prefix") + MysqlType.TRANSACTIONS_TABLE);
             PreparedStatement pstmt = connection.prepareStatement(query);
@@ -282,6 +286,7 @@ public class Mysql {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     //下面准备给钱
+                    hasClaimed = true;
                     double price = rs.getDouble("price");
                     PriceType priceType = PriceType.getType(rs.getString("payment"));
                     Player seller = Bukkit.getPlayer(sellerName);
@@ -306,11 +311,12 @@ public class Mysql {
             pstmt = connection.prepareStatement(query);
             pstmt.setString(1, sellerName);
             pstmt.execute();
-
+            return hasClaimed;
         } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("单据更新失败！");
         }
+        return false;
     }
 
     //交易完成后还需要增加统计记录

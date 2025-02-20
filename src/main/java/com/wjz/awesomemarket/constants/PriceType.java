@@ -1,6 +1,7 @@
 package com.wjz.awesomemarket.constants;
 
 import com.wjz.awesomemarket.AwesomeMarket;
+import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -105,7 +106,7 @@ public enum PriceType {
     }
 
     public String getName() {
-        return AwesomeMarket.getInstance().getConfig().getString("currency." + this.toString().toLowerCase());
+        return Log.getString("currency." + this.toString().toLowerCase());
     }
 
     public PriceType next() {

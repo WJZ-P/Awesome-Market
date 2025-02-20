@@ -258,7 +258,7 @@ public class TransactionHolder implements InventoryHolder {
                                         .replace("%player2%", viewer.getName())));
         loadBackground(0, 54);
         opener.openInventory(transactionGUI);
-
+        this.currentPage=1;
         loadFuncBar();
         loadAndSetItems();
 

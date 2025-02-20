@@ -57,12 +57,12 @@ public class MarketHolder implements InventoryHolder {
 
     //非static变量
     private final AtomicBoolean canTurnPage = new AtomicBoolean(true);
-    private final Inventory marketGUI;
+    private Inventory marketGUI;
     private int currentPage = 1;//默认打开第一页
     private List<MarketItem> marketItemList = new ArrayList<>();//存放物品。
     private PriceType priceType = PriceType.ALL;//根据物品货币类型筛选
     private SortType sortType = SortType.TIME_DESC;//默认查询时间倒序
-    private String sellerName;//用于筛选特定玩家的物品
+    private String sellerName = null;//用于筛选特定玩家的物品
     private String itemType;//用于筛选特定的物品类型
     private final OfflinePlayer owner;//这个容器的拥有者，查看别人的时候别人不一定在线
     private final Player marketOpener;//这个容器的打开者，必定在线
@@ -101,9 +101,11 @@ public class MarketHolder implements InventoryHolder {
 
     public MarketHolder(Player owner, int currentPage) {
         this.currentPage = currentPage;
-        this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market-GUI.title"));
         this.owner = owner;
         this.marketOpener = owner;
+        this.marketGUI = Bukkit.createInventory(this, 54,
+                Log.getString("market-GUI.title").replace("%seller%", sellerName == null ? "" :
+                        Log.getString("market-GUI.seller").replace("%player2%", sellerName)));
         //下面对marketGUI做初始化处理
         loadBackground(0, 54);
         //加载功能栏
@@ -115,9 +117,11 @@ public class MarketHolder implements InventoryHolder {
     public MarketHolder(OfflinePlayer viewedPlayer, Player opener, int currentPage) {
         this.sellerName = viewedPlayer.getName();
         this.currentPage = currentPage;
-        this.marketGUI = Bukkit.createInventory(this, 54, Log.getString("market-GUI.title"));
         this.owner = viewedPlayer;
         this.marketOpener = opener;
+        this.marketGUI = Bukkit.createInventory(this, 54,
+                Log.getString("market-GUI.title").replace("%seller%", sellerName == null ? "" :
+                        Log.getString("market-GUI.seller").replace("%player2%", sellerName)));
         //下面对marketGUI做初始化处理
         loadBackground(0, 54);
         //加载功能栏
@@ -163,8 +167,13 @@ public class MarketHolder implements InventoryHolder {
 
     public void reload() {
         this.currentPage = 1;//重新设置成第一页
+        this.marketGUI = Bukkit.createInventory(this, 54,
+                Log.getString("market-GUI.title").replace("%seller%", sellerName == null ? "" :
+                        Log.getString("market-GUI.seller").replace("%player2%", sellerName)));
+
         this.loadFuncBar();
         this.loadMarketItems();
+        marketOpener.openInventory(marketGUI);
     }
 
     //加载功能栏,非static是因为页数每个对象不一样
@@ -304,7 +313,7 @@ public class MarketHolder implements InventoryHolder {
             //切换回主线程更新UI
             int finalSlot = slot;
             Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
-                for (int i=0;i<itemStacks.size();i++)
+                for (int i = 0; i < itemStacks.size(); i++)
                     marketGUI.setItem(i, itemStacks.get(i));
                 if (finalSlot < 45) {//物品不足一页时填充
                     loadBackground(finalSlot, 45);

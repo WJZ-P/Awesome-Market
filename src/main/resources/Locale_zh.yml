@@ -224,6 +224,11 @@ command:
       name-not-exist: §7[§b全球市场§7] §c玩家不存在!
       not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!
 
+currency:
+  money: "游戏币"
+  point: "点券"
+  all: "所有"
+
 trade-type:
   all: §a全部
   buy: §6购买
