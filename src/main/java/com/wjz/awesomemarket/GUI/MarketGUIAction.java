@@ -78,7 +78,7 @@ public enum MarketGUIAction {
                                         String.valueOf(marketItem.getItemStack().getType()), Instant.now().getEpochSecond(),
                                         marketItem.getPrice(), String.valueOf(marketItem.getPriceType()), String.valueOf(StorageType.DELISTED));
                             });
-                            player.sendMessage(Log.getString("tip.unlisted-storage"));
+                            player.playSound(player.getLocation(), Sound.UI_LOOM_TAKE_RESULT, 1.0f, 1.0f);
                             //如果对方在线，同时给对方发送消息
                             Player seller = Bukkit.getPlayer(marketItem.getSellerName());
                             if (seller != null) {
@@ -147,7 +147,7 @@ public enum MarketGUIAction {
     STATISTIC {
         public void action(Player player, int slot, InventoryClickEvent event) {
             //给玩家打开统计面板
-            GUI.openTransaction(player,player,(MarketHolder) player.getOpenInventory().getTopInventory().getHolder());
+            GUI.openTransaction(player, player, (MarketHolder) player.getOpenInventory().getTopInventory().getHolder());
         }
     },
     SORT_TYPE {

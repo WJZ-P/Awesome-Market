@@ -128,7 +128,10 @@ confirm-GUI:
 storage-GUI:
   title: §9§l暂存库 §7- §8%player%
   prev-page: §e上一页
+  prev-page-lore: §e%d / %d 页
+
   next-page: §e下一页
+  next-page-lore: §e%d / %d 页
   market: §e点击返回全球市场
 
   item:
@@ -152,9 +155,10 @@ storage-GUI:
     - §8==============================
 
 transaction-GUI:
-  title: §3§l交易记录 §7- §8%player%
+  title: §3§l交易记录 §7- §1%player% %another_player%
   is-claimed: §b ✅ §a§l卖家已收款
   not-claimed: §4 ❌ §c§l卖家未收款
+  another-player: §8§l ❌ §c%player2%
   transaction-item-lore:
     - §8==========§7§l[§b§l 交易记录 §7§l]§8==========
     - ""
@@ -162,6 +166,8 @@ transaction-GUI:
     - §7»§9 🛍 §3购买玩家：§a%buyer%
     - §7»§6 💰 §3交易价格：§e%price% §6%priceType%
     - §7»§b 📅 §3交易时间：§d%trade_time%
+    - ""
+    - §7»§b 🔍 §a点击以查看与TA的交易
     - ""
     - §7» %isClaimed%
     - ""
@@ -175,7 +181,7 @@ transaction-GUI:
   next-page: §e下一页
   next-page-lore: §e%d / %d 页
 
-  sort-type: §c商品排序
+  sort-type: §c记录排序
   sort-type-lore:
     - §e当前：§6%sort%
     - ""
@@ -192,6 +198,12 @@ transaction-GUI:
     - §e当前：§6%currency%
     - ""
     - §a§l点击切换
+
+  help-book: §3帮助
+  help-book-lore:
+    - §a§l 这里还没有什么东西哦!
+    - ""
+    - §6§l 点击恢复默认排序
 
 tip:
   item-is-sold: §7[§b全球市场§7] §a您的物品§7[%item%§7]§a已被§6%buyer%§a购买!

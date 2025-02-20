@@ -26,10 +26,6 @@ mysql-data-base:
     maxLifetime: 900000      #连接最大生命周期
     connectionTimeout: 30000  #获取连接超时时间
 
-#the time that items will stay in the market, in days. When expired, items will be removed from the market
-#物品上架到市场的过期时间，过期后被下架，单位为天
-market-item-expiry: 30
-
 currency:
   tax:
     money: 0.05

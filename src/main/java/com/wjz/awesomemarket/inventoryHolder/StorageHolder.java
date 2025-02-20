@@ -4,6 +4,8 @@ import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.SkullType;
 import com.wjz.awesomemarket.constants.StorageType;
 import com.wjz.awesomemarket.entity.StorageItem;
+import com.wjz.awesomemarket.sql.MysqlType;
+import com.wjz.awesomemarket.sql.SQLFilter;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.UsefulTools;
@@ -24,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,7 +36,7 @@ public class StorageHolder implements InventoryHolder {
     private int currentPage = 1;
     private final Player opener;//这个holder的打开者
     private final OfflinePlayer owner;//这个容器的拥有者
-    private final int maxPage;
+    private int maxPage;
     private List<StorageItem> storageItems;
     public static final String PREV_PAGE_KEY = "prev_page";
     public static final String NEXT_PAGE_KEY = "next_page";
@@ -82,7 +85,6 @@ public class StorageHolder implements InventoryHolder {
         for (int i = 0; i < 54; i++) {
             storageGUI.setItem(i, background);
         }
-
         //加载功能栏
         this.loadFuncBar();
         //加载物品
@@ -219,12 +221,22 @@ public class StorageHolder implements InventoryHolder {
     }
 
     private void loadFuncBar() {
-        //功能栏
-        ItemStack prevBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("storage-GUI.prev-page"), null, GUI_ACTION_KEY);
-        ItemStack nextBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("storage-GUI.next-page"), null, GUI_ACTION_KEY);
-        ItemStack marketBtn = UsefulTools.createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("storage-GUI.market"), null, GUI_ACTION_KEY);
-        storageGUI.setItem(PREV_PAGE_SLOT, prevBtn);
-        storageGUI.setItem(NEXT_PAGE_SLOT, nextBtn);
-        storageGUI.setItem(MARKET_SLOT, marketBtn);
+        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
+            //设置页数
+            this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(owner.getName()) / 45);
+            //功能栏
+            ItemStack prevBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("storage-GUI.prev-page"),
+                    Collections.singletonList(String.format(Log.getString("storage-GUI.prev-page-lore"), currentPage, maxPage)), GUI_ACTION_KEY);
+            ItemStack nextBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("storage-GUI.next-page"),
+                    Collections.singletonList(String.format(Log.getString("storage-GUI.next-page-lore"), currentPage, maxPage)), GUI_ACTION_KEY);
+            ItemStack marketBtn = UsefulTools.createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("storage-GUI.market"), null, GUI_ACTION_KEY);
+
+            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
+                storageGUI.setItem(PREV_PAGE_SLOT, prevBtn);
+                storageGUI.setItem(NEXT_PAGE_SLOT, nextBtn);
+                storageGUI.setItem(MARKET_SLOT, marketBtn);
+            });
+        });
+
     }
 }

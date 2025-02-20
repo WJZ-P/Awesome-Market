@@ -53,12 +53,14 @@ public class TransactionHolder implements InventoryHolder {
     private static final String SORT_TYPE_KEY = "sort_type";
     private static final String TRADE_TYPE_KEY = "trade_type";
     private static final String PRICE_TYPE_KEY = "price_type";
+    private static final String HELP_BOOK_KEY = "help_book";
     private static final int SORT_TYPE_SLOT = 47;
-    private static final int TRADE_TYPE_SLOT = 48;
+    private static final int TRADE_TYPE_SLOT = 46;
     private static final int CURRENCY_TYPE_SLOT = 51;
     private static final int PREV_PAGE_SLOT = 45;
     private static final int NEXT_PAGE_SLOT = 53;
     private static final int MARKET_SLOT = 49;
+    private static final int HELP_BOOK_SLOT = 52;
     public static final NamespacedKey GUI_ACTION_KEY = new NamespacedKey
             (AwesomeMarket.getPlugin(AwesomeMarket.class), MarketHolder.ACTION_KEY);
     private final AtomicBoolean canTurnPage = new AtomicBoolean(true);
@@ -107,6 +109,7 @@ public class TransactionHolder implements InventoryHolder {
                     currencyLore, GUI_ACTION_KEY);
             ItemStack tradeTypeBtn = createNavItemStack(new ItemStack(Material.COMPASS), TRADE_TYPE_KEY, Log.getString("transaction-GUI.trade-type"),
                     tradeLore, GUI_ACTION_KEY);
+            ItemStack helpBook = createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK), HELP_BOOK_KEY, Log.getString("transaction-GUI.help-book"), Log.getStringList("transaction-GUI.help-book-lore"), GUI_ACTION_KEY);
 
             //如果不是默认排序。物品就带附魔颜色
             if (sortType != SortType.TIME_DESC) {
@@ -135,6 +138,7 @@ public class TransactionHolder implements InventoryHolder {
                 this.transactionGUI.setItem(CURRENCY_TYPE_SLOT, currencyTypeBtn);
                 this.transactionGUI.setItem(MARKET_SLOT, marketBtn);
                 this.transactionGUI.setItem(TRADE_TYPE_SLOT, tradeTypeBtn);
+                this.transactionGUI.setItem(HELP_BOOK_SLOT, helpBook);
             });
         });
     }
@@ -188,17 +192,14 @@ public class TransactionHolder implements InventoryHolder {
                 //要给物品上描述信息
                 List<String> lore = Log.getStringList("transaction-GUI.transaction-item-lore");
                 //修改lore
-                for (int i = 0; i < lore.size(); i++) {
-                    lore.set(i, lore.get(i)
-                            .replace("%seller%", transactionItem.getSeller())
-                            .replace("%buyer%", transactionItem.getBuyer())
-                            .replace("%price%", String.format("%.2f", transactionItem.getPrice()))
-                            .replace("%priceType%", transactionItem.getPriceType().getName())
-                            .replace("%trade_time%", UsefulTools.getFormatTime(transactionItem.getTradeTime()))
-                            .replace("%isClaimed%", transactionItem.getIsClaimed() == 1 ?
-                                    Log.getString("transaction-GUI.is-claimed") : Log.getString("transaction-GUI.not-claimed")));
-
-                }
+                lore.replaceAll(s -> s
+                        .replace("%seller%", transactionItem.getSeller())
+                        .replace("%buyer%", transactionItem.getBuyer())
+                        .replace("%price%", String.format("%.2f", transactionItem.getPrice()))
+                        .replace("%priceType%", transactionItem.getPriceType().getName())
+                        .replace("%trade_time%", UsefulTools.getFormatTime(transactionItem.getTradeTime()))
+                        .replace("%isClaimed%", transactionItem.getIsClaimed() == 1 ?
+                                Log.getString("transaction-GUI.is-claimed") : Log.getString("transaction-GUI.not-claimed")));
                 meta.setLore(lore);
                 //添加商品的NBT标签
                 meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, TRANSACTION_KEY);
@@ -206,18 +207,18 @@ public class TransactionHolder implements InventoryHolder {
                 itemStack.setItemMeta(meta);
                 tempItemList.add(itemStack);
                 slot++;
-
-                //切换回主线程更新UI
-                int finalSlot = slot;
-                Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
-                    for (int i = 0; i < tempItemList.size(); i++)
-                        transactionGUI.setItem(i, tempItemList.get(i));
-                    if (finalSlot < 45) {//物品不足一页时填充
-                        loadBackground(finalSlot, 45);
-                    }
-                    this.canTurnPage.set(true);
-                });
             }
+
+            //切换回主线程更新UI
+            int finalSlot = slot;
+            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
+                for (int i = 0; i < tempItemList.size(); i++)
+                    transactionGUI.setItem(i, tempItemList.get(i));
+                if (finalSlot < 45) {//物品不足一页时填充
+                    loadBackground(finalSlot, 45);
+                }
+                this.canTurnPage.set(true);
+            });
         });
     }
 
@@ -264,5 +265,13 @@ public class TransactionHolder implements InventoryHolder {
 
     public void setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
+    }
+
+    public void setViewer(OfflinePlayer viewer) {
+        this.viewer = viewer;
+    }
+
+    public TransactionItem getTransactionItem(int slot) {
+        return transactionItems.get(slot);
     }
 }
