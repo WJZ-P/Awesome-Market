@@ -153,8 +153,8 @@ storage-GUI:
 
 transaction-GUI:
   title: §3§l交易记录 §7- §8%player%
-  is-claimed: §b ✅ §a§l卖家已确认
-  not-claimed: §4 ❌ §c§l卖家未确认!
+  is-claimed: §b ✅ §a§l卖家已收款
+  not-claimed: §4 ❌ §c§l卖家未收款!
   transaction-item-lore:
     - §8==========§7§l[§b§l 交易记录 §7§l]§8==========
     - ""

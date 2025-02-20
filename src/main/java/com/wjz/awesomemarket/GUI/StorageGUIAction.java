@@ -20,7 +20,8 @@ public enum StorageGUIAction {
                         Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             }
         }
-    }, NEXT_PAGE {
+    },
+    NEXT_PAGE {
         @Override
         public void action(StorageHolder storageHolder, int slot) {
             //翻到下一页
@@ -32,7 +33,8 @@ public enum StorageGUIAction {
                         Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
             }
         }
-    }, WAITING_FOR_CLAIM {
+    },
+    WAITING_FOR_CLAIM {
         @Override
         public void action(StorageHolder storageHolder, int slot) {
             takeItemToInv(storageHolder, slot);
@@ -43,7 +45,8 @@ public enum StorageGUIAction {
         public void action(StorageHolder storageHolder, int slot) {
             takeItemToInv(storageHolder, slot);
         }
-    }, MARKET {
+    },
+    MARKET {
         @Override
         public void action(StorageHolder storageHolder, int slot) {
             //打开市场

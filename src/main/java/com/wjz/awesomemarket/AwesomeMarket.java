@@ -1,10 +1,7 @@
 package com.wjz.awesomemarket;
 
 import com.wjz.awesomemarket.Command.MyTabCompleter;
-import com.wjz.awesomemarket.Listeners.ConfirmListener;
-import com.wjz.awesomemarket.Listeners.LoginListener;
-import com.wjz.awesomemarket.Listeners.MarketListener;
-import com.wjz.awesomemarket.Listeners.StorageListener;
+import com.wjz.awesomemarket.Listeners.*;
 import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.*;
 import org.black_ixx.playerpoints.PlayerPoints;
@@ -57,6 +54,7 @@ public final class AwesomeMarket extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ConfirmListener(),this);
         Bukkit.getPluginManager().registerEvents(new StorageListener(),this);
         Bukkit.getPluginManager().registerEvents(new LoginListener(),this);
+        Bukkit.getPluginManager().registerEvents(new TransactionListener(),this);
     }
 
     @Override

@@ -159,7 +159,8 @@ public enum MarketGUIAction {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, // 清脆的"叮"声
                     1.0f, (float) (0.8 + 0.1 * sortType.ordinal())); // 根据排序类型改变音高
         }
-    }, PRICE_TYPE {
+    },
+    PRICE_TYPE {
         public void action(Player player, int slot, InventoryClickEvent event) {
             MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
             marketHolder.setPriceType(marketHolder.getPriceType().next());

@@ -34,8 +34,10 @@ import static com.wjz.awesomemarket.utils.UsefulTools.createNavItemStack;
 
 public class TransactionHolder implements InventoryHolder {
     private final Inventory transactionGUI;
+
     private final MarketHolder marketHolder;
     private int currentPage = 1;
+
     private final Player opener;//这个holder的打开者
     private final OfflinePlayer owner;//这个容器的拥有者
     private OfflinePlayer viewer;//想要查询交易记录的目标玩家
@@ -68,9 +70,7 @@ public class TransactionHolder implements InventoryHolder {
     }
 
     public TransactionHolder(MarketHolder marketHolder, Player opener, OfflinePlayer owner) {
-        //默认是购入排序,最大页数应该用异步更新。
-        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getPlugin(AwesomeMarket.class), () -> this.maxPage = Mysql.getItemsCountWithFilter(MysqlType.TRANSACTIONS_TABLE,
-                new SQLFilter(owner.getName(), null, sortType, priceType, tradeType, 1)) / 45 + 1);
+
         //这个放在最前面，因为耗时应该较久并且后面要用到
 
         this.transactionGUI = Bukkit.createInventory(this, 54, Log.getString("transaction-GUI.title").replace("%player%", owner.getName()));
@@ -78,31 +78,38 @@ public class TransactionHolder implements InventoryHolder {
         this.opener = opener;
         this.owner = owner;
         loadBackground(0, 54);
-        loadFuncBar();
+
+        //默认是购入排序,最大页数应该用异步更新。
+        Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getPlugin(AwesomeMarket.class), () -> {
+            this.maxPage = Mysql.getItemsCountWithFilter(MysqlType.TRANSACTIONS_TABLE,
+                    new SQLFilter(owner.getName(), null, sortType, priceType, tradeType, 1)) / 45 + 1;
+            loadFuncBar();
+        });
+
         this.loadAndSetItems();
     }
 
     private void loadFuncBar() {
         //加载功能栏
-        ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("transaction-GUI.name.prev-page"),
+        ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("transaction-GUI.prev-page"),
                 Collections.singletonList(String.format(Log.getString("transaction-GUI.prev-page-lore"), this.currentPage,
                         maxPage)), GUI_ACTION_KEY);
-        ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("transaction-GUI.name.next-page"),
+        ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("transaction-GUI.next-page"),
                 Collections.singletonList(String.format(Log.getString("transaction-GUI.next-page-lore"), this.currentPage,
                         maxPage)), GUI_ACTION_KEY);
         ItemStack marketBtn = createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("transaction-GUI.market"), null, GUI_ACTION_KEY);
 
         //这里设置对应的lore
-        List<String> sortLore = Log.getStringList("transaction-GUI.name.sort-type-lore");
+        List<String> sortLore = Log.getStringList("transaction-GUI.sort-type-lore");
         sortLore.replaceAll(s -> s.replace("%sort%", sortType.getString()));
-        List<String> tradeLore = Log.getStringList("transaction-GUI.name.trade-type-lore");
+        List<String> tradeLore = Log.getStringList("transaction-GUI.trade-type-lore");
         tradeLore.replaceAll(s -> s.replace("%tradeType%", tradeType.getName()));
 
-        ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), SORT_TYPE_KEY, Log.getString("market-GUI.name.sort-type"),
+        ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), SORT_TYPE_KEY, Log.getString("transaction-GUI.sort-type"),
                 sortLore, GUI_ACTION_KEY);
-        ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
+        ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), PRICE_TYPE_KEY, Log.getString("transaction-GUI.currency-type"),
                 tradeLore, GUI_ACTION_KEY);
-        ItemStack tradeTypeBtn = createNavItemStack(new ItemStack(Material.COMPASS), TRADE_TYPE_KEY, Log.getString("market-GUI.name.trade-type"), Log.getStringList("market-GUI.name.trade-type-lore"), GUI_ACTION_KEY);
+        ItemStack tradeTypeBtn = createNavItemStack(new ItemStack(Material.COMPASS), TRADE_TYPE_KEY, Log.getString("transaction-GUI.trade-type"), Log.getStringList("market-GUI.name.trade-type-lore"), GUI_ACTION_KEY);
 
         //如果不是默认排序。物品就带附魔颜色
         if (sortType != SortType.TIME_DESC) {
@@ -212,5 +219,43 @@ public class TransactionHolder implements InventoryHolder {
                 });
             }
         });
+    }
+    public MarketHolder getMarketHolder() {
+        return marketHolder;
+    }
+    public Player getOpener() {
+        return opener;
+    }
+
+    public OfflinePlayer getOwner() {
+        return owner;
+    }
+
+    public SortType getSortType() {
+        return sortType;
+    }
+
+    public void setSortType(SortType sortType) {
+        this.sortType = sortType;
+    }
+
+    public void reload() {
+        loadFuncBar();
+        loadAndSetItems();
+    }
+    public void setPriceType(PriceType priceType) {
+        this.priceType = priceType;
+    }
+
+    public PriceType getPriceType() {
+        return priceType;
+    }
+
+    public void setTradeType(TradeType tradeType) {
+        this.tradeType = tradeType;
+    }
+
+    public TradeType getTradeType() {
+        return tradeType;
     }
 }

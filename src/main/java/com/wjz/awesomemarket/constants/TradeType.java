@@ -19,6 +19,10 @@ public enum TradeType {
             return Log.getString("trade-type.all");
         }
     };
-
+    private static final TradeType[] VALUES = values();
     public abstract String getName();
+
+    public TradeType next() {
+        return VALUES[(this.ordinal() + 1) % VALUES.length];
+    }
 }
