@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.wjz.awesomemarket.utils.UsefulTools.createNavItemStack;
 
 public class TransactionHolder implements InventoryHolder {
-    private final Inventory transactionGUI;
+    private Inventory transactionGUI;
 
     private final MarketHolder marketHolder;
     private int currentPage = 1;
@@ -71,20 +71,24 @@ public class TransactionHolder implements InventoryHolder {
     }
 
     public TransactionHolder(MarketHolder marketHolder, Player opener, OfflinePlayer owner) {
-        this.transactionGUI = Bukkit.createInventory(this, 54, Log.getString("transaction-GUI.title").replace("%player%", owner.getName()));
+        this.transactionGUI = Bukkit.createInventory(this, 54,
+                Log.getString("transaction-GUI.title")
+                        .replace("%player%", owner.getName())
+                        .replace("%another_player%", viewer == null ? "" :
+                                Log.getString("transaction-GUI.another-player")
+                                        .replace("%player2%", viewer.getName())));
         this.marketHolder = marketHolder;
         this.opener = opener;
         this.owner = owner;
         loadBackground(0, 54);
-        loadFuncBar();
-        loadAndSetItems();
+        reload();
     }
 
     private void loadFuncBar() {
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getPlugin(AwesomeMarket.class), () -> {
             //设置页数
             this.maxPage = Mysql.getItemsCountWithFilter(MysqlType.TRANSACTIONS_TABLE,
-                    new SQLFilter(owner.getName(), null, sortType, priceType, tradeType, 1)) / 45 + 1;
+                    new SQLFilter(owner.getName(), viewer == null ? null : viewer.getName(), sortType, priceType, tradeType, 1)) / 45 + 1;
 
             //加载功能栏
             ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("transaction-GUI.prev-page"),
@@ -178,9 +182,11 @@ public class TransactionHolder implements InventoryHolder {
 
     private void loadAndSetItems() {
         this.canTurnPage.set(false);//加载物品的时候不可以翻页
+
         //加载物品
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
             this.transactionItems = Mysql.getTransactionItems(new SQLFilter(owner.getName(), viewer == null ? null : viewer.getName(), sortType, priceType, tradeType, currentPage));
+            Log.infoDirectly("加载了" + transactionItems.size() + "个交易记录");
             //下面进行物品的设置
             List<ItemStack> tempItemList = new ArrayList<>();
             int slot = 0;
@@ -243,8 +249,19 @@ public class TransactionHolder implements InventoryHolder {
     }
 
     public void reload() {
+        //要先看viewer是不是空。不为空就改名字
+        this.transactionGUI = Bukkit.createInventory(this, 54,
+                Log.getString("transaction-GUI.title")
+                        .replace("%player%", owner.getName())
+                        .replace("%another_player%", viewer == null ? "" :
+                                Log.getString("transaction-GUI.another-player")
+                                        .replace("%player2%", viewer.getName())));
+        loadBackground(0, 54);
+        opener.openInventory(transactionGUI);
+
         loadFuncBar();
         loadAndSetItems();
+
     }
 
     public void setPriceType(PriceType priceType) {

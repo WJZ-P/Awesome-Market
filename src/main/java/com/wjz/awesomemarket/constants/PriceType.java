@@ -105,7 +105,7 @@ public enum PriceType {
     }
 
     public String getName() {
-        return AwesomeMarket.getInstance().getConfig().getString("currency.name." + this.toString().toLowerCase());
+        return AwesomeMarket.getInstance().getConfig().getString("currency." + this.toString().toLowerCase());
     }
 
     public PriceType next() {

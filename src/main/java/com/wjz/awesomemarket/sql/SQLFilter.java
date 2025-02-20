@@ -47,7 +47,7 @@ public class SQLFilter {
             String condition = null;
             switch (tradeType) {
                 case ALL -> condition = viewer == null ? " AND (seller = '%owner%' OR buyer = '%owner%') " :
-                        " AND ( (seller = '%owner%' AND buyer = '%viewer%') OR (buyer = '%viewer%' AND seller= '%owner%' ) ) ";
+                        " AND ( (seller = '%owner%' AND buyer = '%viewer%') OR (seller = '%viewer%' AND buyer= '%owner%' ) ) ";
                 case SELL ->
                         condition = viewer == null ? " AND seller = '%owner%' " : "AND (seller = '%owner%' AND buyer = '%viewer%') ";
                 case BUY ->
