@@ -39,22 +39,21 @@ public class SQLFilter {
     }
 
     public String getLimit() {
-        return sortType.toSQL();
+        return sortType.toSQL(tradeType != null);
     }
 
     public String getCondition() {
         if (tradeType != null) {//说明查询的是交易记录表
             String condition = null;
             switch (tradeType) {
-                case ALL -> condition = viewer == null ? "AND (seller = '%owner%' OR buyer = '%owner%') " :
-                        "AND ( (seller = '%owner%' AND buyer = '%viewer%') OR (buyer = '%viewer%' AND seller= '%owner%' ) ) ";
+                case ALL -> condition = viewer == null ? " AND (seller = '%owner%' OR buyer = '%owner%') " :
+                        " AND ( (seller = '%owner%' AND buyer = '%viewer%') OR (buyer = '%viewer%' AND seller= '%owner%' ) ) ";
                 case SELL ->
-                        condition = viewer == null ? "AND seller = '%owner%' " : "AND (seller = '%owner%' AND buyer = '%viewer%') ";
+                        condition = viewer == null ? " AND seller = '%owner%' " : "AND (seller = '%owner%' AND buyer = '%viewer%') ";
                 case BUY ->
-                        condition = viewer == null ? "AND buyer = '%owner%' " : "AND (buyer = '%owner%' AND seller= '%viewer%' ) ";
+                        condition = viewer == null ? " AND buyer = '%owner%' " : "AND (buyer = '%owner%' AND seller= '%viewer%' ) ";
             }
             return new StringBuilder().append("WHERE 1=1 ")
-                    .append(sortType == null ? "" : sortType.toSQL())
                     .append(priceType == null ? "" : priceType.toSQL())
                     .append(condition.replace("%owner%", seller).replace("%viewer%", viewer == null ? "" : viewer))
                     .toString();

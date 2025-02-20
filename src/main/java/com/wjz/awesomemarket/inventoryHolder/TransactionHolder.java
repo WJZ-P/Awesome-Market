@@ -85,10 +85,10 @@ public class TransactionHolder implements InventoryHolder {
     private void loadFuncBar() {
         //加载功能栏
         ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("transaction-GUI.name.prev-page"),
-                Collections.singletonList(String.format(Log.getString("transaction-GUI.name.prev-page-lore"), this.currentPage,
+                Collections.singletonList(String.format(Log.getString("transaction-GUI.prev-page-lore"), this.currentPage,
                         maxPage)), GUI_ACTION_KEY);
         ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("transaction-GUI.name.next-page"),
-                Collections.singletonList(String.format(Log.getString("transaction-GUI.name.next-page-lore"), this.currentPage,
+                Collections.singletonList(String.format(Log.getString("transaction-GUI.next-page-lore"), this.currentPage,
                         maxPage)), GUI_ACTION_KEY);
         ItemStack marketBtn = createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("transaction-GUI.market"), null, GUI_ACTION_KEY);
 
@@ -169,7 +169,7 @@ public class TransactionHolder implements InventoryHolder {
         this.canTurnPage.set(false);//加载物品的时候不可以翻页
         //加载物品
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
-            this.transactionItems = Mysql.getTransactionItems(new SQLFilter(owner.getName(), viewer.getName(), sortType, priceType, tradeType, currentPage));
+            this.transactionItems = Mysql.getTransactionItems(new SQLFilter(owner.getName(), viewer == null ? null : viewer.getName(), sortType, priceType, tradeType, currentPage));
             //下面进行物品的设置
             List<ItemStack> tempItemList = new ArrayList<>();
             int slot = 0;
@@ -179,7 +179,7 @@ public class TransactionHolder implements InventoryHolder {
                 ItemStack itemStack = transactionItem.getItemStack();
                 ItemMeta meta = itemStack.getItemMeta();
                 //要给物品上描述信息
-                List<String> lore = Log.getStringList("market-GUI.name.commodity.lore");
+                List<String> lore = Log.getStringList("transaction-GUI.transaction-item-lore");
                 //修改lore
                 for (int i = 0; i < lore.size(); i++) {
                     lore.set(i, lore.get(i)
@@ -187,7 +187,10 @@ public class TransactionHolder implements InventoryHolder {
                             .replace("%buyer%", transactionItem.getBuyer())
                             .replace("%price%", String.format("%.2f", transactionItem.getPrice()))
                             .replace("%priceType%", transactionItem.getPriceType().getName())
-                            .replace("%trade_time%", UsefulTools.getFormatTime(transactionItem.getTradeTime())));
+                            .replace("%trade_time%", UsefulTools.getFormatTime(transactionItem.getTradeTime()))
+                            .replace("%isClaimed%", transactionItem.getIsClaimed() == 1 ?
+                                    Log.getString("transaction-GUI.is-claimed") : Log.getString("transaction-GUI.not-claimed")));
+
                 }
                 meta.setLore(lore);
                 //添加商品的NBT标签

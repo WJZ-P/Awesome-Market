@@ -118,6 +118,4 @@ public class MysqlType {
             "buy_count = buy_count + VALUES(buy_count)";
     //根据uuid查询统计记录
     public static String SELECT_FROM_STATISTIC = "SELECT * FROM `%s` WHERE player_uuid = ?";
-    //插入记录行
-    public static String INSERT_INTO_STATISTIC = "INSERT INTO `%s` (player_uuid) VALUES (?)";
 }

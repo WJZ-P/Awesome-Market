@@ -9,24 +9,20 @@ public enum SortType {
     PRICE_ASC;
 
     private static final SortType[] VALUES = values();
+
     //获取排序方式的本地化翻译
-    public String getString(){
-        return Log.getString("sort."+String.valueOf(this).toLowerCase());
+    public String getString() {
+        return Log.getString("sort." + String.valueOf(this).toLowerCase());
     }
 
-    public String toSQL() {
-        switch (this) {
-            case PRICE_ASC:
-                return "price ASC";
-            case PRICE_DESC:
-                return "price DESC";
-            case TIME_ASC:
-                return "on_sell_time ASC";
-            case TIME_DESC:
-                return "on_sell_time DESC";
-            default:
-                throw new IllegalStateException();
-        }
+    public String toSQL(boolean isTradeType) {
+        return switch (this) {
+            case PRICE_ASC -> "price ASC";
+            case PRICE_DESC -> "price DESC";
+            case TIME_ASC -> isTradeType ? "trade_time ASC" : "on_sell_time ASC";
+            case TIME_DESC -> isTradeType ? "trade_time DESC" : "on_sell_time DESC";
+            default -> throw new IllegalStateException();
+        };
     }
 
     public SortType next() {
