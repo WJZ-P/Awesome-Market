@@ -147,7 +147,7 @@ public enum MarketGUIAction {
     STATISTIC {
         public void action(Player player, int slot, InventoryClickEvent event) {
             //给玩家打开统计面板
-
+            GUI.openTransaction(player,player,(MarketHolder) player.getOpenInventory().getTopInventory().getHolder());
         }
     },
     SORT_TYPE {
