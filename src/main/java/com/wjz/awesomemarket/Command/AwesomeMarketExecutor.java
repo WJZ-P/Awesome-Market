@@ -30,7 +30,7 @@ public class AwesomeMarketExecutor implements CommandExecutor {
                 if (strings.length == 0)//说明没有额外的参数，就直接打开全球市场
                 {
                     //sender.sendMessage("§b准备打开GUI辣！");
-                    GUI.openMarket((Player) sender);
+                    GUI.openMarket((Player) sender,1);
                     //sender.sendMessage("§d指令执行成功辣");
                     return true;
                 }

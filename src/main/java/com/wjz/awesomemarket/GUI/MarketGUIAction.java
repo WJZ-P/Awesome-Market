@@ -146,6 +146,7 @@ public enum MarketGUIAction {
     },
     STATISTIC {
         public void action(Player player, int slot, InventoryClickEvent event) {
+            //给玩家打开统计面板
 
         }
     },

@@ -266,7 +266,7 @@ public class MarketHolder implements InventoryHolder {
                 if (oldLore == null) oldLore = new ArrayList<>();
 
                 //要给物品上描述信息
-                List<String> commodityLore = Log.langConfig.getStringList("market-GUI.name.commodity.lore");
+                List<String> commodityLore = Log.getStringList("market-GUI.name.commodity.lore");
                 //添加lore
                 //price,currency,player,on_sell_time
 
@@ -301,8 +301,8 @@ public class MarketHolder implements InventoryHolder {
             //切换回主线程更新UI
             int finalSlot = slot;
             Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
-                for (ItemStack itemStack : itemStacks)
-                    marketGUI.setItem(finalSlot, itemStack);
+                for (int i=0;i<itemStacks.size();i++)
+                    marketGUI.setItem(i, itemStacks.get(i));
                 if (finalSlot < 45) {//物品不足一页时填充
                     loadBackground(finalSlot, 45);
                 }

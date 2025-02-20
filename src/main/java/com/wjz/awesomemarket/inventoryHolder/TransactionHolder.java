@@ -22,8 +22,10 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,7 +51,7 @@ public class TransactionHolder implements InventoryHolder {
     public static final String TRANSACTION_KEY = "transaction";
     private static final String SORT_TYPE_KEY = "sort_type";
     private static final String TRADE_TYPE_KEY = "trade_type";
-    private static final String PRICE_TYPE_KEY="price_type";
+    private static final String PRICE_TYPE_KEY = "price_type";
     private static final int SORT_TYPE_SLOT = 47;
     private static final int TRADE_TYPE_SLOT = 48;
     private static final int CURRENCY_TYPE_SLOT = 51;
@@ -68,7 +70,7 @@ public class TransactionHolder implements InventoryHolder {
     public TransactionHolder(MarketHolder marketHolder, Player opener, OfflinePlayer owner) {
         //默认是购入排序,最大页数应该用异步更新。
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getPlugin(AwesomeMarket.class), () -> this.maxPage = Mysql.getItemsCountWithFilter(MysqlType.TRANSACTIONS_TABLE,
-                new SQLFilter(owner.getName(),null, sortType, priceType, tradeType, 1)) / 45 + 1);
+                new SQLFilter(owner.getName(), null, sortType, priceType, tradeType, 1)) / 45 + 1);
         //这个放在最前面，因为耗时应该较久并且后面要用到
 
         this.transactionGUI = Bukkit.createInventory(this, 54, Log.getString("transaction-GUI.title").replace("%player%", owner.getName()));
@@ -100,7 +102,7 @@ public class TransactionHolder implements InventoryHolder {
                 sortLore, GUI_ACTION_KEY);
         ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), PRICE_TYPE_KEY, Log.getString("market-GUI.name.currency-type"),
                 tradeLore, GUI_ACTION_KEY);
-        ItemStack tradeTypeBtn=createNavItemStack(new ItemStack(Material.COMPASS), TRADE_TYPE_KEY, Log.getString("market-GUI.name.trade-type"), Log.getStringList("market-GUI.name.trade-type-lore"), GUI_ACTION_KEY);
+        ItemStack tradeTypeBtn = createNavItemStack(new ItemStack(Material.COMPASS), TRADE_TYPE_KEY, Log.getString("market-GUI.name.trade-type"), Log.getStringList("market-GUI.name.trade-type-lore"), GUI_ACTION_KEY);
 
         //如果不是默认排序。物品就带附魔颜色
         if (sortType != SortType.TIME_DESC) {
@@ -150,6 +152,7 @@ public class TransactionHolder implements InventoryHolder {
         this.loadFuncBar();
         return true;
     }
+
     public boolean turnNextPage() {
         if (!canTurnPage.get()) return false;//不允许翻页就直接返回false
 
@@ -166,10 +169,45 @@ public class TransactionHolder implements InventoryHolder {
         this.canTurnPage.set(false);//加载物品的时候不可以翻页
         //加载物品
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getInstance(), () -> {
-            this.transactionItems=Mysql.getTransactionItems(new SQLFilter(owner.getName(),viewer.getName(), sortType, priceType, tradeType, currentPage));
-            Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
-                //转回主线程设置物品
-            });
+            this.transactionItems = Mysql.getTransactionItems(new SQLFilter(owner.getName(), viewer.getName(), sortType, priceType, tradeType, currentPage));
+            //下面进行物品的设置
+            List<ItemStack> tempItemList = new ArrayList<>();
+            int slot = 0;
+            for (TransactionItem transactionItem : transactionItems) {
+                if (slot >= 45) break;
+                //下面开始设置UI里面的物品
+                ItemStack itemStack = transactionItem.getItemStack();
+                ItemMeta meta = itemStack.getItemMeta();
+                //要给物品上描述信息
+                List<String> lore = Log.getStringList("market-GUI.name.commodity.lore");
+                //修改lore
+                for (int i = 0; i < lore.size(); i++) {
+                    lore.set(i, lore.get(i)
+                            .replace("%seller%", transactionItem.getSeller())
+                            .replace("%buyer%", transactionItem.getBuyer())
+                            .replace("%price%", String.format("%.2f", transactionItem.getPrice()))
+                            .replace("%priceType%", transactionItem.getPriceType().getName())
+                            .replace("%trade_time%", UsefulTools.getFormatTime(transactionItem.getTradeTime())));
+                }
+                meta.setLore(lore);
+                //添加商品的NBT标签
+                meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, TRANSACTION_KEY);
+                //设置好的meta数据写入到item中
+                itemStack.setItemMeta(meta);
+                tempItemList.add(itemStack);
+                slot++;
+
+                //切换回主线程更新UI
+                int finalSlot = slot;
+                Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
+                    for (int i = 0; i < tempItemList.size(); i++)
+                        transactionGUI.setItem(i, tempItemList.get(i));
+                    if (finalSlot < 45) {//物品不足一页时填充
+                        loadBackground(finalSlot, 45);
+                    }
+                    this.canTurnPage.set(true);
+                });
+            }
         });
     }
 }

@@ -13,7 +13,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -112,5 +114,9 @@ public class UsefulTools {
         meta.setPlayerProfile(profile);
         head.setItemMeta(meta);
         return head;
+    }
+
+    public static String getFormatTime(long time){
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time));
     }
 }
