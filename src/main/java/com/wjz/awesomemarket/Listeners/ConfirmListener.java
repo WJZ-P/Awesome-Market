@@ -47,8 +47,7 @@ public class ConfirmListener implements Listener {
         Inventory ConfirmInv = event.getInventory();
         //使用异步任务来做渲染
         GUIAnimation guiAnimation = new GUIAnimation(ConfirmInv);
-        guiAnimation.runLiteCircleAnimate(0, 5);
-
+        guiAnimation.runLiteCircleAnimate(0, 2);
     }
 
     @EventHandler

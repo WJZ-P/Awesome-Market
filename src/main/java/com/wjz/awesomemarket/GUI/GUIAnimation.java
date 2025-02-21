@@ -27,30 +27,30 @@ public class GUIAnimation {
 
     public GUIAnimation(Inventory inventory) {
         this.inventory = inventory;//设定好容器
-        this.liteCircleItem = new ItemStack(Material.PINK_STAINED_GLASS_PANE, 1);//设定好物品
-        ItemMeta meta = liteCircleItem.getItemMeta();
+        ItemStack itemStack = new ItemStack(Material.YELLOW_STAINED_GLASS_PANE, 1);//设定好物品
+        ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName("");//设定好物品名字
-        liteCircleItem.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
+        liteCircleItem = itemStack;
     }
 
     //执行小圈圈动画
-    public void runLiteCircleAnimate(long delay,long interval) {
+    public void runLiteCircleAnimate(long delay, long interval) {
         if (map.containsKey(inventory)) {
             return; //  如果该 Inventory 已经有动画任务在运行，  则直接返回，  避免重复启动
         }
         int[] currentIndex = {0, 1, 2, 3, 4};
 
-        BukkitTask task = Bukkit.getScheduler().runTaskTimer(AwesomeMarket.getInstance(), new BukkitRunnable() { //  需要传入插件实例 plugin
-            public void run() {
-                //在这里编写动画更新逻辑
-                //首先清除掉原来的动画物品
-                cleanItems(liteCirclePath);
-                //接下来设置动画
-                for (int i = 0; i < currentIndex.length; i++) {
-                    inventory.setItem(liteCirclePath[currentIndex[i]], liteCircleItem);
-                    //更新索引
-                    currentIndex[i] = (currentIndex[i] + 1) % liteCirclePath.length;
-                }
+        //  需要传入插件实例 plugin
+        BukkitTask task = Bukkit.getScheduler().runTaskTimer(AwesomeMarket.getInstance(), () -> {
+            //在这里编写动画更新逻辑
+            //首先清除掉原来的动画物品
+            cleanItems(liteCirclePath);
+            //接下来设置动画
+            for (int i = 0; i < currentIndex.length; i++) {
+                inventory.setItem(liteCirclePath[currentIndex[i]], liteCircleItem);
+                //更新索引
+                currentIndex[i] = (currentIndex[i] + 1) % liteCirclePath.length;
             }
         }, delay, interval);
         map.put(inventory, task);
