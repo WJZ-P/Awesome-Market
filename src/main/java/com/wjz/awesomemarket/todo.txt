@@ -3,7 +3,9 @@
 写下架功能√
 bug:下架的物品没显示在暂存箱里，需要改进。√
 
-OP能看玩家销售记录
+OP能看玩家销售记录√
+/amt view transaction player1 player2√
+/amt view transaction player1√
 
 实现/amt view market player √
 实现/amt view storage player √

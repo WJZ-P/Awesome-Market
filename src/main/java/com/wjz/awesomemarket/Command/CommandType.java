@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.Command;
 
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.wjz.awesomemarket.inventoryHolder.StorageHolder;
+import com.wjz.awesomemarket.inventoryHolder.TransactionHolder;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
 import org.bukkit.Bukkit;
@@ -11,6 +12,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public enum CommandType {
     SELL {
@@ -23,8 +26,8 @@ public enum CommandType {
         @Override
         public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
             //view 有两个备选参数，分别是market和storage，分别代表查看市场物品和查看暂存库物品
-
-            if (strings.length < 3) { //view market(storage) %name%
+            //strings =[view,market,player]
+            if (strings.length == 1) {
                 sender.sendMessage(Log.getString("command.general.error.lack-of-params"));
                 return;
             }
@@ -34,6 +37,12 @@ public enum CommandType {
                     //首先检查是否有权限
                     if (!sender.hasPermission("awesomemarket.market.lookOthers")) {
                         sender.sendMessage(Log.getString("command.general.error.no-permission"));
+                        return;
+                    }
+                    //处理参数
+                    if (strings.length < 3) {
+                        for (String msg : Log.getStringList("command.general.help.view-market"))
+                            sender.sendMessage(msg);
                         return;
                     }
 
@@ -54,6 +63,11 @@ public enum CommandType {
                         sender.sendMessage(Log.getString("command.general.error.no-permission"));
                         return;
                     }
+                    if (strings.length < 3) {
+                        for (String msg : Log.getStringList("command.general.help.view-storage"))
+                            sender.sendMessage(msg);
+                        return;
+                    }
 
                     //处理暂存库指令
                     String targetName = strings[2];
@@ -67,9 +81,31 @@ public enum CommandType {
                         playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
                     }
                 }
+                case "transaction" -> {
+                    //首先检查是否有权限
+                    if (!sender.hasPermission("awesomemarket.transaction.lookOthers")) {
+                        sender.sendMessage(Log.getString("command.general.error.no-permission"));
+                        return;
+                    }
+                    //处理交易记录指令
+                    if (strings.length < 3) {
+                        for (String msg : Log.getStringList("command.general.help.view-transaction"))
+                            sender.sendMessage(msg);
+                        return;
+                    }
+                    Player playerSender = (Player) sender;
+                    String player1 = strings[2];
+                    String player2 = strings.length >= 4 ? strings[3] : null;
+                    if (player2 == null) {
+                        //说明只指定了一名玩家
+                        playerSender.openInventory(new TransactionHolder(new MarketHolder(playerSender, 1), playerSender, Bukkit.getOfflinePlayer(player1)).getInventory());
+                        playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
+                    } else {
+                        playerSender.openInventory(new TransactionHolder(new MarketHolder(playerSender, 1), playerSender, Bukkit.getOfflinePlayer(player1), Bukkit.getOfflinePlayer(player2)).getInventory());
+                        playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
+                    }
+                }
             }
-
-
         }
     },
     FIND {

@@ -84,6 +84,21 @@ public class TransactionHolder implements InventoryHolder {
         reload();
     }
 
+    public TransactionHolder(MarketHolder marketHolder, Player opener, OfflinePlayer owner, OfflinePlayer viewer) {
+        this.viewer = viewer;
+        this.marketHolder = marketHolder;
+        this.opener = opener;
+        this.owner = owner;
+        this.transactionGUI = Bukkit.createInventory(this, 54,
+                Log.getString("transaction-GUI.title")
+                        .replace("%player%", owner.getName())
+                        .replace("%another_player%", viewer == null ? "" :
+                                Log.getString("transaction-GUI.another-player")
+                                        .replace("%player2%", viewer.getName())));
+        loadBackground(0, 54);
+        reload();
+    }
+
     private void loadFuncBar() {
         Bukkit.getScheduler().runTaskAsynchronously(AwesomeMarket.getPlugin(AwesomeMarket.class), () -> {
             //设置页数
@@ -258,7 +273,7 @@ public class TransactionHolder implements InventoryHolder {
                                         .replace("%player2%", viewer.getName())));
         loadBackground(0, 54);
         opener.openInventory(transactionGUI);
-        this.currentPage=1;
+        this.currentPage = 1;
         loadFuncBar();
         loadAndSetItems();
 

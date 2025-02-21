@@ -32,3 +32,6 @@ permissions:
   awesomemarket.transaction.look: #查看交易记录
     description: Allow players to look other players' transaction.
     default: op
+  awesomemarket.transaction.lookOthers: #查看其他玩家的交易记录
+    description: Allow players to look other players' transaction.
+    default: op

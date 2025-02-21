@@ -223,6 +223,18 @@ command:
       lack-of-name: §7[§b全球市场§7] §c请输入玩家名!
       name-not-exist: §7[§b全球市场§7] §c玩家不存在!
       not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!
+    help:
+      view-market:
+       - "§7[§b全球市场§7] §c请输入需要查看的玩家名 示例:"
+       - "§7[§b全球市场§7] §a/amt view market  <玩家名>"
+      view-storage:
+       - "§7[§b全球市场§7] §c请输入需要查看的玩家名 示例:"
+       - "§7[§b全球市场§7] §a/amt view storage  <玩家名>"
+      view-transaction:
+       - "§7[§b全球市场§7] §c请输入需要查看的玩家名 示例:"
+       - "§7[§b全球市场§7] §a/amt view transaction  <玩家名>"
+       - "§7[§b全球市场§7] §c支持指定双玩家以查看交易记录 示例:"
+       - "§7[§b全球市场§7] §a/amt view transaction  <玩家1> <玩家2>"
 
 currency:
   money: "游戏币"

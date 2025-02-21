@@ -39,7 +39,7 @@ public class MyTabCompleter implements TabCompleter {
             if (arg1.equals("sell")) {
                 StringUtil.copyPartialMatches(args[1], Arrays.asList("money", "point"), completions);
             } else if (arg1.equals("view")) {
-                StringUtil.copyPartialMatches(args[1], Arrays.asList("market", "storage"), completions);
+                StringUtil.copyPartialMatches(args[1], Arrays.asList("market", "storage","transaction"), completions);
             }
 
         } else if (args.length == 3) {
