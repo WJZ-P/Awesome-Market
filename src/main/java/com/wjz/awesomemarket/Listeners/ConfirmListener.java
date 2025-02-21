@@ -2,6 +2,7 @@ package com.wjz.awesomemarket.Listeners;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.GUI.ConfirmGUIAction;
+import com.wjz.awesomemarket.GUI.GUIAnimation;
 import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
 import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.NamespacedKey;
@@ -44,13 +45,17 @@ public class ConfirmListener implements Listener {
         //打开UI的时候来一个小动画.
         //首先得获取容器
         Inventory ConfirmInv = event.getInventory();
-        //使用异步任务来做渲染.先搁置
+        //使用异步任务来做渲染
+        GUIAnimation guiAnimation = new GUIAnimation(ConfirmInv);
+        guiAnimation.runLiteCircleAnimate(0, 5);
 
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof ConfirmHolder)) return;
-
+        ConfirmHolder confirmHolder = (ConfirmHolder) event.getInventory().getHolder();
+        //停止确认界面的动画
+        GUIAnimation.stop(confirmHolder.getInventory());
     }
 }
