@@ -39,22 +39,22 @@ public class ConfirmHolder implements InventoryHolder {
         this.marketPage = marketHolder.getCurrentPage();
         this.marketHolder = marketHolder;
         this.marketItem = marketHolder.getMarketItem(slot);
-        confirmGUI = Bukkit.createInventory(this, 27, Log.getString("confirm-GUI.buy.title"));
+        confirmGUI = Bukkit.createInventory(this, 27, Log.getString("confirm-gui.buy.title"));
 
-        String buyLore = Log.getString("confirm-GUI.buy.confirm-lore")
+        String buyLore = Log.getString("confirm-gui.buy.confirm-lore")
                 .replace("%price%", String.format("%.2f", marketItem.getPrice()))
                 .replace("%currency%", marketItem.getPriceType().getName())
                 .replace("%player%", marketItem.getSellerName());
         //创建两个按钮物品
         ItemStack confirmBtn = createButton(UsefulTools.getCustomSkull(
                         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTc5YTVjOTVlZTE3YWJmZWY0NWM4ZGMyMjQxODk5NjQ5NDRkNTYwZjE5YTQ0ZjE5ZjhhNDZhZWYzZmVlNDc1NiJ9fX0="),
-                Log.getString("confirm-GUI.buy.confirm"),
+                Log.getString("confirm-gui.buy.confirm"),
                 buyLore, "confirm");
 
         ItemStack cancelBtn = createButton(UsefulTools.getCustomSkull(
                         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1NDgzNjJhMjRjMGZhODQ1M2U0ZDkzZTY4YzU5NjlkZGJkZTU3YmY2NjY2YzAzMTljMWVkMWU4NGQ4OTA2NSJ9fX0="),
-                Log.getString("confirm-GUI.buy.cancel"),
-                Log.getString("confirm-GUI.buy.cancel-lore"), "cancel");
+                Log.getString("confirm-gui.buy.cancel"),
+                Log.getString("confirm-gui.buy.cancel-lore"), "cancel");
 
         //设置物品
         confirmGUI.setItem(CONFIRM_SLOT, confirmBtn);

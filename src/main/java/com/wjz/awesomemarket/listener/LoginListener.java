@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.Listeners;
+package com.wjz.awesomemarket.listener;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.sql.Mysql;

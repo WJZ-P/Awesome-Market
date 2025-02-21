@@ -1,11 +1,7 @@
-package com.wjz.awesomemarket.GUI;
+package com.wjz.awesomemarket.gui;
 
-import com.wjz.awesomemarket.entity.MarketItem;
-import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
-import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.*;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;

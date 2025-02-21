@@ -1,10 +1,9 @@
-package com.wjz.awesomemarket.Listeners;
+package com.wjz.awesomemarket.listener;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.GUI.ConfirmGUIAction;
-import com.wjz.awesomemarket.GUI.GUIAnimation;
+import com.wjz.awesomemarket.gui.ConfirmGUIAction;
+import com.wjz.awesomemarket.gui.GUIAnimation;
 import com.wjz.awesomemarket.inventoryHolder.ConfirmHolder;
-import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

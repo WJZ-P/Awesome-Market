@@ -1,10 +1,9 @@
-package com.wjz.awesomemarket.GUI;
+package com.wjz.awesomemarket.gui;
 
 import com.wjz.awesomemarket.constants.PriceType;
 import com.wjz.awesomemarket.constants.SortType;
 import com.wjz.awesomemarket.entity.TransactionItem;
 import com.wjz.awesomemarket.inventoryHolder.TransactionHolder;
-import com.wjz.awesomemarket.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;

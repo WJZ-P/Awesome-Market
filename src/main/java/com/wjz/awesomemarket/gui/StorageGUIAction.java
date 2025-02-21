@@ -1,6 +1,5 @@
-package com.wjz.awesomemarket.GUI;
+package com.wjz.awesomemarket.gui;
 
-import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.wjz.awesomemarket.inventoryHolder.StorageHolder;
 import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.Log;

@@ -1,17 +1,12 @@
-package com.wjz.awesomemarket.Command;
+package com.wjz.awesomemarket.command;
 
 import com.wjz.awesomemarket.utils.GUI;
 import com.wjz.awesomemarket.utils.Log;
-import com.wjz.awesomemarket.utils.MarketTools;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 /**
  * 处理指令

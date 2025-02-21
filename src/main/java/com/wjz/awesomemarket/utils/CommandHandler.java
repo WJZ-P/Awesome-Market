@@ -1,6 +1,6 @@
 package com.wjz.awesomemarket.utils;
 
-import com.wjz.awesomemarket.Command.AwesomeMarketExecutor;
+import com.wjz.awesomemarket.command.AwesomeMarketExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CommandHandler {

@@ -1,7 +1,7 @@
 package com.wjz.awesomemarket;
 
-import com.wjz.awesomemarket.Command.MyTabCompleter;
-import com.wjz.awesomemarket.Listeners.*;
+import com.wjz.awesomemarket.command.MyTabCompleter;
+import com.wjz.awesomemarket.listener.*;
 import com.wjz.awesomemarket.sql.Mysql;
 import com.wjz.awesomemarket.utils.*;
 import org.black_ixx.playerpoints.PlayerPoints;

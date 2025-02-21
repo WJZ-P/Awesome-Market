@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.GUI;
+package com.wjz.awesomemarket.gui;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import org.bukkit.Bukkit;
@@ -6,12 +6,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

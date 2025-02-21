@@ -1,7 +1,7 @@
-package com.wjz.awesomemarket.Listeners;
+package com.wjz.awesomemarket.listener;
 
 import com.wjz.awesomemarket.AwesomeMarket;
-import com.wjz.awesomemarket.GUI.StorageGUIAction;
+import com.wjz.awesomemarket.gui.StorageGUIAction;
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
 import com.wjz.awesomemarket.inventoryHolder.StorageHolder;
 import org.bukkit.NamespacedKey;

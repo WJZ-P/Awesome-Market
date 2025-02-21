@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.Command;
+package com.wjz.awesomemarket.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

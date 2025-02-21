@@ -74,7 +74,7 @@ public class StorageHolder implements InventoryHolder {
         this.owner = player;
         this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(player.getName()) / 45);
 
-        storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-GUI.title").replace("%player%", player.getName()));
+        storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-gui.title").replace("%player%", player.getName()));
 
         //以灰色玻璃板作为默认填充
         ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
@@ -97,7 +97,7 @@ public class StorageHolder implements InventoryHolder {
         this.owner = owner;
         this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(owner.getName()) / 45);
 
-        storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-GUI.title").replace("%player%", owner.getName()));
+        storageGUI = Bukkit.createInventory(this, 54, Log.getString("storage-gui.title").replace("%player%", owner.getName()));
 
         //以灰色玻璃板作为默认填充
         ItemStack background = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
@@ -157,7 +157,7 @@ public class StorageHolder implements InventoryHolder {
                             ItemMeta meta = itemStack.getItemMeta();
                             List<String> oldLore = itemStack.getLore();
                             if (oldLore == null) oldLore = new ArrayList<>();
-                            List<String> lore = Log.getStringList("storage-GUI.item");
+                            List<String> lore = Log.getStringList("storage-gui.item");
                             LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(storageItem.getPurchaseTime()), ZoneId.systemDefault());
                             for (int i = 0; i < lore.size(); i++) {
                                 lore.set(i, lore.get(i)
@@ -182,7 +182,7 @@ public class StorageHolder implements InventoryHolder {
                             ItemMeta meta = itemStack.getItemMeta();
                             List<String> oldLore = itemStack.getLore();
                             if (oldLore == null) oldLore = new ArrayList<>();
-                            List<String> lore = Log.getStringList("storage-GUI.unlisted-item");
+                            List<String> lore = Log.getStringList("storage-gui.unlisted-item");
                             LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(storageItem.getPurchaseTime()), ZoneId.systemDefault());
                             for (int i = 0; i < lore.size(); i++) {
                                 lore.set(i, lore.get(i)
@@ -225,11 +225,11 @@ public class StorageHolder implements InventoryHolder {
             //设置页数
             this.maxPage = (int) Math.ceil((double) Mysql.getStorageTotalItemsCount(owner.getName()) / 45);
             //功能栏
-            ItemStack prevBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("storage-GUI.prev-page"),
-                    Collections.singletonList(String.format(Log.getString("storage-GUI.prev-page-lore"), currentPage, maxPage)), GUI_ACTION_KEY);
-            ItemStack nextBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("storage-GUI.next-page"),
-                    Collections.singletonList(String.format(Log.getString("storage-GUI.next-page-lore"), currentPage, maxPage)), GUI_ACTION_KEY);
-            ItemStack marketBtn = UsefulTools.createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("storage-GUI.market"), null, GUI_ACTION_KEY);
+            ItemStack prevBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("storage-gui.prev-page"),
+                    Collections.singletonList(String.format(Log.getString("storage-gui.prev-page-lore"), currentPage, maxPage)), GUI_ACTION_KEY);
+            ItemStack nextBtn = UsefulTools.createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("storage-gui.next-page"),
+                    Collections.singletonList(String.format(Log.getString("storage-gui.next-page-lore"), currentPage, maxPage)), GUI_ACTION_KEY);
+            ItemStack marketBtn = UsefulTools.createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("storage-gui.market"), null, GUI_ACTION_KEY);
 
             Bukkit.getScheduler().runTask(AwesomeMarket.getInstance(), () -> {
                 storageGUI.setItem(PREV_PAGE_SLOT, prevBtn);

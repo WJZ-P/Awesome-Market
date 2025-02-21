@@ -72,10 +72,10 @@ public class TransactionHolder implements InventoryHolder {
 
     public TransactionHolder(MarketHolder marketHolder, Player opener, OfflinePlayer owner) {
         this.transactionGUI = Bukkit.createInventory(this, 54,
-                Log.getString("transaction-GUI.title")
+                Log.getString("transaction-gui.title")
                         .replace("%player%", owner.getName())
                         .replace("%another_player%", viewer == null ? "" :
-                                Log.getString("transaction-GUI.another-player")
+                                Log.getString("transaction-gui.another-player")
                                         .replace("%player2%", viewer.getName())));
         this.marketHolder = marketHolder;
         this.opener = opener;
@@ -90,10 +90,10 @@ public class TransactionHolder implements InventoryHolder {
         this.opener = opener;
         this.owner = owner;
         this.transactionGUI = Bukkit.createInventory(this, 54,
-                Log.getString("transaction-GUI.title")
+                Log.getString("transaction-gui.title")
                         .replace("%player%", owner.getName())
                         .replace("%another_player%", viewer == null ? "" :
-                                Log.getString("transaction-GUI.another-player")
+                                Log.getString("transaction-gui.another-player")
                                         .replace("%player2%", viewer.getName())));
         loadBackground(0, 54);
         reload();
@@ -106,29 +106,29 @@ public class TransactionHolder implements InventoryHolder {
                     new SQLFilter(owner.getName(), viewer == null ? null : viewer.getName(), sortType, priceType, tradeType, 1)) / 45 + 1;
 
             //加载功能栏
-            ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("transaction-GUI.prev-page"),
-                    Collections.singletonList(String.format(Log.getString("transaction-GUI.prev-page-lore"), this.currentPage,
+            ItemStack prevBtn = createNavItemStack(new ItemStack(Material.ARROW), PREV_PAGE_KEY, Log.getString("transaction-gui.prev-page"),
+                    Collections.singletonList(String.format(Log.getString("transaction-gui.prev-page-lore"), this.currentPage,
                             maxPage)), GUI_ACTION_KEY);
-            ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("transaction-GUI.next-page"),
-                    Collections.singletonList(String.format(Log.getString("transaction-GUI.next-page-lore"), this.currentPage,
+            ItemStack nextBtn = createNavItemStack(new ItemStack(Material.ARROW), NEXT_PAGE_KEY, Log.getString("transaction-gui.next-page"),
+                    Collections.singletonList(String.format(Log.getString("transaction-gui.next-page-lore"), this.currentPage,
                             maxPage)), GUI_ACTION_KEY);
-            ItemStack marketBtn = createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("transaction-GUI.market"), null, GUI_ACTION_KEY);
+            ItemStack marketBtn = createNavItemStack(UsefulTools.getCustomSkull(SkullType.YELLOW_MARKET_DATA), MARKET_KEY, Log.getString("transaction-gui.market"), null, GUI_ACTION_KEY);
 
             //这里设置对应的lore
-            List<String> sortLore = Log.getStringList("transaction-GUI.sort-type-lore");
+            List<String> sortLore = Log.getStringList("transaction-gui.sort-type-lore");
             sortLore.replaceAll(s -> s.replace("%sort%", sortType.getString()));
-            List<String> tradeLore = Log.getStringList("transaction-GUI.trade-type-lore");
+            List<String> tradeLore = Log.getStringList("transaction-gui.trade-type-lore");
             tradeLore.replaceAll(s -> s.replace("%tradeType%", tradeType.getName()));
-            List<String> currencyLore = Log.getStringList("transaction-GUI.currency-type-lore");
+            List<String> currencyLore = Log.getStringList("transaction-gui.currency-type-lore");
             currencyLore.replaceAll(s -> s.replace("%currency%", priceType.getName()));
 
-            ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), SORT_TYPE_KEY, Log.getString("transaction-GUI.sort-type"),
+            ItemStack sortTypeBtn = createNavItemStack(new ItemStack(Material.SUNFLOWER), SORT_TYPE_KEY, Log.getString("transaction-gui.sort-type"),
                     sortLore, GUI_ACTION_KEY);
-            ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), PRICE_TYPE_KEY, Log.getString("transaction-GUI.currency-type"),
+            ItemStack currencyTypeBtn = createNavItemStack(new ItemStack(Material.EMERALD), PRICE_TYPE_KEY, Log.getString("transaction-gui.currency-type"),
                     currencyLore, GUI_ACTION_KEY);
-            ItemStack tradeTypeBtn = createNavItemStack(new ItemStack(Material.COMPASS), TRADE_TYPE_KEY, Log.getString("transaction-GUI.trade-type"),
+            ItemStack tradeTypeBtn = createNavItemStack(new ItemStack(Material.COMPASS), TRADE_TYPE_KEY, Log.getString("transaction-gui.trade-type"),
                     tradeLore, GUI_ACTION_KEY);
-            ItemStack helpBook = createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK), HELP_BOOK_KEY, Log.getString("transaction-GUI.help-book"), Log.getStringList("transaction-GUI.help-book-lore"), GUI_ACTION_KEY);
+            ItemStack helpBook = createNavItemStack(new ItemStack(Material.KNOWLEDGE_BOOK), HELP_BOOK_KEY, Log.getString("transaction-gui.help-book"), Log.getStringList("transaction-gui.help-book-lore"), GUI_ACTION_KEY);
 
             //如果不是默认排序。物品就带附魔颜色
             if (sortType != SortType.TIME_DESC) {
@@ -211,7 +211,7 @@ public class TransactionHolder implements InventoryHolder {
                 ItemStack itemStack = transactionItem.getItemStack();
                 ItemMeta meta = itemStack.getItemMeta();
                 //要给物品上描述信息
-                List<String> lore = Log.getStringList("transaction-GUI.transaction-item-lore");
+                List<String> lore = Log.getStringList("transaction-gui.transaction-item-lore");
                 //修改lore
                 lore.replaceAll(s -> s
                         .replace("%seller%", transactionItem.getSeller())
@@ -220,7 +220,7 @@ public class TransactionHolder implements InventoryHolder {
                         .replace("%priceType%", transactionItem.getPriceType().getName())
                         .replace("%trade_time%", UsefulTools.getFormatTime(transactionItem.getTradeTime()))
                         .replace("%isClaimed%", transactionItem.getIsClaimed() == 1 ?
-                                Log.getString("transaction-GUI.is-claimed") : Log.getString("transaction-GUI.not-claimed")));
+                                Log.getString("transaction-gui.is-claimed") : Log.getString("transaction-gui.not-claimed")));
                 meta.setLore(lore);
                 //添加商品的NBT标签
                 meta.getPersistentDataContainer().set(GUI_ACTION_KEY, PersistentDataType.STRING, TRANSACTION_KEY);
@@ -266,10 +266,10 @@ public class TransactionHolder implements InventoryHolder {
     public void reload() {
         //要先看viewer是不是空。不为空就改名字
         this.transactionGUI = Bukkit.createInventory(this, 54,
-                Log.getString("transaction-GUI.title")
+                Log.getString("transaction-gui.title")
                         .replace("%player%", owner.getName())
                         .replace("%another_player%", viewer == null ? "" :
-                                Log.getString("transaction-GUI.another-player")
+                                Log.getString("transaction-gui.another-player")
                                         .replace("%player2%", viewer.getName())));
         loadBackground(0, 54);
         opener.openInventory(transactionGUI);

@@ -1,4 +1,4 @@
-package com.wjz.awesomemarket.GUI;
+package com.wjz.awesomemarket.gui;
 
 import com.wjz.awesomemarket.AwesomeMarket;
 import com.wjz.awesomemarket.constants.PriceType;
@@ -14,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.time.Instant;
