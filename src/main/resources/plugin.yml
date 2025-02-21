@@ -1,13 +1,14 @@
 name: AwesomeMarket
-version: '1.0-SNAPSHOT'
+version: '1.0'
 main: com.wjz.awesomemarket.AwesomeMarket
 api-version: '1.21'
 load: STARTUP
 authors: [ WJZ_P ]
 description: An awesome global market plugin!
-website: https://github.com/WJZ-P
+website: https://github.com/WJZ-P/Awesome-Market
 #depend: [Vault,PlayerPoints] 注释掉是因为没装插件的报错太粗暴了。交给插件本身处理。
 softdepend: [ Vault,PlayerPoints ]
+
 commands:
   awesomemarket:
     description: 打开全球市场
@@ -18,7 +19,7 @@ permissions:
     description: Allow players to look other players' storage
     default: op
 
-  awesomemarket.market.lookOthers: #查看其他玩家的暂存库
+  awesomemarket.market.lookOthers: #查看其他玩家的商店
     description: Allow players to look other players' market
     default: true
 

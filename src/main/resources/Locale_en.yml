@@ -8,246 +8,246 @@ load_plugin: |
   §b/_/  |_|§3__/|__/\___/____/\____/_/ /_/ /_/\___§b/_/  /_/§3\__,_/_/  /_/|_|\___/§b\__/  
   
   §3▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
-  §aAwesomeMarket 插件已启动!!
-  §e感谢使用(｡•̀ᴗ-)✧!
-  §c任何bug请联系QQ：1369727119
-  §aGithub地址：https://github.com/WJZ-P/Awesome-Market
+  §aAwesomeMarket Plugin Enabled!!
+  §eWelcome to WJZ_P's Plugin (✧ω✧)!
+  §cAny questions, please contact 1369727119@qq.com or issue on Github
+  §aGithub：https://github.com/WJZ-P/Awesome-Market
 
 unload_plugin: |
   
   §c==============================
-  §bAwesomeMarket 插件已关闭!
-  §e感谢使用(｡•̀ᴗ-)✧!
+  §bAwesomeMarket Plugin Disabled!
+  §eThank you for using (｡•̀ᴗ-)✧!
   §c==============================
 
-try_create_database: "§7[§b全球市场§7] §e数据库不存在，创建awesome_market数据库。"
-connect_mysql_success: "§7[§b全球市场§7] §e成功连接数据库！"
-connect_mysql_fail: "§7[§b全球市场§7] §e数据库连接出错！"
-create_mysql_fail: "§7[§b全球市场§7] §e创建数据库或表出错！"
-no_vault: "§7[§b全球市场§7] §cVault插件未安装或未启用！"
-no_player_points: "§7[§b全球市场§7] §cPlayerPoints插件未安装或未启用！"
-payment_type_error: "§7[§b全球市场§7] §c货币类型错误！"
-price_error: "§7[§b全球市场§7] §c请输入正确的价格！"
-pay_tax_fail: "§7[§b全球市场§7] §c您的货币余额§e %.2f§c 不足以付税§e%.2f§c！上架失败！"
-withdraw_tax: "§7[§b全球市场§7] §e物品上架成功！扣除税款§c %.2f §a%s"
-args_error_sell: "§7[§b全球市场§7] §c参数错误，正确格式为:\n§e/amt sell money(point) price"
-empty_item_error_sell: "§7[§b全球市场§7] §e请把要上架的商品置于主手中！"
+try_create_database: "§7[§bAwesome Market§7] §eDatabase does not exist, creating awesome_market database."
+connect_mysql_success: "§7[§bAwesome Market§7] §eSuccessfully connected to the database!"
+connect_mysql_fail: "§7[§bAwesome Market§7] §eDatabase connection error!"
+create_mysql_fail: "§7[§bAwesome Market§7] §eError creating database or tables!"
+no_vault: "§7[§bAwesome Market§7] §cVault plugin is not installed or enabled!"
+no_player_points: "§7[§bAwesome Market§7] §cPlayerPoints plugin is not installed or enabled!"
+payment_type_error: "§7[§bAwesome Market§7] §cCurrency type error!"
+price_error: "§7[§bAwesome Market§7] §cPlease enter a valid price!"
+pay_tax_fail: "§7[§bAwesome Market§7] §cYour currency balance §e %.2f§c is insufficient to pay the tax §e%.2f§c! Listing failed!"
+withdraw_tax: "§7[§bAwesome Market§7] §eItem listed successfully! Tax deducted §c %.2f §a%s"
+args_error_sell: "§7[§bAwesome Market§7] §cParameter error, correct format is:\n§e/amt sell money(point) price"
+empty_item_error_sell: "§7[§bAwesome Market§7] §ePlease hold the item you want to list in your main hand!"
 
-buy_success: §7[§b全球市场§7] §a您花费§e %money%§6 %currency% §a购买了§e%seller%§a的§7[§r%item%§7] §a!
-add_item_to_storage: §7[§b全球市场§7] §c背包空间不足! 物品已移至暂存库!
-get_storage_item_fail: §7[§b全球市场§7] §c背包空间不足! 请先清理出足够的背包!
-take_item_from_storage: §7[§b全球市场§7] §a物品已成功入库!
+buy_success: §7[§bAwesome Market§7] §aYou spent §e %money%§6 %currency% §a to purchase §e%seller%§a's §7[§r%item%§7] §a!
+add_item_to_storage: §7[§bAwesome Market§7] §cInventory is full! Item has been moved to the storage!
+get_storage_item_fail: §7[§bAwesome Market§7] §cInventory is full! Please clear enough space in your inventory first!
+take_item_from_storage: §7[§bAwesome Market§7] §aItem has been successfully taken!
+
 
 buy_fail:
-  lack-of-eco: §7[§b全球市场§7] §c余额不足! 您仍需§e %money% §6 %currency% §c以购买!
-  has-been-bought: §7[§b全球市场§7] §c购买失败! 手慢了! 物品已被买走...
+  lack-of-eco: §7[§bAwesome Market§7] §cInsufficient balance! You still need §e %money% §6 %currency% §c to purchase!
+  has-been-bought: §7[§bAwesome Market§7] §cPurchase failed! Too slow! Item has been bought already...
 
 sort:
-  time_desc: §6最新商品
-  time_asc: §6最旧商品
-  price_desc: §6高价优先
-  price_asc: §6低价优先
+  time_desc: §6Newest Items
+  time_asc: §6Oldest Items
+  price_desc: §6Price High to Low
+  price_asc: §6Price Low to High
 
 market-GUI:
-  title: §e§l全球市场 %seller%
+  title: §e§lAwesome Market %seller%
   seller: §7- §c%player2%
-  prev-page: §e上一页
-  prev-page-lore: §e%d / %d 页
+  prev-page: §ePrev Page
+  prev-page-lore: §ePage %d / %d
 
-  next-page: §e下一页
-  next-page-lore: §e%d / %d 页
+  next-page: §eNext Page
+  next-page-lore: §ePage %d / %d
 
-  sort-type: §c商品排序
+  sort-type: §cSort By
   sort-type-lore:
-    - §e当前：§6%sort%
+    - "§eCurrent: §6%sort%"
     - ""
-    - §a§l点击切换
+    - §a§lClick to Switch
 
-  currency-type: §b货币类型
+  currency-type: §bCurrency Type
   currency-type-lore:
-    - §e当前：§6%currency%
+    - "§eCurrent: §6%currency%"
     - ""
-    - §a§l点击切换
+    - §a§lClick to Switch
 
-  storage: §9暂存库
-  storage-lore: §5背包已满时购得物品会存于此处
+  storage: §9Storage
+  storage-lore: §5A magical storage!
 
-  help-book: §3帮助
+  help-book: §3Help
   help-book-lore:
-    - §a§l /amt sell 货币类型 价格 §r§a- 上架主手物品
-    - §a§l /amt view 玩家名 §r§a- 查看玩家商店
-    - §a§l /amt find §r§a- 在商店查找主手物品
+    - §a§l /amt sell currency price §r§a- List item in main hand
+    - §a§l /amt view InvType <ID> §r§a- View player's inventory
+    - §a§l /amt find §r§a- Find item in main hand in shop
     - ""
-    - §6§l 点击恢复默认排序
+    - §6§l Click to Reset to Default Sort
 
   commodity:
     lore:
-      - §8==========§7§l[§a§l 市场商品 §7§l]§8==========
+      - §8===========§7§l[§a§l Market Item §7§l]§8==========
       - ""
-      - §7»§6 🪙 §3 物品价格：§e%price% §6%currency%
-      - §7»§e 🧑 §3 出售玩家：§a%player%
-      - §7»§b 📅 §3 上架时间：§d%on_sell_time%
+      - "§7»§6 🪙 §3 Price: §e%price% §6%currency%"
+      - "§7»§e 🧑 §3 Seller: §a%player%"
+      - "§7»§b 📅 §3 Listing Time: §d%on_sell_time%"
       - ""
-      - "§7§l▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▪▫▪▫▪▫▪▫▪▪▫▪▫▪"
+      - "§7§l▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪▪▫▪▫▪▫▪▫▪▪▫▪▫▪▫▪▫▪▫▪▫▪▫▪"
       - ""
-      - §7»§b 🔍 §c鼠标右键 §a- 仅查看该种商品
-      - §7»§b 🔍 §cshift+右键 §a- 查看玩家商店
+      - §7»§b 🔍 §cRight-Click §a- View only this item type
+      - §7»§b 🔍 §cShift+Right-Click §a- View player's shop
       - ""
       - "%operation%"
       - ""
-      - §8==============================
+      - §8====================================
 
-    buy: §7»§2 ✅ §a§l点击购买
-    unlisted: §7»§4 ❌ §c§lshift+左键下架商品
+    buy: §7»§2 ✅ §a§lClick to Buy
+    unlisted: §7»§4 ❌ §c§lShift+Left-Click to Unlist
 
-
-
-  statistic: §3统计数据§7 - §6%player%
-  statistic-loading: §c正在加载...
+  statistic: §3Statistics§7 - §6%player%
+  statistic-loading: §cLoading...
   statistic-lore:
-    - §8»»————————————««
-    - §a📦 商品交易  §8»»
-    - "  §7»§b  🛒 §a购买: §c%buy_count% §6件"
-    - "  §7»§6  🛍 §a出售: §c%sell_count% §6件"
+    - §8»»———————————————————««
+    - §a📦 Item Transactions  §8»»
+    - "  §7»§b  🛒 §aBought: §c%buy_count% §6items"
+    - "  §7»§6  🛍 §aSold: §c%sell_count% §6items"
     - ""
-    - §e💰 花费统计  §8»»
-    - "  §7»§a  💸 §e支出: §c%money% §6%currency_money%"
-    - "  §7»§a  💸 §e支出: §c%point% §6%currency_point%"
+    - §e💰 Spending Statistics  §8»»
+    - "  §7»§a  💸 §eSpent: §c%money% §6%currency_money%"
+    - "  §7»§a  💸 §eSpent: §c%point% §6%currency_point%"
     - ""
-    - §b⭐ 收入统计  §8»»
-    - "  §7»§e  🌟 §b收入: §c%money_get% §6%currency_money%"
-    - "  §7»§e  🌟 §b收入: §c%point_get% §6%currency_point%"
+    - §b⭐ Income Statistics  §8»»
+    - "  §7»§e  🌟 §bIncome: §c%money_get% §6%currency_money%"
+    - "  §7»§e  🌟 §bIncome: §c%point_get% §6%currency_point%"
     - ""
     - "%operation%"
-    - §8»»————————————««
-  statistic-look-up: §7»§b 🔍 §a§l点击查看交易记录
-  statistic-no-permission-look-up: §7»§4 ❌ §c§l你没有权限查看TA的交易记录!
+    - §8»»———————————————————««
+  statistic-look-up: §7»§b 🔍 §a§lClick to View Transaction Records
+  statistic-no-permission-look-up: §7»§4 ❌ §c§lYou don't have permission to view THEIR transaction records!
 
 confirm-GUI:
   buy:
-    title: §c§l确认支付?
-    confirm: §a点击以确认支付!
-    confirm-lore: §e你将支付 §c%price% §6%currency% §e给 §a%player%
-    cancel: §c点击以取消支付!
-    cancel-lore: §d我再想想...
+    title: §c§lConfirm Payment?
+    confirm: §aClick to Confirm Payment!
+    confirm-lore: §eYou will pay §c%price% §6%currency% §e to §a%player%
+    cancel: §cClick to Cancel Payment!
+    cancel-lore: §dLet me reconsider...
 
 storage-GUI:
-  title: §9§l暂存库 §7- §8%player%
-  prev-page: §e上一页
-  prev-page-lore: §e%d / %d 页
+  title: §9§lStorage §7- §8%player%
+  prev-page: §ePrev Page
+  prev-page-lore: §ePage %d / %d
 
-  next-page: §e下一页
-  next-page-lore: §e%d / %d 页
-  market: §e点击返回全球市场
+  next-page: §eNext Page
+  next-page-lore: §ePage %d / %d
+  market: §eClick to Return to Awesome Market
 
   item:
-    - §8==========§7§l[§a§l 待取商品 §7§l]§8==========
+    - §8========§7§l[§a§l Unclaimed Item §7§l]§8========
     - ""
-    - §7»§b 📅 §3购得时间：§d%buy_time%
-    - §7»§6 💰 §3物品价格：§e%price% §6%currency%
-    - §7»§e 🧑 §3出售玩家：§a%player%
+    - "§7»§b 📅 §3Purchase Time: §d%buy_time%"
+    - "§7»§6 💰 §3Price: §e%price% §6%currency%"
+    - "§7»§e 🧑 §3Seller: §a%player%"
     - ""
-    - §7»§2 📦 §a§l点击入库
+    - §7»§2 📦 §a§lClick to Retrieve!
     - ""
-    - §8==============================
+    - §8==================================
 
   unlisted-item:
-    - §8==========§7§l[§c§l 下架物品 §7§l]§8==========
-    - §7»§b 📅 §3下架时间：§d%time%
-    - §7»§6 💰 §3出售价格：§e%price% §6%currency%
+    - §8=========§7§l[§c§l Unlisted Item §7§l]§8=========
     - ""
-    - §7» 👆 §a§l点击取回!
+    - "§7»§b 📅 §3Unlisted Time: §d%time%"
+    - "§7»§6 💰 §3Selling Price: §e%price% §6%currency%"
     - ""
-    - §8==============================
+    - §7» 👆 §a§lClick to Retrieve!
+    - ""
+    - §8==================================
 
 transaction-GUI:
-  title: §3§l交易记录 §7- §1%player% %another_player%
-  is-claimed: §b ✅ §a§l卖家已收款
-  not-claimed: §4 ❌ §c§l卖家未收款
+  title: §3Transaction §7- §1%player% %another_player%
+  is-claimed: §b ✅ §a§lSeller Claimed Payment
+  not-claimed: §4 ❌ §c§lSeller Has Not Claimed Payment
   another-player: §8§l❌ §c%player2%
   transaction-item-lore:
-    - §8==========§7§l[§b§l 交易记录 §7§l]§8==========
+    - §8=======§7§l[§b§l Transaction Record §7§l]§8=======
     - ""
-    - §7»§a 👤 §3出售玩家：§c%seller%
-    - §7»§9 🛍 §3购买玩家：§a%buyer%
-    - §7»§6 💰 §3交易价格：§e%price% §6%priceType%
-    - §7»§b 📅 §3交易时间：§d%trade_time%
+    - "§7»§a 👤 §3Seller: §c%seller%"
+    - "§7»§9 🛍 §3Buyer: §a%buyer%"
+    - "§7»§6 💰 §3Transaction Price: §e%price% §6%priceType%"
+    - "§7»§b 📅 §3Transaction Time: §d%trade_time%"
     - ""
-    - §7»§b 🔍 §a点击以查看与TA的交易
+    - §7»§b 🔍 §aClick to View Transactions with THEM
     - ""
     - §7» %isClaimed%
     - ""
-    - §8==============================
+    - §8=====================================
 
 
-  market: §e点击返回全球市场
-  prev-page: §e上一页
-  prev-page-lore: §e%d / %d 页
+  market: §eClick to Return to Awesome Market
+  prev-page: §ePrev Page
+  prev-page-lore: §ePage %d / %d
 
-  next-page: §e下一页
-  next-page-lore: §e%d / %d 页
+  next-page: §eNext Page
+  next-page-lore: §ePage %d / %d
 
-  sort-type: §c记录排序
+  sort-type: §cSort By
   sort-type-lore:
-    - §e当前：§6%sort%
+    - "§eCurrent: §6%sort%"
     - ""
-    - §a§l点击切换
+    - §a§lClick to Switch
 
-  trade-type: §b交易类型
+  trade-type: §bTransaction Type
   trade-type-lore:
-    - §e当前：§6%tradeType%
+    - "§eCurrent: §6%tradeType%"
     - ""
-    - §a§l点击切换
+    - §a§lClick to Switch
 
-  currency-type: §b货币类型
+  currency-type: §bCurrency Type
   currency-type-lore:
-    - §e当前：§6%currency%
+    - "§eCurrent: §6%currency%"
     - ""
-    - §a§l点击切换
+    - §a§lClick to Switch
 
-  help-book: §3帮助
+  help-book: §3Help
   help-book-lore:
-    - §a§l 这里还没有什么东西哦!
+    - §a§l Nothing here yet!
     - ""
-    - §6§l 点击恢复默认排序
+    - §6§l Click to Reset to Default Sort
 
 tip:
-  item-is-sold: §7[§b全球市场§7] §a您的物品§7[%item%§7]§a已被§6%buyer%§a购买!
-  receive-money: §7[§b全球市场§7] §a您获得了§e %money%§6 %currency% §a作为§7[§r%item%§7]§a的售出收益!
-  can-not-buy-self: §7[§b全球市场§7] §c您不能购买自己的商品!
-  unlisted-fail: §7[§b全球市场§7] §c下架失败! 物品已经被买走啦!
-  unlisted-success: §7[§b全球市场§7] §a物品成功下架至背包!
-  unlisted-storage: §7[§b全球市场§7] §c背包空间不足! 下架物品已移至暂存库!
-  unlisted-storage-op: §7[§b全球市场§7] §b已强制把物品下架至玩家暂存库!
-  item-unlisted-by-op: §7[§b全球市场§7] §c你的一件被管理员强制下架至暂存库!
+  item-is-sold: §7[§bAwesome Market§7] §aYour item §7[%item%§7]§a has been purchased by §6%buyer%§a!
+  receive-money: §7[§bAwesome Market§7] §aYou received §e %money%§6 %currency% §a as sales revenue for §7[§r%item%§7]§a!
+  can-not-buy-self: §7[§bAwesome Market§7] §cYou can't buy your own items!
+  unlisted-fail: §7[§bAwesome Market§7] §cUnlisting failed! Item has been bought!
+  unlisted-success: §7[§bAwesome Market§7] §aItem successfully unlisted to inventory!
+  unlisted-storage: §7[§bAwesome Market§7] §cInventory is full! Unlisted item has been moved to storage!
+  unlisted-storage-op: §7[§bAwesome Market§7] §bItem has been forcibly unlisted to player's storage by operator!
+  item-unlisted-by-op: §7[§bAwesome Market§7] §cOne of your items has been forcibly unlisted to storage by administrator!
 
 command:
   general:
     error:
-      no-permission: §7[§b全球市场§7] §c你没有权限使用该指令!
-      lack-of-params: §7[§b全球市场§7] §c参数不足!
-      lack-of-name: §7[§b全球市场§7] §c请输入玩家名!
-      name-not-exist: §7[§b全球市场§7] §c玩家不存在!
-      not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!
+      no-permission: §7[§bAwesome Market§7] §cYou do not have permission to use this command!
+      lack-of-params: §7[§bAwesome Market§7] §cInsufficient parameters!
+      lack-of-name: §7[§bAwesome Market§7] §cPlease enter a player name!
+      name-not-exist: §7[§bAwesome Market§7] §cPlayer does not exist!
+      not-player: §7[§bAwesome Market§7] §cThis command can only be used by players!
     help:
       view-market:
-        - "§7[§b全球市场§7] §c请输入需要查看的玩家名 示例:"
-        - "§7[§b全球市场§7] §a/amt view market  <玩家名>"
+        - "§7[§bAwesome Market§7] §cPlease enter the player name to view Example:"
+        - "§7[§bAwesome Market§7] §a/amt view market  <playername>"
       view-storage:
-        - "§7[§b全球市场§7] §c请输入需要查看的玩家名 示例:"
-        - "§7[§b全球市场§7] §a/amt view storage  <玩家名>"
+        - "§7[§bAwesome Market§7] §cPlease enter the player name to view Example:"
+        - "§7[§bAwesome Market§7] §a/amt view storage  <playername>"
       view-transaction:
-        - "§7[§b全球市场§7] §c请输入需要查看的玩家名 示例:"
-        - "§7[§b全球市场§7] §a/amt view transaction  <玩家名>"
-        - "§7[§b全球市场§7] §c支持指定双玩家以查看交易记录 示例:"
-        - "§7[§b全球市场§7] §a/amt view transaction  <玩家1> <玩家2>"
+        - "§7[§bAwesome Market§7] §cPlease enter the player name to view Example:"
+        - "§7[§bAwesome Market§7] §a/amt view transaction  <playername>"
+        - "§7[§bAwesome Market§7] §cSupports specifying two players to view transaction records Example:"
+        - "§7[§bAwesome Market§7] §a/amt view transaction  <player1> <player2>"
 
 currency:
-  money: "游戏币"
-  point: "点券"
-  all: "所有"
+  money: "Money"
+  point: "Points"
+  all: "All"
 
 trade-type:
-  all: §a全部
-  buy: §6购买
-  sell: §c出售
+  all: §aAll
+  buy: §6Buy
+  sell: §cSell
