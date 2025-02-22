@@ -16,13 +16,18 @@ public enum SortType {
     }
 
     public String toSQL(boolean isTradeType) {
-        return switch (this) {
-            case PRICE_ASC -> "price ASC";
-            case PRICE_DESC -> "price DESC";
-            case TIME_ASC -> isTradeType ? "trade_time ASC" : "on_sell_time ASC";
-            case TIME_DESC -> isTradeType ? "trade_time DESC" : "on_sell_time DESC";
-            default -> throw new IllegalStateException();
-        };
+        switch (this) {
+            case PRICE_ASC:
+                return "price ASC";
+            case PRICE_DESC:
+                return "price DESC";
+            case TIME_ASC:
+                return isTradeType ? "trade_time ASC" : "on_sell_time ASC";
+            case TIME_DESC:
+                return isTradeType ? "trade_time DESC" : "on_sell_time DESC";
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     public SortType next() {

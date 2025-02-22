@@ -149,7 +149,7 @@ public class StorageHolder implements InventoryHolder {
 
                     //下面根据不同的storage类型进行操作
                     switch (storageItem.getStorageType()) {
-                        case StorageType.WAITING_FOR_CLAIM -> {
+                        case WAITING_FOR_CLAIM: {
                             //等待领取的物品
 
                             //要给itemstack设置一些属性
@@ -175,8 +175,9 @@ public class StorageHolder implements InventoryHolder {
                             itemStack.setItemMeta(meta);
                             storageGUI.setItem(slot, itemStack);
                             slot++;
+                            break;
                         }
-                        case StorageType.DELISTED -> {
+                        case DELISTED: {
                             //下架的物品
                             ItemStack itemStack = storageItem.getItemStack().clone();
                             ItemMeta meta = itemStack.getItemMeta();
@@ -200,7 +201,13 @@ public class StorageHolder implements InventoryHolder {
                             itemStack.setItemMeta(meta);
                             storageGUI.setItem(slot, itemStack);
                             slot++;
+                            break;
                         }
+
+                        case RECEIPT:
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + storageItem.getStorageType());
                     }
 
 

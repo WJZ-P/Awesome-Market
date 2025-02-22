@@ -31,7 +31,7 @@ public enum CommandType {
             }
 
             switch (strings[1].toLowerCase()) {
-                case "market" -> {  //处理市场指令
+                case "market": {  //处理市场指令
                     //首先检查是否有权限
                     if (!sender.hasPermission("awesomemarket.market.lookOthers")) {
                         sender.sendMessage(Log.getString("command.general.error.no-permission"));
@@ -54,8 +54,9 @@ public enum CommandType {
                         playerSender.openInventory(new MarketHolder(player, playerSender, 1).getInventory());
                         playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
                     }
+                    break;
                 }
-                case "storage" -> {
+                case "storage": {
                     //首先检查是否有权限
                     if (!sender.hasPermission("awesomemarket.storage.lookOthers")) {
                         sender.sendMessage(Log.getString("command.general.error.no-permission"));
@@ -78,8 +79,9 @@ public enum CommandType {
                         playerSender.openInventory(new StorageHolder(player, playerSender, new MarketHolder(playerSender, 1)).getInventory());
                         playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
                     }
+                    break;
                 }
-                case "transaction" -> {
+                case "transaction": {
                     //首先检查是否有权限
                     if (!sender.hasPermission("awesomemarket.transaction.lookOthers")) {
                         sender.sendMessage(Log.getString("command.general.error.no-permission"));
@@ -102,6 +104,7 @@ public enum CommandType {
                         playerSender.openInventory(new TransactionHolder(new MarketHolder(playerSender, 1), playerSender, Bukkit.getOfflinePlayer(player1), Bukkit.getOfflinePlayer(player2)).getInventory());
                         playerSender.playSound(playerSender.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 0.8f);
                     }
+                    break;
                 }
             }
         }

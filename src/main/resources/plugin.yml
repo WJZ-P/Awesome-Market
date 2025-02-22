@@ -1,7 +1,7 @@
 name: AwesomeMarket
 version: '1.0'
 main: com.wjz.awesomemarket.AwesomeMarket
-api-version: '1.21'
+api-version: '1.13'#naive version is 1.21
 load: STARTUP
 authors: [ WJZ_P ]
 description: An awesome global market plugin!

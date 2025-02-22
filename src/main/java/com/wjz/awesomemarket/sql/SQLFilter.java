@@ -46,12 +46,16 @@ public class SQLFilter {
         if (tradeType != null) {//说明查询的是交易记录表
             String condition = null;
             switch (tradeType) {
-                case ALL -> condition = viewer == null ? " AND (seller = '%owner%' OR buyer = '%owner%') " :
-                        " AND ( (seller = '%owner%' AND buyer = '%viewer%') OR (seller = '%viewer%' AND buyer= '%owner%' ) ) ";
-                case SELL ->
-                        condition = viewer == null ? " AND seller = '%owner%' " : "AND (seller = '%owner%' AND buyer = '%viewer%') ";
-                case BUY ->
-                        condition = viewer == null ? " AND buyer = '%owner%' " : "AND (buyer = '%owner%' AND seller= '%viewer%' ) ";
+                case ALL:
+                    condition = viewer == null ? " AND (seller = '%owner%' OR buyer = '%owner%') " :
+                            " AND ( (seller = '%owner%' AND buyer = '%viewer%') OR (seller = '%viewer%' AND buyer= '%owner%' ) ) ";
+                    break;
+                case SELL:
+                    condition = viewer == null ? " AND seller = '%owner%' " : "AND (seller = '%owner%' AND buyer = '%viewer%') ";
+                    break;
+                case BUY:
+                    condition = viewer == null ? " AND buyer = '%owner%' " : "AND (buyer = '%owner%' AND seller= '%viewer%' ) ";
+                    break;
             }
             return new StringBuilder().append("WHERE 1=1 ")
                     .append(priceType == null ? "" : priceType.toSQL())
