@@ -6,12 +6,12 @@ language: zh
 #use Mysql as database
 #使用mysql数据库
 mysql-data-base:
-  ip: 101.126.90.250
+  ip: hey! I'm here!
   port: 3306
   #type your own user and pwd
   #填写自己的user和 password
-  user: WJZ
-  password: 123456
+  user: My name is WJZ!
+  password: it should never be 123456！
   #不要有-等特殊符号，小写
   #do not use "-" or other special characters, use lowercase
   database-name: awesome_market
