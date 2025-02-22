@@ -8,7 +8,6 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import java.time.Instant;
 
 /**
@@ -48,7 +47,7 @@ public class MarketTools {
 
 
         //得判断手中有没有物品
-        if (itemStack.isEmpty()) {
+        if (UsefulTools.isItemStackEmpty(itemStack)) {
             player.sendMessage(Log.getString("empty_item_error_sell"));
             return;
         }

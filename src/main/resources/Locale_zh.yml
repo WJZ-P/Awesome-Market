@@ -48,7 +48,7 @@ sort:
   price_desc: §6高价优先
   price_asc: §6低价优先
 
-market-GUI:
+market-gui:
   title: §e§l全球市场 %seller%
   seller: §7- §c%player2%
   prev-page: §e上一页
@@ -123,7 +123,7 @@ market-GUI:
   statistic-look-up: §7»§b 🔍 §a§l点击查看交易记录
   statistic-no-permission-look-up: §7»§4 ❌ §c§l你没有权限查看TA的交易记录!
 
-confirm-GUI:
+confirm-gui:
   buy:
     title: §c§l确认支付?
     confirm: §a点击以确认支付!
@@ -131,7 +131,7 @@ confirm-GUI:
     cancel: §c点击以取消支付!
     cancel-lore: §d我再想想...
 
-storage-GUI:
+storage-gui:
   title: §9§l暂存库 §7- §8%player%
   prev-page: §e上一页
   prev-page-lore: §e%d / %d 页
@@ -161,7 +161,7 @@ storage-GUI:
     - ""
     - §8==============================
 
-transaction-GUI:
+transaction-gui:
   title: §3§l交易记录 §7- §1%player% %another_player%
   is-claimed: §b ✅ §a§l卖家已收款
   not-claimed: §4 ❌ §c§l卖家未收款

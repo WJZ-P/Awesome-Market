@@ -119,4 +119,8 @@ public class UsefulTools {
     public static String getFormatTime(long time){
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time));
     }
+    //判断itemStack是否为空，因为ItemStack.isEmpty在1.17以上才有
+    public static boolean isItemStackEmpty(ItemStack itemStack){
+        return itemStack == null || itemStack.getType() == Material.AIR;
+    }
 }

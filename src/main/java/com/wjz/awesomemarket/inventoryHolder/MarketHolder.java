@@ -212,13 +212,13 @@ public class MarketHolder implements InventoryHolder {
         //如果不是默认排序。物品就带附魔颜色
         if (sortType != SortType.TIME_DESC) {
             ItemMeta meta = sortTypeBtn.getItemMeta();
-            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+            meta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             sortTypeBtn.setItemMeta(meta);
         }
         if (priceType != PriceType.ALL) {
             ItemMeta meta = currencyTypeBtn.getItemMeta();
-            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+            meta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             currencyTypeBtn.setItemMeta(meta);
         }
