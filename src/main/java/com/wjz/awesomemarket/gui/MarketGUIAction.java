@@ -51,11 +51,11 @@ public enum MarketGUIAction {
             if (clickType.isLeftClick()) {//点击鼠标左键
                 if (!clickType.isShiftClick()) {
                     //不可以买自己的商品
-//                    if (marketHolder.getMarketItem(slot).getSellerName().equals(player.getName())) {
-//                        player.sendMessage(Log.getString("tip.can-not-buy-self"));
-//                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-//                        return;
-//                    }
+                    if (marketHolder.getMarketItem(slot).getSellerName().equals(player.getName())) {
+                        player.sendMessage(Log.getString("tip.can-not-buy-self"));
+                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        return;
+                    }
                     //调用confirmGUI。
                     GUI.openConfirm(player, marketHolder, slot);//传入UI中的具体物品。
                 } else {
