@@ -133,19 +133,19 @@ public class TransactionHolder implements InventoryHolder {
             //如果不是默认排序。物品就带附魔颜色
             if (sortType != SortType.TIME_DESC) {
                 ItemMeta meta = sortTypeBtn.getItemMeta();
-                meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+                meta.addEnchant(Enchantment.LURE, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 sortTypeBtn.setItemMeta(meta);
             }
             if (priceType != PriceType.ALL) {
                 ItemMeta meta = currencyTypeBtn.getItemMeta();
-                meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+                meta.addEnchant(Enchantment.LURE, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 currencyTypeBtn.setItemMeta(meta);
             }
             if (tradeType != TradeType.ALL) {
                 ItemMeta meta = tradeTypeBtn.getItemMeta();
-                meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+                meta.addEnchant(Enchantment.LURE, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 tradeTypeBtn.setItemMeta(meta);
             }

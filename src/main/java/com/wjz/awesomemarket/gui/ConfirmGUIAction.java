@@ -1,7 +1,9 @@
 package com.wjz.awesomemarket.gui;
 
 import com.wjz.awesomemarket.inventoryHolder.MarketHolder;
+import com.wjz.awesomemarket.utils.UsefulTools;
 import org.bukkit.*;
+import org.bukkit.block.data.type.Fire;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -18,8 +20,17 @@ public enum ConfirmGUIAction {
 
                 //在玩家头上放烟花
                 Location loc = player.getLocation();
-                Firework fw = (Firework) player.getLocation().add(0, 2, 0).getWorld()
-                        .spawnEntity(loc, EntityType.FIREWORK_ROCKET);
+                //判断版本，FIREWORK_ROCKET是1.17才有的
+                Firework fw = null;
+                if (UsefulTools.isVersionNewerThan("1.17")) {
+                    fw = (Firework) player.getLocation().add(0, 2, 0).getWorld()
+                            .spawnEntity(loc, EntityType.FIREWORK_ROCKET);
+                }
+                else{
+                    fw = (Firework) player.getLocation().add(0, 2, 0).getWorld()
+                            .spawnEntity(loc, EntityType.valueOf("FIREWORK"));
+                }
+
                 FireworkMeta fwm = fw.getFireworkMeta();
                 FireworkEffect effect = FireworkEffect.builder()
                         .withColor(Color.WHITE)

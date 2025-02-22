@@ -7,6 +7,8 @@ import com.wjz.awesomemarket.inventoryHolder.TransactionHolder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 public class GUI {
     public static void openMarket(Player player, int page) {
@@ -19,9 +21,9 @@ public class GUI {
         player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0f, 0.8f);
         player.openInventory(new ConfirmHolder(marketHolder,slot).getInventory());
     }
-    public static void openStorage(Player player){
+    public static void openStorage(Player player, InventoryHolder inventoryHolder){
         player.playSound(player.getLocation(),Sound.BLOCK_CHEST_OPEN,1.0f,1.0f);
-        player.openInventory(new StorageHolder(player,(MarketHolder) player.getOpenInventory().getTopInventory().getHolder()).getInventory());
+        player.openInventory(new StorageHolder(player, (MarketHolder) inventoryHolder).getInventory());
     }
     public static void openTransaction
             (Player player, OfflinePlayer owner, MarketHolder marketHolder){

@@ -8,6 +8,7 @@ import com.wjz.awesomemarket.entity.StorageItem;
 import com.wjz.awesomemarket.entity.TransactionItem;
 import com.wjz.awesomemarket.utils.Log;
 import com.wjz.awesomemarket.utils.MarketTools;
+import com.wjz.awesomemarket.utils.UsefulTools;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.Component;
@@ -214,6 +215,9 @@ public class Mysql {
         } catch (SQLException e) {
             Log.severeDirectly("根据页数查询物品失败");
             e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Log.severe("command.general.error.deserialize-fail");
         }
 
         return marketItems;
@@ -249,6 +253,9 @@ public class Mysql {
         } catch (SQLException e) {
             Log.severeDirectly("Mysql查询交易记录失败!");
             e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Log.severe("command.general.error.deserialize-fail");
         }
         return transactionItems;
     }
@@ -299,11 +306,16 @@ public class Mysql {
                     ItemStack itemStack = deserializeItem(rs.getString("item_detail"));
                     String receiveTip = Log.getString("tip.receive-money").
                             replace("%money%", String.format("%,.2f", price)).replace("%currency%", priceType.getName());
-                    Component message = Component.text(receiveTip).replaceText(b -> b.matchLiteral("%item%")
-                            .replacement(Component.translatable(itemStack.getType().translationKey())
-                                    .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())));
+                    //做版本检查
+                    if (UsefulTools.isVersionNewerThan("1.17")) {
+                        Component message = Component.text(receiveTip).replaceText(b -> b.matchLiteral("%item%")
+                                .replacement(Component.translatable(itemStack.getType().translationKey())
+                                        .color(itemStack.displayName().color()).hoverEvent(itemStack.asHoverEvent())));
 
-                    seller.sendMessage(message);
+                        seller.sendMessage(message);
+                    } else {
+                        seller.sendMessage(receiveTip.replace("%item%", itemStack.getType().name()));
+                    }
                 }
             }
             //然后更新所有未确认账单为确认
@@ -315,6 +327,9 @@ public class Mysql {
         } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("单据更新失败！");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Log.severe("command.general.error.deserialize-fail");
         }
         return false;
     }
@@ -430,6 +445,9 @@ public class Mysql {
         } catch (SQLException e) {
             e.printStackTrace();
             Log.severeDirectly("获取暂存库物品失败！");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            Log.severe("command.general.error.deserialize-fail");
         }
         return storageItemList;
     }

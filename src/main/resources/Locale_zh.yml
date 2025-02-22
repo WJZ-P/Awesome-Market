@@ -230,6 +230,7 @@ command:
       lack-of-name: §7[§b全球市场§7] §c请输入玩家名!
       name-not-exist: §7[§b全球市场§7] §c玩家不存在!
       not-player: §7[§b全球市场§7] §c该指令仅限玩家使用!
+      deserialize-fail: §7[§b全球市场§7] §c你在尝试序列化不支持的物品!在低版本解析高版本的物品是不允许的!
     help:
       view-market:
         - "§7[§b全球市场§7] §c请输入需要查看的玩家名 示例:"

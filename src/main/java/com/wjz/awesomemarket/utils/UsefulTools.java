@@ -24,29 +24,34 @@ public class UsefulTools {
     public static ItemStack getCustomSkull(String textureValue) {
 
         //说明是新版
-        if(isVersionNewerThan("1.20.4")){
-            ItemStack skull=MarketTools.deserializeItem(String.format(SkullType.CUSTOM_SKULL,UUID.randomUUID(),textureValue));
+        if (isVersionNewerThan("1.20.4")) {
+            ItemStack skull = MarketTools.deserializeItem(String.format(SkullType.CUSTOM_SKULL, UUID.randomUUID(), textureValue));
             return skull;
-        }
-
-        else{//旧版获取方法
-            ItemStack head = new ItemStack(Material.LEGACY_SKULL);
+        } else {//旧版获取方法
+            ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+            // **更严谨的方式获取 SkullMeta，使用 Bukkit.getItemFactory() 创建**
             SkullMeta meta = (SkullMeta) head.getItemMeta();
-            //使用反射设置texture
-            try {
-                Field profileField = meta.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
+            // **添加判空检查，确保 meta 对象不为 null**
+            if (meta != null) {
+                //使用反射设置texture
+                try {
+                    Field profileField = meta.getClass().getDeclaredField("profile");
+                    profileField.setAccessible(true);
 
-                GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-                profile.getProperties().put("textures", new Property("textures", textureValue));
+                    GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+                    profile.getProperties().put("textures", new Property("textures", textureValue));
 
-                profileField.set(meta, profile);
-                head.setItemMeta(meta);
-            } catch (Exception e) {
-                e.printStackTrace();
+                    profileField.set(meta, profile);
+                    head.setItemMeta(meta); // 设置修改后的 meta
+                } catch (Exception e) {
+                    e.printStackTrace(); // 异常处理，打印堆栈信息
+                    return null; // **重要：反射设置失败时，返回 null 或者一个默认物品，避免后续代码继续使用可能出错的 head 对象**
+                }
+                return head; // **正常情况下返回 head**
+            } else {
+                // **如果 meta 为 null，记录警告信息，并返回 null 或者一个默认物品**
+                return new ItemStack(Material.PLAYER_HEAD); // **返回 null，表示创建头颅失败**
             }
-
-            return head;
         }
     }
 
@@ -94,33 +99,33 @@ public class UsefulTools {
                 .mapToInt(Integer::parseInt)
                 .toArray();
     }
+
     //1.16+
-    public static ItemStack getPlayerHead(Player player){
+    public static ItemStack getPlayerHead(Player player) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
         //1.16+用playerProfile
-        // 1.16+ 使用PlayerProfile
-        PlayerProfile profile = player.getPlayerProfile();
-        meta.setPlayerProfile(profile);
-        head.setItemMeta(meta);
-        return head;
-    }
-    public static ItemStack getPlayerHead(OfflinePlayer player){
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
-        //1.16+用playerProfile
-        // 1.16+ 使用PlayerProfile
         PlayerProfile profile = player.getPlayerProfile();
         meta.setPlayerProfile(profile);
         head.setItemMeta(meta);
         return head;
     }
 
-    public static String getFormatTime(long time){
+    public static ItemStack getPlayerHead(OfflinePlayer player) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) head.getItemMeta();
+        //1.16+用playerProfile
+        meta.setOwner(player.getName());
+        head.setItemMeta(meta);
+        return head;
+    }
+
+    public static String getFormatTime(long time) {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time));
     }
+
     //判断itemStack是否为空，因为ItemStack.isEmpty在1.17以上才有
-    public static boolean isItemStackEmpty(ItemStack itemStack){
+    public static boolean isItemStackEmpty(ItemStack itemStack) {
         return itemStack == null || itemStack.getType() == Material.AIR;
     }
 }

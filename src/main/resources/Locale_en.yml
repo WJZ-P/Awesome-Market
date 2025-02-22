@@ -229,6 +229,7 @@ command:
       lack-of-name: §7[§bAwesome Market§7] §cPlease enter a player name!
       name-not-exist: §7[§bAwesome Market§7] §cPlayer does not exist!
       not-player: §7[§bAwesome Market§7] §cThis command can only be used by players!
+      deserialize-fail: §7[§bAwesome Market§7] §cYou are trying to serialize an unsupported item! It is not allowed to parse high-version items in low-version!
     help:
       view-market:
         - "§7[§bAwesome Market§7] §cPlease enter the player name to view Example:"

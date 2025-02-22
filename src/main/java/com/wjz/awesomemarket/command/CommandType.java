@@ -67,7 +67,10 @@ public enum CommandType {
                             sender.sendMessage(msg);
                         return;
                     }
-
+                    if (!((OfflinePlayer) sender).hasPlayedBefore()) {
+                        sender.sendMessage(Log.getString("command.general.error.name-not-exist"));
+                        return;
+                    }
                     //处理暂存库指令
                     String targetName = strings[2];
                     OfflinePlayer player = Bukkit.getOfflinePlayer(targetName);
@@ -96,6 +99,14 @@ public enum CommandType {
                     Player playerSender = (Player) sender;
                     String player1 = strings[2];
                     String player2 = strings.length >= 4 ? strings[3] : null;
+                    if (!Bukkit.getOfflinePlayer(player1).hasPlayedBefore()) {
+                        sender.sendMessage(Log.getString("command.general.error.name-not-exist"));
+                        return;
+                    }
+                    if (player2 != null && !Bukkit.getOfflinePlayer(player2).hasPlayedBefore()) {
+                        sender.sendMessage(Log.getString("command.general.error.name-not-exist"));
+                        return;
+                    }
                     if (player2 == null) {
                         //说明只指定了一名玩家
                         playerSender.openInventory(new TransactionHolder(new MarketHolder(playerSender, 1), playerSender, Bukkit.getOfflinePlayer(player1)).getInventory());

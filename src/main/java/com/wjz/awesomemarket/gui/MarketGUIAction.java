@@ -22,7 +22,7 @@ public enum MarketGUIAction {
     PREV_PAGE {
         @Override
         public void action(Player player, int slot, InventoryClickEvent event) {
-            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            MarketHolder marketHolder = (MarketHolder) event.getInventory().getHolder();
             if (marketHolder != null && !marketHolder.turnPrevPage()) {//第一页无法上一页
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;
@@ -33,7 +33,7 @@ public enum MarketGUIAction {
     }, NEXT_PAGE {
         @Override
         public void action(Player player, int slot, InventoryClickEvent event) {
-            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            MarketHolder marketHolder = (MarketHolder) event.getInventory().getHolder();
             if (marketHolder != null && !marketHolder.turnNextPage()) {//最后一页无法下一页
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return;
@@ -46,16 +46,16 @@ public enum MarketGUIAction {
         @Override
         public void action(Player player, int slot, InventoryClickEvent event) {
             ClickType clickType = event.getClick();
-            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            MarketHolder marketHolder = (MarketHolder) event.getInventory().getHolder();
 
             if (clickType.isLeftClick()) {//点击鼠标左键
                 if (!clickType.isShiftClick()) {
                     //不可以买自己的商品
-                    if (marketHolder.getMarketItem(slot).getSellerName().equals(player.getName())) {
-                        player.sendMessage(Log.getString("tip.can-not-buy-self"));
-                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-                        return;
-                    }
+//                    if (marketHolder.getMarketItem(slot).getSellerName().equals(player.getName())) {
+//                        player.sendMessage(Log.getString("tip.can-not-buy-self"));
+//                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+//                        return;
+//                    }
                     //调用confirmGUI。
                     GUI.openConfirm(player, marketHolder, slot);//传入UI中的具体物品。
                 } else {
@@ -126,13 +126,13 @@ public enum MarketGUIAction {
     STORAGE {
         @Override
         public void action(Player player, int slot, InventoryClickEvent event) {
-            GUI.openStorage(player);
+            GUI.openStorage(player,event.getInventory().getHolder());
         }
     },
     HELP_BOOK {
         public void action(Player player, int slot, InventoryClickEvent event) {
             //点击恢复默认排序
-            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            MarketHolder marketHolder = (MarketHolder) event.getInventory().getHolder();
             marketHolder.setItemType(null);
             marketHolder.setSellerName(null);
             marketHolder.setSortType(SortType.TIME_DESC);
@@ -146,12 +146,12 @@ public enum MarketGUIAction {
     STATISTIC {
         public void action(Player player, int slot, InventoryClickEvent event) {
             //给玩家打开统计面板
-            GUI.openTransaction(player, player, (MarketHolder) player.getOpenInventory().getTopInventory().getHolder());
+            GUI.openTransaction(player, player, (MarketHolder) event.getInventory().getHolder());
         }
     },
     SORT_TYPE {
         public void action(Player player, int slot, InventoryClickEvent event) {
-            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            MarketHolder marketHolder = (MarketHolder) event.getInventory().getHolder();
             SortType sortType = marketHolder.getSortType();
             marketHolder.setSortType(sortType.next());//切换到下一个排序类型
             marketHolder.reload();
@@ -161,7 +161,7 @@ public enum MarketGUIAction {
     },
     PRICE_TYPE {
         public void action(Player player, int slot, InventoryClickEvent event) {
-            MarketHolder marketHolder = (MarketHolder) player.getOpenInventory().getTopInventory().getHolder();
+            MarketHolder marketHolder = (MarketHolder) event.getInventory().getHolder();
             marketHolder.setPriceType(marketHolder.getPriceType().next());
             marketHolder.reload();
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
